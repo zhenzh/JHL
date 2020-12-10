@@ -75,6 +75,10 @@ function window_size()
     return {width = width, height = height}
 end
 
+function window_wrap()
+    return 100 --getWindowWrap()
+end
+
 function add_timer(name, seconds, send, group, options)
     local timer_id,timer_activity
     if name == nil or name == "" then

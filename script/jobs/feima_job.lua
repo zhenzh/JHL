@@ -78,6 +78,7 @@ function feima_job()
     var.job.statics = var.job.statics or {name = "飞马镖局"}
     var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
     var.job.statics["exp"] = var.job.statics["exp"] or state.exp
+    var.job.statics["pot"] = var.job.statics["pot"] or state.pot
     var.job.enemy_name = var.job.enemy_name or ("(?:"..set.concat(job_enemys, "|")..")")
     var.job.enemy = {count = 0}
     var.job.addenemy = {count = 0}
@@ -598,6 +599,7 @@ function feima_job_arrive()
     var.job.statics["result"] = "成功"
     var.job.statics["end"] = time.epoch()
     var.job.statics["exp"] = state.exp - var.job.statics["exp"]
+    var.job.statics["pot"] = state.pot - var.job.statics["pot"]
     return 0
 end
 
@@ -634,9 +636,11 @@ function feima_job_settle()
                     if statics[i]["name"] == "飞马镖局" and 
                        statics[i]["result"] == "成功" then
                         statics[i]["exp"] = (statics[i]["exp"] or 0) + state.exp - var.job.statics["exp"]
+                        statics[i]["pot"] = (statics[i]["pot"] or 0) + state.pot - var.job.statics["pot"]
                     end
                 end
                 var.job.statics["exp"] = state.exp
+                var.job.statics["pot"] = state.pot
             end
             for k,v in ipairs(config.jobs) do
                 if k == #config.jobs then

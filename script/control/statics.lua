@@ -1,31 +1,56 @@
-function statics_details(time_shift)
+function statics_list(time_shift)
     if time_shift == nil then
-        time_shift = os.time() - 3600
+        time_shift = time.epoch() - 3600000
     elseif type(time_shift) == "number" then
-        time_shite = os.time() - (3600 * time_shift)
+        time_shift = time.epoch() - (3600000 * time_shift)
     else
         show("统计时间不正确", "red")
         return false
     end
-    show(string.format("%68s", ""), "white", "gray")
-    show(string.format("%7s%-13s%8s%-8s%10s%10s%10s%2s", "", "完成时间", "", "任务名", "获得经验", "获得潜能", "用时", ""), "white", "gray")
-    local font_color = "black"
-    local back_color = "palegreen"
-    local details_shift = {}
-    for i = #details, 1, -1 do
-        if os.time(details[i][1]) >= time_shift then
-            set.insert(details_shift, 1, details[i])
+    show(string.format("%"..tostring((window_wrap()-1)).."s", ""), "white", "gray")
+    local c1,c2,c3,c4,c5,c6,c7,c8 = math.floor((window_wrap()-1)*0.02),
+                                    math.floor((window_wrap()-1)*0.23),
+                                    math.floor((window_wrap()-1)*0.15),
+                                    math.floor((window_wrap()-1)*0.1),
+                                    math.floor((window_wrap()-1)*0.15),
+                                    math.floor((window_wrap()-1)*0.15),
+                                    math.floor((window_wrap()-1)*0.1)
+    c8 = window_wrap()-1-c1-c2-c3-c4-c5-c6-c7
+    local format = "%"..tostring(c1).."s%-"..tostring(c2).."s%-"..tostring(c3).."s%-"..tostring(c4).."s%"..tostring(c5).."s%"..tostring(c6).."s%"..tostring(c7).."s%-"..tostring(c8).."s"
+    show(string.format(format, "", "完成时间", "任务名", "结果", "获得经验", "获得潜能", "", "用时"), "white", "gray")
+    local history,list = {},{}
+    for i=#statics,1,-1 do
+        if statics[i]["end"] >= time_shift then
+            set.append(list, statics[i])
+        else
+            return statics_list_print(list, format)
+        end
+    end
+    for i=time_shift,time.toepoch(statics.date, "%Y%m%d")+86399999,86400000 do
+        if io.exists(get_work_path().."log/statics."..time.todate(i, "%Y%m%d")) then
+            table.load(get_work_path().."log/statics."..time.todate(i, "%Y%m%d"), history)
+        end
+    end
+    for i=#history,1,-1 do
+        if history[i]["end"] >= time_shift then
+            set.append(list, history[i])
         else
             break
         end
     end
-    for _,v in ipairs(details_shift) do
-        if back_color == "palegreen" then
-            back_color = "#C5FFCA"
+    return statics_list_print(list, format)
+end
+
+function statics_list_print(list, format)
+    local font_color = "yellow"
+    local back_color = "gray"
+    for _,v in ipairs(list) do
+        if back_color == "black" then
+            back_color = "gray"
         else
-            back_color = "palegreen"
+            back_color = "black"
         end
-        show(string.format("%20s%16s%10s%10s%10s%2s", v[1]["year"].."/"..v[1]["month"].."/"..v[1]["day"].." "..v[1]["hour"]..":"..v[1]["min"]..":"..v[1]["sec"], v[2], tostring(v[3]), tostring(v[4]), tostring(v[5]), ""), font_color, back_color)
+        show(string.format(format, "", time.todate(v["end"], "%Y/%m/%d %H:%M:%S"), v["name"], v["result"], tostring(v["exp"]), tostring(v["pot"]), "", time.todate(v["end"]-v["begin"], "%M:%S")), font_color, back_color)
     end
 end
 

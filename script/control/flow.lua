@@ -1,5 +1,5 @@
 require "skills"
---require "statics"
+require "statics"
 
 show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
 

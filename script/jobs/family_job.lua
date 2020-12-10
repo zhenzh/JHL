@@ -115,6 +115,7 @@ function family_job()
     end
     if config.jobs["门派任务"].phase == phase["任务结算"] then
         var.job.statics["exp"] = var.job.statics["exp"] or state.exp
+        var.job.statics["pot"] = var.job.statics["pot"] or state.pot
         config.jobs["门派任务"].dest = nil
         rc = family_job_p3()
         if rc ~= nil then
@@ -127,6 +128,7 @@ function family_job()
         end
         if var.job.statics["exp"] ~= nil then
             var.job.statics["exp"] = state.exp - var.job.statics["exp"]
+            var.job.statics["pot"] = state.pot - var.job.statics["pot"]
         end
         return family_job_return(family_job_p4())
     end
@@ -189,6 +191,7 @@ function family_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p2 ］")
     var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
     var.job.statics["exp"] = var.job.statics["exp"] or state.exp
+    var.job.statics["pot"] = var.job.statics["pot"] or state.pot
     if config.jobs["门派任务"].phase == phase["任务执行"] then
         jia_min()
         if wield(config.fight["通用"].weapon) < 0 then
