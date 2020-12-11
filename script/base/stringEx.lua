@@ -5,6 +5,8 @@
   string.isen(c)                判断字符 c 是否为英文字符，只能判断一个字符。如参数传入字符串，则只对第一个字符进行判断
   string.is_empty(c)            判断字符 c 是否为空
   string.count(s, c)            统计字符串 s 中字符 c 出现的次数
+  string.split(s, d)            将字符串 s 以分隔符 d 拆分
+  string.trim(s)                去除字符串 s 两端的空白
   string.concat(...)            将若干个独立字符串连接成一个字符串
   string.toset(s)               将字符串 s 转换成集合
   string.totable(s)             将字符串 s 转换成表
@@ -35,6 +37,22 @@ function string.count(s, c)
         i = i + 1
     end
     return i
+end
+
+function string.split(s, d)
+    local r,from = {},1
+    local delim_from,delim_to = string.find(s, d, from)
+    while delim_from do
+        set.append(r, string.sub(s, from, delim_from-1))
+        from = delim_to + 1
+        delim_from,delim_to = string.find(s, d, from)
+    end
+    set.append(r, string.sub(s, from))
+    return r
+end
+
+function string.trim(s)
+    return s:gsub("^%s*(.-)%s*$", "%1")
 end
 
 function string.concat(...)

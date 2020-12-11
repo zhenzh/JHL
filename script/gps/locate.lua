@@ -426,7 +426,7 @@ function get_room_id_by_exits(exits, rooms)
     local room_ids = {}
     for _,v in ipairs(rooms) do
         for _,i in ipairs(map[v].exits) do
-            if set.equal(i, exits) then
+            if set.eq(i, exits) then
                 set.append(room_ids, v)
                 break
             end
@@ -574,7 +574,7 @@ end
 --             wait.regexp("^[>\\s]*你目前还没有任何为 搜索完成 的变量设定。$", 30)
 --             EnableTrigger("get_room_name", true)
 --             EnableTrigger("get_room_exits", true)
---             if set.equal(room_update, string.split(GetVariable("room_id"), "|")) == true then
+--             if set.eq(room_update, string.split(GetVariable("room_id"), "|")) == true then
 --                 room_update = nil
 --             end
 --             Execute("set 更新定位")

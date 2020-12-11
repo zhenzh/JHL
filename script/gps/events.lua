@@ -1902,7 +1902,7 @@ function dynamic_exit()
     if var.goto.pause ~= nil then
         return dynamic_exit_return(1, "移动暂停")
     end
-    rc,msg = dynamic_exit_exec(set.complement(env.current.exits, dynamic_exit_exclude[msg] or {}))
+    rc,msg = dynamic_exit_exec(set.compl(env.current.exits, dynamic_exit_exclude[msg] or {}))
     if rc ~= nil then
         return dynamic_exit_return(rc, msg)
     end

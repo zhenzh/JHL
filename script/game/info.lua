@@ -610,7 +610,7 @@ function get_carryon_item_end()
     elseif #var.wield == 1 then
         carryon.wield = {var.wield[1], ""}
     else
-        if set.equal(carryon.wield, var.wield) == false then
+        if set.eq(carryon.wield, var.wield) == false then
             carryon.wield = {"未知", "未知"}
         end
     end

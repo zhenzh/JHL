@@ -1181,10 +1181,10 @@ function aquire_buy(list)
         return -1
     else
         if rc > 0 then
-            var.aquire.list = table.complement(var.aquire.list, table.complement(list, msg))
+            var.aquire.list = table.compl(var.aquire.list, table.compl(list, msg))
             return 1,msg
         else
-            var.aquire.list = table.complement(var.aquire.list, list)
+            var.aquire.list = table.compl(var.aquire.list, list)
         end
     end
     var.aquire.refresh = true
@@ -1198,10 +1198,10 @@ function aquire_qu(list)
         return -1
     else
         if rc > 0 then
-            var.aquire.list = table.complement(var.aquire.list, table.complement(list, msg))
+            var.aquire.list = table.compl(var.aquire.list, table.compl(list, msg))
             return 1,msg
         else
-            var.aquire.list = table.complement(var.aquire.list, list)
+            var.aquire.list = table.compl(var.aquire.list, list)
         end
     end
     var.aquire.refresh = true
@@ -1324,14 +1324,14 @@ function search_room(obj)
     if #var.search.optical > 0 then
         for i = #var.search.optical, 1, -1 do
             if #var.search.optical[i] > 0 then
-                var.search.area = set.complement(var.search.area, var.search.optical[i])
+                var.search.area = set.compl(var.search.area, var.search.optical[i])
                 set.extend(var.search.area, var.search.optical[i])
             end
         end
         var.search.optical = {}
     end
     if not table.is_empty(var.search.result) then
-        var.search.area = set.complement(var.search.area, table.keys(var.search.result))
+        var.search.area = set.compl(var.search.area, table.keys(var.search.result))
         return 0,var.search.result,var.search.area
     end
     return search_room(obj)
