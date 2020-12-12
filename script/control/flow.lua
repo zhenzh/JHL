@@ -626,11 +626,11 @@ function prepare_skills()
         skill_id[k] = cfg[k][1]
     end
     local current_prepare = table.keys(skills.prepare)
-    if not set.equal(current_prepare, prepare) then
+    if not set.eq(current_prepare, prepare) then
         if #set.inter(current_prepare, prepare) < #current_prepare then
             run("prepare none")
         else
-            prepare = set.complement(prepare, current_prepare)
+            prepare = set.compl(prepare, current_prepare)
         end
         if #prepare > 0 then
             prepare[1] = skill_id[prepare[1]]

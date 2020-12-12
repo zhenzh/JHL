@@ -2,15 +2,15 @@
 ================
   集合操作模块
 ================
-  set.insert(s,p,i)           向集合 s 中的位置 p 处插入一个元素 i，元素 i 必须是数字或字符串，允许存在重复元素
-  set.append(s,a)             向集合 s 末尾追加一个元素 a，元素 a 必须是数字或字符串，允许存在重复元素
-  set.remove(s,p)             从集合 s 中去除位置在 p 的元素
-  set.delete(s,o)             从集合 s 中去除所有值等于 o 的元素，元素值 o 必须是数字或字符串，允许存在重复元素
+  set.insert(s, p, i)         向集合 s 中的位置 p 处插入一个元素 i，元素 i 必须是数字或字符串，允许存在重复元素
+  set.append(s, a)            向集合 s 末尾追加一个元素 a，元素 a 必须是数字或字符串，允许存在重复元素
+  set.remove(s, p)            从集合 s 中去除位置在 p 的元素
+  set.delete(s, o)            从集合 s 中去除所有值等于 o 的元素，元素值 o 必须是数字或字符串，允许存在重复元素
   set.reverse(s)              将集合 s 中的所有元素顺序逆向排列
-  set.sort(s,c)               将集合 s 中的所有元素升序排列, 排序规则可由函数 c 指定
-  set.permute(s,n)            返回集合 s 中任意 n 个元素的排列
-  set.combine(s,n)            返回集合 s 中任意 n 个元素的组合
-  set.concat(s,p)             将集合 s 中的所有元素用连接符 p 串连接成一个字符串
+  set.sort(s, c)              将集合 s 中的所有元素升序排列, 排序规则可由函数 c 指定
+  set.permute(s, n)           返回集合 s 中任意 n 个元素的排列
+  set.combine(s, n)           返回集合 s 中任意 n 个元素的组合
+  set.concat(s, p)            将集合 s 中的所有元素用连接符 p 串连接成一个字符串
   set.last(s)                 返回集合 s 的最后一个元素
   set.max(s)                  返回集合 s 中最大的元素
   set.min(s)                  返回集合 s 中最小的元素
@@ -20,35 +20,36 @@
   set.extend(...)             向集合 s 末尾追加若干个集合的元素，允许存在重复元素
   set.union(...)              获取并返回若干个集合的并集，重复元素只保留一个
   set.inter(...)              获取并返回若干个集合的交集，重复元素只保留一个
-  set.complement(s,...)       返回从第一个集合 s 中去除后续若干个集合所包含的元素后得到的新集合，重复元素只保留一个
-  set.equal(a,b)              比较集合 a 和 b 中的元素是否相等，存在重复元素的集合将先去重后比较
-  set.lessthan(a,b)           比较集合 a 是否真包含集合 b，存在重复元素的集合将先去重后比较
-  set.lessequal(a,b)          比较集合 a 是否包含集合 b，存在重复元素的集合将先去重后比较
+  set.compl(...)              返回从第一个集合 s 中去除后续若干个集合所包含的元素后得到的新集合，重复元素只保留一个
+  set.eq(a, b)                比较集合 a 和 b 中的元素是否相等，存在重复元素的集合将先去重后比较
+  set.lt(a, b)                比较集合 a 是否真包含集合 b，存在重复元素的集合将先去重后比较
+  set.le(a, b)                比较集合 a 是否包含集合 b，存在重复元素的集合将先去重后比较
   set.copy(s)                 复制集合 s 的值生成新的集合
   set.tokey(s)                生成以集合 s 的元素作为键值的表，存在重复元素的集合将被去重
-  set.has(s,a)                判断集合 s 中是否存在元素 a
+  set.index_of(s, e)          获取元素 e 在集合 s 中位置
+  set.has(s, e)               判断集合 s 中是否存在元素 a
   set.is_empty(s)             判断集合 s 是否为空集合
-  set.count(s,a)              获取元素 a 在集合 s 中存在的个数
-  set.isset(t)                判断表 t 是否属于集合类型
+  set.count(s, a)             获取元素 a 在集合 s 中存在的个数
+  set.is_set(t)               判断表 t 是否属于集合类型
   set.tostring(s)             将集合 s 转换成字符串
   set.print(s)                打印集合 s
 --]]
 
 set = {}
 
-function set.insert(s,p,i)
+function set.insert(s, p, i)
     return table.insert(s, p, i)
 end
 
-function set.append(s,a)
+function set.append(s, a)
     s[#s+1] = a
 end
 
-function set.remove(s,p)
+function set.remove(s, p)
     return table.remove(s, p)
 end
 
-function set.delete(s,o)
+function set.delete(s, o)
     local i = #s
     while i > 0 do
         if s[i] == o then
@@ -65,13 +66,13 @@ function set.reverse(s)
     end
 end
 
-function set.sort(s,c)
+function set.sort(s, c)
     return table.sort(s, c)
 end
 
-function set.permute(s,n)
+function set.permute(s, n)
     local t = {}
-    local function _permute(a,k,r)
+    local function _permute(a, k, r)
         if #a == k then
             set.append(r, set.copy(a))
         else
@@ -83,13 +84,13 @@ function set.permute(s,n)
         end
     end
     n = n or #s
-    for _,v in ipairs(set.combine(s,n)) do
+    for _,v in ipairs(set.combine(s, n)) do
         _permute(v,1,t)
     end
     return t
 end
-    
-function set.combine(s,n)
+
+function set.combine(s, n)
     s = set.copy(s)
     n = n or #s
     if n == 0 then
@@ -105,8 +106,8 @@ function set.combine(s,n)
     end
     return t
 end
-  
-function set.concat(s,p)
+
+function set.concat(s, p)
     if p == nil then
         p = ""
     end
@@ -165,27 +166,55 @@ function set.extend(...)
     end
 end
 
+function set.inter(...)
+    local s,t,r = {...},{},{}
+    for _,v in ipairs(s[1]) do
+        r[v] = true
+    end
+    for i=2,#s do
+        t = r
+        r = {}
+        for _,v in ipairs(s[i]) do
+            if t[v] ~= nil then
+                t[v] = nil
+                r[v] = true
+            end
+        end
+    end
+    return table.keys(r)
+end
+
 function set.union(...)
-    local t = {...}
-    local r = t[1]
-    for i=2,#t,1 do
-        r = table.n_union(r, t[i])
+    local s = {...}
+    local t,r = {},{}
+    for _,v in ipairs(s) do
+        for _,i in ipairs(v) do
+            if t[i] == nil then
+                set.append(r, i)
+                t[i] = true
+            end
+        end
     end
     return r
 end
 
-function set.inter(...)
-    return table.n_intersection(...)
-end
-
-function set.complement(s,...)
-    for _,v in ipairs({...}) do
-        s = table.n_complement(s, v)
+function set.compl(...)
+    local s = {...}
+    local t,r = {},{}
+    for i=2,#s do
+        for _,v in ipairs(s[i]) do
+            t[v] = true
+        end
     end
-    return s
+    for _,v in ipairs(s[1]) do
+        if t[v] == nil then
+            set.append(r, v)
+        end
+    end
+    return r
 end
 
-function set.equal(a,b)
+function set.eq(a, b)
     set.dedup(a)
     set.dedup(b)
     local s = set.tokey(a)
@@ -203,7 +232,7 @@ function set.equal(a,b)
     end
 end
 
-function set.lessthan(a,b)
+function set.lt(a, b)
     set.dedup(a)
     set.dedup(b)
     local s = set.tokey(a)
@@ -221,7 +250,7 @@ function set.lessthan(a,b)
     end
 end
 
-function set.lessequal(a,b)
+function set.le(a, b)
     set.dedup(a)
     set.dedup(b)
     local s = set.tokey(a)
@@ -251,19 +280,29 @@ function set.tokey(s)
     return t
 end
 
-function set.has(s,a)
-    if table.index_of(s, a) == nil then
-        return false
-    else
-        return true
+function set.index_of(s, e)
+    for k,v in pairs(s) do
+        if v == e then
+            return k
+        end
     end
+    return 0
+end
+
+function set.has(s, e)
+    for _,v in ipairs(s) do
+        if v == e then
+            return true
+        end
+    end
+    return false
 end
 
 function set.is_empty(s)
     return table.is_empty(s)
 end
 
-function set.count(s,a)
+function set.count(s, a)
     local c = 0
     for _,v in ipairs(s) do
         if v == a then
@@ -273,7 +312,7 @@ function set.count(s,a)
     return c
 end
 
-function set.isset(t)
+function set.is_set(t)
     local k = table.keys(t)
     if #k > 0 then
         return false
