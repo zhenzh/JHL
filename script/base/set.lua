@@ -32,7 +32,6 @@
   set.count(s, a)             获取元素 a 在集合 s 中存在的个数
   set.is_set(t)               判断表 t 是否属于集合类型
   set.tostring(s)             将集合 s 转换成字符串
-  set.print(s)                打印集合 s
 --]]
 
 set = {}
@@ -331,8 +330,4 @@ function set.tostring(s)
         end
     end
     return "{"..table.concat(p, ",").."}"
-end
-
-function set.print(s)
-    print(set.tostring(s))
 end

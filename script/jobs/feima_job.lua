@@ -403,6 +403,7 @@ function feima_job_ganche()
             end
         end
     else
+        automation.idle = false
         var.job.move = false
         var.job.enemy = {count = 0}
         var.job.addenemy = {count = 0}

@@ -28,7 +28,7 @@ function statics_list(time_shift)
     end
     for i=time_shift,time.toepoch(statics.date, "%Y%m%d")+86399999,86400000 do
         if io.exists(get_work_path().."log/statics."..time.todate(i, "%Y%m%d")) then
-            table.load(get_work_path().."log/statics."..time.todate(i, "%Y%m%d"), history)
+            history = table.load(get_work_path().."log/statics."..time.todate(i, "%Y%m%d"))
         end
     end
     for i=#history,1,-1 do

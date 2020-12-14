@@ -3,6 +3,7 @@ require "set"
 require "stringEx"
 require "timeEx"
 
+trigger = trigger or {}
 triggers = triggers or { update = true}
 triggers.group = triggers.group or {}
 triggers.pended = triggers.pended or {}
@@ -18,6 +19,7 @@ function trigger_process(text)
         set.remove(global.buffer, 1)
     end
     set.append(global.buffer, text)
+    message("trace", "当前行", get_lines(-1)[1], "")
     for k,v in ipairs(triggers.fire) do
         triggers.update = false
         for i,_ in pairs(v) do
@@ -45,18 +47,8 @@ function trigger_process_exec(name)
         return
     end
 
-    local capture
-    if triggers[name].options.Multi == true then
-        capture = { regex.find(set.concat(get_lines(-triggers[name].multilines), "\n"), triggers[name].pattern) }
-    else
-        capture = { regex.find(get_lines(-1)[1], triggers[name].pattern) }
-    end
-    if #capture == 0 then
+    if trigger_regex(name) == false then
         return
-    end
-    global.regex = { [0] = string.gsub(get_lines(-1)[1], capture[1], capture[2]) }
-    for i=3,#capture do
-        set.append(global.regex, capture[i])
     end
 
     if triggers[name].options.Gag == true then

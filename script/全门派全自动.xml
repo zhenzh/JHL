@@ -31,7 +31,7 @@
 			<name>JHL</name>
 			<packageName></packageName>
 			<script>if threads == nil then
-    package.path = package.path..";"..getMudletHomeDir().."/../../script/?.lua"
+    package.path = package.path..";"..getMudletHomeDir():gsub("profiles/JHL", "").."script/?.lua"
     require "main"
 end</script>
 			<eventHandlerList />

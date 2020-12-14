@@ -1,13 +1,21 @@
+local HOME = string.gsub(debug.getinfo(1).source:sub(2), "script/main.lua", "")
+function get_work_path()
+    return HOME.."profiles/JHL/"
+end
+
+function get_script_path()
+    return HOME.."script/"
+end
+
 package.path = package.path..";"..
-    getMudletHomeDir().."/../../script/base/?.lua;"..
-    getMudletHomeDir().."/../../script/game/?.lua;"..
-    getMudletHomeDir().."/../../script/gps/?.lua;"..
-    getMudletHomeDir().."/../../script/control/?.lua;"..
-    getMudletHomeDir().."/../../script/jobs/?.lua"
+get_script_path().."base/?.lua;"..
+get_script_path().."game/?.lua;"..
+get_script_path().."gps/?.lua;"..
+get_script_path().."control/?.lua;"..
+get_script_path().."jobs/?.lua"
 
 global = global or { flood = 0, uid = {}, buffer = { "" }, regex = {} }
 automation = automation or {}
-automation.items = automation.items or {}
 statics = statics or {}
 config = config or {}
 var = var or {}
@@ -24,21 +32,21 @@ show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lu
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 global.debug.level = global.debug["debug"] or 0
 
-add_timer("idle", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
+add_timer("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
 
 if io.exists(get_work_path().."log/global.tmp") then
-    table.load(get_work_path().."log/global.tmp", global.buffer)
+    global.buffer = table.load(get_work_path().."log/global.tmp")
     table.save(get_work_path().."log/global.tmp", {})
 end
 
 if io.exists(get_work_path().."log/automation.tmp") then
-    table.load(get_work_path().."log/automation.tmp", automation)
+    automation = table.load(get_work_path().."log/automation.tmp")
     table.save(get_work_path().."log/automation.tmp", {})
 end
-if table.is_empty(automation) then
-    automation.killer = {}
-    automation.npc_killer = {"猫也会心碎"}
-end
+
+automation.items = automation.items or {}
+automation.killer = automation.killer or {}
+automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
 
 automation.skill = nil
 config = automation.config
@@ -63,7 +71,7 @@ ui = automation.ui
 
 statics.date = time.date("yyyyMMdd")
 if io.exists(get_work_path().."log/statics."..statics.date) then
-    table.load(get_work_path().."log/statics."..statics.date, statics)
+    statics = table.load(get_work_path().."log/statics."..statics.date)
 end
 
 collectgarbage("collect")

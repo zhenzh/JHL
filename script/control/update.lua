@@ -4,8 +4,7 @@ function add_yun_desc(force_name, yun, valid_desc, invalid_desc)
        is_trigger_exist(invalid_name) then
         show("该内功状态已存在描述记录", "orange")
     end
-    local status_triggers = {}
-    table.load(get_script_path().."game/status.lua", status_triggers)
+    local status_triggers = table.load(get_script_path().."game/status.lua")
     status_triggers[valid_name] = {'state.buff["'..force_name.."_"..yun..'"] = true', "状态记录", {Enable=true}, 1, valid_desc}
     status_triggers[invalid_name] = {'state.buff["'..force_name.."_"..yun..'"] = nil', "状态记录", {Enable=true}, 1, invalid_desc}
     add_trigger(valid_name, status_triggers[valid_name][1], status_triggers[valid_name][2], status_triggers[valid_name][3], status_triggers[valid_name][4], status_triggers[valid_name][5])

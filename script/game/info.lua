@@ -89,8 +89,7 @@ add_trigger("others_leave", "", "显示过滤", {Enable=false, Gag=true}, 1, "^\
                                                                         "^\\S+奔了过去。$")
 
 -- 状态记录
-local status_triggers = {}
-table.load(get_script_path().."game/status.lua", status_triggers)
+local status_triggers = table.load(get_script_path().."game/status.lua")
 for k,v in pairs(status_triggers) do
     add_trigger(k, v[1], v[2], v[3], v[4], v[5])
 end

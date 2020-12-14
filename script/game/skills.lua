@@ -83,7 +83,7 @@ function zuanyan_num_i(i)
     if skills.basic[config.zuanyan[i]].level >= profile.level then
         return zuanyan_num_i(i+1)
     end
-    automation.skill = false show("dbg set false", "red")
+    automation.skill = false
     if skills.enable[config.zuanyan[i]].name ~= skills.special[config.zuanyan[config.zuanyan[i]].enable].name then
         if wait_line("enable "..config.zuanyan[i].." "..config.zuanyan[config.zuanyan[i]].enable, 30, nil, 30, "你从现在起用\\S+作为基本\\S+的特殊技能。") == false then
             return zuanyan_return(-1)
@@ -192,8 +192,12 @@ function zuanyan_exec(i)
         var.zuanyan.refresh = false
         _,var.zuanyan.income = dazuo_analysis()
     elseif l[0] == "你只能参悟本派的武功。" or l[0] == "你没有根底，无法钻研这门武功。" then
+        if break_event() == true then
+            return 1
+        end
         return zuanyan_num_i(i+1)
     elseif string.match(l[0], "进行了钻研") then
+        automation.idle = false
         if wait_line(nil, 30, {Gag=true}, 30, "^> $") == false then
             return -1
         end
@@ -213,6 +217,9 @@ function zuanyan_exec(i)
             if run_skills() < 0 or run_enable() < 0 then
                 return -1
             end
+        end
+        if break_event() == true then
+            return 1
         end
         return zuanyan_num_i(i)
     end
@@ -392,6 +399,9 @@ function lian_exec(i, j)
             if rc ~= 0 then
                 return rc
             end
+            if break_event() == true then
+                return 1
+            end
             return lian_exec(i, j)
         else
             return 1
@@ -403,7 +413,8 @@ function lian_exec(i, j)
         wait(0.1)
         return lian_exec(i, j)
     elseif string.match(l[0], "开始练习") then
-        automation.skill = false show("dbg set false", "red")
+        automation.idle = false
+        automation.skill = false
         var.lian.refresh = true
         if wait_line(nil, 30, {Gag=true}, 30, "^> $") == false then
             return -1
@@ -453,6 +464,9 @@ function lian_exec(i, j)
         if wait_line(nil, 30, {Gag=true}, 30, "^> $") == false then
             return -1
         end
+        if break_event() == true then
+            return 1
+        end
         return lian_num_i(i, j+1)
     else
         if l[0] == "你只能练习用 enable 指定的特殊技能。" then
@@ -463,6 +477,9 @@ function lian_exec(i, j)
         else
             if wait_line(nil, 30, {Gag=true}, 30, "^> $") == false then
                 return -1
+            end
+            if break_event() == true then
+                return 1
             end
             if unwield() < 0  then
                 return -1

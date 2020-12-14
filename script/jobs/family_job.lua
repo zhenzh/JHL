@@ -784,6 +784,7 @@ end
 
 function family_job_exec()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_exec ］")
+    automation.idle = false
     local rc = family_job_goto_dest()
     if rc ~= nil then
         return rc
@@ -1040,7 +1041,6 @@ function family_job_info()
 end
 
 function family_job_settle()
-    show("dbg family settle "..tostring(automation.skill))
     config.jobs["门派任务"].phase = phase["任务完成"]
     if automation.skill ~= nil then
         run("set 中断事件")

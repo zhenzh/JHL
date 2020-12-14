@@ -15,7 +15,9 @@
   table.union(...)              获取并返回若干个表的并集
   table.compl(...)              返回从第一个表 t 中去除后续若干个表所包含的元素后得到的新表
   table.tostring(t)             将表 t 转换成字符串
-  table.print(t)                打印表 t
+  table.save(f, t)              将表 t 写入文件 f
+  table.load(f)                 返回从文件 f 读入的表
+  table.tojson(t)               将表 t 转换成 JSON 格式
 --]]
 
 table = table or {}
@@ -53,138 +55,6 @@ function table.is_empty(t)
     end
     return false
 end
-
-function table.save2(f, t)
-    local file,err = io.open(f, "w")
-    if err then return _,err end
-    file:write("return "..table.tostring(t))
-    file:close()
-    return
-end
-
-function table.load2(f)
-    local tbl,err = loadfile(f)()
-    if err then return _,err end
-    return tbl
-end
-
--- function table.save2(filename, tbl)
---     local function exportstring(s)
--- 		s = string.format("%q", s)
--- 		s = string.gsub(s, "\\\n", "\\n")
--- 		s = string.gsub(s, "\r", "\\r")
--- 		s = string.gsub(s, string.char(26), "\"..string.char(26)..\"")
--- 		return s
---     end
-
---     local charS,charE = "   ","\n"
--- 	local file,err,_
--- 	if not filename then
--- 		file =  { write = function(self, newstr) self.str = self.str..newstr end, str = "" }
--- 		charS,charE = "",""
--- 	elseif filename == true or filename == 1 then
--- 		charS,charE,file = "","",io.tmpfile()
--- 	else
--- 		file,err = io.open(filename, "w")
--- 		if err then return _,err end
--- 	end
--- 	local tables,lookup = { tbl },{ [tbl] = 1 }
--- 	file:write("return {"..charE)
--- 	for idx,t in ipairs(tables) do
--- 		if filename and filename ~= true and filename ~= 1 then
--- 			file:write("-- Table: {"..idx.."}"..charE)
--- 		end
--- 		file:write("{"..charE)
--- 		local thandled = {}
--- 		for i,v in ipairs(t) do
--- 			thandled[i] = true
--- 			if type(v) ~= "userdata" then
--- 				if type(v) == "table" then
--- 					if not lookup[v] then
--- 						table.insert(tables, v)
--- 						lookup[v] = #tables
--- 					end
--- 					file:write(charS.."{"..lookup[v].."},"..charE)
--- 				elseif type(v) == "function" then
--- 					file:write(charS.."loadstring("..exportstring(string.dump( v )).."),"..charE)
--- 				else
--- 					local value = (type(v) == "string" and exportstring(v)) or tostring(v)
--- 					file:write(charS..value..","..charE)
--- 				end
--- 			end
--- 		end
--- 		for i,v in pairs(t) do
--- 			if (not thandled[i]) and type(v) ~= "userdata" then
--- 				if type(i) == "table" then
--- 					if not lookup[i] then
--- 						table.insert(tables, i)
--- 						lookup[i] = #tables
--- 					end
--- 					file:write(charS.."[{"..lookup[i].."}]=")
--- 				else
--- 					local index = (type(i) == "string" and "["..exportstring(i).."]") or string.format( "[%d]",i)
--- 					file:write(charS..index.."=")
--- 				end
--- 				if type(v) == "table" then
--- 					if not lookup[v] then
--- 						table.insert(tables, v)
--- 						lookup[v] = #tables
--- 					end
--- 					file:write("{"..lookup[v].."},"..charE)
--- 				elseif type(v) == "function" then
--- 					file:write("loadstring("..exportstring(string.dump(v)).."),"..charE)
--- 				else
--- 					local value = (type(v) == "string" and exportstring(v) ) or tostring(v)
--- 					file:write(value..","..charE)
--- 				end
--- 			end
--- 		end
--- 		file:write("},"..charE)
--- 	end
--- 	file:write("}")
--- 	if not filename then
--- 		return file.str.."--|"
--- 	elseif filename == true or filename == 1 then
--- 		file:seek ("set")
--- 		return file:read("*a").."--|"
--- 	else
--- 		file:close()
--- 		return 1
--- 	end
--- end
-
--- function table.load2( sfile )
--- 	local tables,err,_
--- 	-- catch marker for stringtable
--- 	if string.sub(sfile, -3, -1) == "--|" then
--- 		tables,err = loadstring(sfile)
--- 	else
--- 		tables,err = loadfile(sfile)
--- 	end
--- 	if err then return _,err
--- 	end
--- 	tables = tables()
--- 	for idx = 1,#tables do
--- 		local tolinkv,tolinki = {},{}
--- 		for i,v in pairs( tables[idx] ) do
--- 			if type( v ) == "table" and tables[v[1]] then
--- 				table.insert( tolinkv,{ i,tables[v[1]] } )
--- 			end
--- 			if type( i ) == "table" and tables[i[1]] then
--- 				table.insert( tolinki,{ i,tables[i[1]] } )
--- 			end
--- 		end
--- 		-- link values, first due to possible changes of indices
--- 		for _,v in ipairs( tolinkv ) do
--- 			tables[idx][v[1]] = v[2]
--- 		end
--- 		-- link indices
--- 		for _,v in ipairs( tolinki ) do
--- 			tables[idx][v[2]],tables[idx][v[1]] =  tables[idx][v[1]],nil
--- 		end
--- 	end
--- 	return tables[1]
--- end
 
 function table.delete(t, o)
     for k,v in pairs(t) do
@@ -329,33 +199,34 @@ function table.compl(...)
     return r
 end
 
+function table.transfer(s, f)
+    if f == nil then return nil end
+    if type(s) == "table" then
+        return f(s)
+    elseif type(s) == "string" then
+        return "\'"..s.."\'"
+    else
+        return tostring(s)
+    end
+end
+
 function table.tostring(t)
     if t == nil then return "" end
     if type(t) == "boolean" then return tostring(t) end
-    local function str(s)
-        if type(s) == "table" then
-           return table.tostring(s)
-        elseif type(s) == "string" then
-            return "\'"..s.."\'"
-        else
-            return tostring(s)
-        end
-    end
-    local s = {"{"}
-    local i = 1
+    local s,i = { "{" },1
     for k,v in pairs(t) do
         local c = ", "
         if i == 1 then c = "" end
         if k == i then
-            set.extend(s, {c, str(v)})
+            set.extend(s, {c, table.transfer(v, table.tostring)})
         else
             if type(k) == 'number' or type(k) == 'string' then
-                set.extend(s, {c, "[", str(k), "] = ", str(v)})
+                set.extend(s, {c, "[", table.transfer(k, table.tostring), "] = ", table.transfer(v, table.tostring)})
             else
                 if type(k) == 'userdata' then
-                    set.extend(s, {c, "*s", table.tostring(getmetatable(k)), "*e = ", str(v)})
+                    set.extend(s, {c, "*s", table.tostring(getmetatable(k)), "*e = ", table.transfer(v, table.tostring)})
                 else
-                    set.extend(s, {c, k, " = ", str(v)})
+                    set.extend(s, {c, k, " = ", table.transfer(v, table.tostring)})
                 end
             end
         end
@@ -365,6 +236,70 @@ function table.tostring(t)
     return table.concat(s, "")
 end
 
-function table.print(t)
-    print(table.tostring(t))
+function table.save(f, t)
+    local file,err = io.open(f, "w")
+    if err then return _,err end
+    if t == nil then return "" end
+    if type(t) == "boolean" then return tostring(t) end
+    local function _tostring(m)
+        local function _transfer(s)
+            if type(s) == "table" then
+                return _tostring(s)
+            elseif type(s) == "string" then
+                return "\'"..string.gsub(string.gsub(s, "\\", "\\\\"), "\'", "\\'").."\'"
+            elseif type(s) == "function" or type(s) == "thread" then
+                return "nil"
+            else
+                return tostring(s)
+            end
+        end
+        local s,i = { "{" },1
+        for k,v in pairs(m) do
+            local c = ", "
+            if i == 1 then c = "" end
+            if k == i then
+                set.extend(s, {c, _transfer(v)})
+            else
+                set.extend(s, {c, "[", _transfer(k), "] = ", _transfer(v)})
+            end
+            i = i + 1
+        end
+        set.append(s, "}")
+        return table.concat(s, "")
+    end
+    file:write("return ".._tostring(t))
+    file:close()
+    return
+end
+
+function table.load(f)
+    local tbl,err = loadfile(f)()
+    if err then return _,err end
+    return tbl
+end
+
+function table.tojson(t)
+    if t == nil then return "" end
+    if type(t) == "boolean" then return tostring(t) end
+    local s,i,k = { "{" },1,set.union(table.index(t), table.keys(t))
+    for _,v in ipairs(k) do
+        local c = ","
+        local r = table.transfer(t[v], table.tojson)
+        if i == #k then c = "" end
+        if type(r) == "table" then
+            set.append(s, "  ["..table.transfer(v, table.tojson).."] = "..set.shift(r))
+            for j=1,#r do
+                if j == #r then
+                    set.append(s, "  "..r[j]..c)
+                else
+                    set.append(s, "  "..r[j])
+                end
+            end
+        else
+            set.append(s, "  ["..table.transfer(v, table.tojson).."] = "..r..c)
+        end
+        i = i + 1
+    end
+    set.append(s, "}")
+    return s
 end

@@ -311,6 +311,18 @@ function is_fighting() -- 0: no fight   1: fight
         end
     until false
 end
+
+function dump()
+    local dump = {}
+    dump.global = global
+    dump.automation = automation
+    dump.config = config
+    dump.var = var
+    dump.triggers = triggers
+    dump.timers = timers
+    table.save(get_work_path().."log/"..time.date("yyyyMMddHHmmss")..".dump")
+end
+
 --function keep_pots(pots)
 --    local l,w
 --    if tonumber(GetVariable("pot")) + tonumber(GetVariable("pot_saved")) >= pots then

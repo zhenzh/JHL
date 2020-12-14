@@ -4,7 +4,7 @@ setBorderTop(100)
 
 --按钮栏背景
 setAppStyleSheet([[
-    QToolBar {border-image: url("]]..get_work_path()..[[../../script/image/sky.png");} 
+    QToolBar {border-image: url("]]..get_script_path()..[[image/sky.png");} 
     QToolBar QToolButton:!hover {color: black;}
     QToolBar QToolButton:hover {color: white;}
 ]])
@@ -17,7 +17,7 @@ left_wallpaper = Geyser.Label:new({
 })
 
 left_wallpaper:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/wallpaper.png");
+    background-image: url("]]..get_script_path()..[[image/wallpaper.png");
     background-repeat: repeat-xy;
     background-position: top left;
     background-origin: padding;
@@ -31,7 +31,7 @@ right_wallpaper = Geyser.Label:new({
 })
 
 right_wallpaper:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/wallpaper.png");
+    background-image: url("]]..get_script_path()..[[image/wallpaper.png");
     background-repeat: repeat-xy;
     background-position: bottom right;
     background-origin: padding;
@@ -45,7 +45,7 @@ top_wallpaper = Geyser.Label:new({
 })
 
 top_wallpaper:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/wallpaper.png");
+    background-image: url("]]..get_script_path()..[[image/wallpaper.png");
     background-repeat: repeat-xy;
     background-position: top left;
     background-origin: padding;
@@ -59,7 +59,7 @@ sky = Geyser.Label:new({
 }, top_wallpaper)
 
 sky:setStyleSheet([[
-    border-image: url("]]..get_work_path()..[[../../script/image/sky.png");
+    border-image: url("]]..get_script_path()..[[image/sky.png");
 ]])
 
 lake_top = Geyser.Label:new({
@@ -69,7 +69,7 @@ lake_top = Geyser.Label:new({
 }, top_wallpaper)
 
 lake_top:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/lake_top.png");
+    background-image: url("]]..get_script_path()..[[image/lake_top.png");
     background-repeat: no-repeat;
     background-position: top right;
     background-origin: padding;
@@ -82,7 +82,7 @@ lake_right = Geyser.Label:new({
 }, right_wallpaper)
 
 lake_right:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/lake_right.png");
+    background-image: url("]]..get_script_path()..[[image/lake_right.png");
     background-repeat: no-repeat;
     background-position: top right;
     background-origin: padding;
@@ -95,7 +95,7 @@ sword_man = Geyser.Label:new({
 }, left_wallpaper)
 
 sword_man:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/sword_man.png");
+    background-image: url("]]..get_script_path()..[[image/sword_man.png");
     background-repeat: no-repeat;
     background-position: bottom right;
     background-origin: padding;
@@ -108,7 +108,7 @@ banboo_left = Geyser.Label:new({
 }, left_wallpaper)
 
 banboo_left:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/banboo_left.png");
+    background-image: url("]]..get_script_path()..[[image/banboo_left.png");
     background-repeat: no-repeat;
     background-position: top left;
     background-origin: padding;
@@ -121,7 +121,7 @@ banboo_top = Geyser.Label:new({
 }, top_wallpaper)
 
 banboo_top:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/banboo_top.png");
+    background-image: url("]]..get_script_path()..[[image/banboo_top.png");
     background-repeat: no-repeat;
     background-position: top right;
     background-origin: padding;
@@ -134,7 +134,7 @@ banner = Geyser.Label:new({
 }, top_wallpaper)
 
 banner:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/banner.png");
+    background-image: url("]]..get_script_path()..[[image/banner.png");
     background-repeat: no-repeat;
     background-position: top left;
 ]])
@@ -146,8 +146,8 @@ char = Geyser.Label:new({
 }, left_wallpaper)
 
 char:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/map_background.png");
-    border-image: url("]]..get_work_path()..[[../../script/image/char_border.png");
+    background-image: url("]]..get_script_path()..[[image/map_background.png");
+    border-image: url("]]..get_script_path()..[[image/char_border.png");
     border: 5px;
     border-radius: 5px;
 ]])
@@ -159,7 +159,7 @@ setup = Geyser.Label:new({
 }, left_wallpaper)
 
 setup:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/setup.png");
+    background-image: url("]]..get_script_path()..[[image/setup.png");
     background-position: top right;
     border: 18;
     border-radius: 18;
@@ -181,9 +181,9 @@ map_window = Geyser.Label:new({
 }, container.right_top)
 
 map_window:setStyleSheet([[
-    background-image: url("]]..get_work_path()..[[../../script/image/map_background.png");
+    background-image: url("]]..get_script_path()..[[image/map_background.png");
     background-repeat: repeat-xy;
-    border-image: url("]]..get_work_path()..[[../../script/image/map_border.png");
+    border-image: url("]]..get_script_path()..[[image/map_border.png");
 ]])
 
 map_console = Geyser.Mapper:new({
@@ -313,7 +313,7 @@ state.panel = Geyser.Label:new({
 }, container.status)
 
 state.panel:setStyleSheet([[
-    border-image: url("]]..get_work_path()..[[../../script/image/status_border.png");
+    border-image: url("]]..get_script_path()..[[image/status_border.png");
 ]])
 
 local gauge_color = {

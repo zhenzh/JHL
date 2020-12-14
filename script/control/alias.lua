@@ -1,19 +1,18 @@
 show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
 
 add_alias("reset", [[^\s*reset\s*$]], [[
+    automation = automation or {}   
     automation.reconnect = nil
     reset()
 ]])
 
 add_alias("lua", [[^/\s*(.*)\s*$]], [[
-    local f,e = loadstring("return "..matches[2])
-    if not f then f,e = assert(loadstring(matches[2])) end
-    local r = f()
-    if r ~= nil then display(r) end
+    display(assert(loadstring(matches[2])()))
 ]])
 
 add_alias("flush", [[^\s*flush\s*$]], [[
     flush_map()
+    loadfile(get_script_path().."gps/template.lua")()
 ]])
 
 add_alias("debug", [[^\s*debug\s+(\w+)\s*$]], [[
@@ -50,12 +49,14 @@ add_alias("query", [[^\s*query (.*)\s*$]], [[
     show(set.tostring(parse(matches[2])), "pink")
 ]])
 
-add_alias("start", [[^\s*start\s*$]], [[
+add_alias("start", [[^\s*rstart\s*$]], [[
     require "flow"
     coroutine.wrap(
         function ()
             load_jobs()
-            config.jobs["门派任务"].phase = nil
+            if (config.jobs["门派任务"].phase or 0) < 2 then
+                config.jobs["门派任务"].phase = nil
+            end
             start()
         end
     )()
