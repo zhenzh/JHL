@@ -74,6 +74,7 @@ end
 
 function feima_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job ］")
+    automation.idle = false
     var.job = var.job or {name = "飞马镖局"}
     var.job.statics = var.job.statics or {name = "飞马镖局"}
     var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
