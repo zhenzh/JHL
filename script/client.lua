@@ -15,25 +15,20 @@ function regex.match(text, pattern)
     return rex.match(text, pattern)
 end
 
-function regex.find(text, pattern)
-    return rex.find(text, pattern)
-end
-
 function trigger_regex(name)
     local capture
     if triggers[name].options.Multi == true then
-        capture = { regex.find(set.concat(get_lines(-triggers[name].multilines), "\n"), triggers[name].pattern) }
+        capture = { regex.match(set.concat(get_lines(-triggers[name].multilines), "\n"), "("..triggers[name].pattern..")") }
     else
-        capture = { regex.find(get_lines(-1)[1], triggers[name].pattern) }
+        capture = { regex.match(get_lines(-1)[1], "("..triggers[name].pattern..")") }
     end
     message("trace", name, "匹配 "..tostring(triggers[name].pattern), table.tostring(capture))
     if #capture == 0 then
         return false
     end
-    global.regex = { [0] = string.gsub(get_lines(-1)[1], capture[1], capture[2]) }
-    for i=3,#capture do
-        set.append(global.regex, capture[i])
-    end
+    capture[0] = capture[1]
+    set.remove(capture, 1)
+    global.regex = capture
     message("trace", "触发详情", name, table.tostring(triggers[name]))
     return true
 end
