@@ -3,6 +3,11 @@ require "set"
 require "stringEx"
 require "timeEx"
 
+alias = alias or {}
+timer = timer or {}
+timers = timers or {}
+timers.group = timers.group or {}
+trigger = trigger or {}
 triggers = triggers or { update = true}
 triggers.group = triggers.group or {}
 triggers.pended = triggers.pended or {}
@@ -18,6 +23,7 @@ function trigger_process(text)
         set.remove(global.buffer, 1)
     end
     set.append(global.buffer, text)
+    message("trace", "当前行", get_lines(-1)[1], "")
     for k,v in ipairs(triggers.fire) do
         triggers.update = false
         for i,_ in pairs(v) do
@@ -41,7 +47,7 @@ function trigger_process_pending()
 end
 
 function trigger_process_exec(name)
-    if is_trigger_exist(name) == false then
+    if trigger.is_exist(name) == false then
         return
     end
 
@@ -54,7 +60,7 @@ function trigger_process_exec(name)
     end
 
     if triggers[name].options.OneShot == true then
-        del_trigger(name)
+        trigger.delete(name)
     end
 
     loadstring(triggers[name].send)()
@@ -77,7 +83,7 @@ function unique_id()
     return id
 end
 
-function add_trigger(name, send, group, options, order, pattern)
+function trigger.add(name, send, group, options, order, pattern)
     if name == "group" or 
        name == "fire" or 
        name == "pended" or 
@@ -96,12 +102,12 @@ function add_trigger(name, send, group, options, order, pattern)
     order = order or 100
 
     if triggers.update == false then
-        set.append(triggers.pended, {add_trigger, name, send, group, options, order, pattern})
+        set.append(triggers.pended, {trigger.add, name, send, group, options, order, pattern})
         return nil
     end
 
-    if is_trigger_exist(name) == true then
-        del_trigger(name)
+    if trigger.is_exist(name) == true then
+        trigger.delete(name)
     end
 
     triggers[name] = {
@@ -128,17 +134,17 @@ function add_trigger(name, send, group, options, order, pattern)
     return name
 end
 
-function del_trigger(name)
+function trigger.delete(name)
     if triggers.update == false then
-        set.append(triggers.pended, {del_trigger, name})
+        set.append(triggers.pended, {trigger.delete, name})
         return nil
     end
 
-    if is_trigger_exist(name) == false then
+    if trigger.is_exist(name) == false then
         return false
     end
 
-    disable_trigger(name)
+    trigger.disable(name)
     if triggers[name].group ~= nil then
         triggers.group[triggers[name].group][name] = nil
     end
@@ -146,17 +152,17 @@ function del_trigger(name)
     return true
 end
 
-function enable_trigger(name)
+function trigger.enable(name)
     if triggers.update == false then
-        set.append(triggers.pended, {enable_trigger, name})
+        set.append(triggers.pended, {trigger.enable, name})
         return nil
     end
 
-    if is_trigger_exist(name) == false then
+    if trigger.is_exist(name) == false then
         return false
     end
 
-    if is_trigger_enable(name) == true then
+    if trigger.is_enable(name) == true then
         return true
     end
 
@@ -164,17 +170,17 @@ function enable_trigger(name)
     return true
 end
 
-function disable_trigger(name)
+function trigger.disable(name)
     if triggers.update == false then
-        set.append(triggers.pended, {disable_trigger, name})
+        set.append(triggers.pended, {trigger.disable, name})
         return nil
     end
 
-    if is_trigger_exist(name) == false then
+    if trigger.is_exist(name) == false then
         return false
     end
 
-    if is_trigger_enable(name) == false then
+    if trigger.is_enable(name) == false then
         return true
     end
 
@@ -182,7 +188,7 @@ function disable_trigger(name)
     return true
 end
 
-function is_trigger_exist(name)
+function trigger.is_exist(name)
     if triggers[name] == nil then
         return false
     else
@@ -190,8 +196,8 @@ function is_trigger_exist(name)
     end
 end
 
-function is_trigger_enable(name)
-    if is_trigger_exist(name) == false then
+function trigger.is_enable(name)
+    if trigger.is_exist(name) == false then
         return false
     end
 
@@ -202,35 +208,35 @@ function is_trigger_enable(name)
     end
 end
 
-function enable_trigger_group(group)
+function trigger.enable_group(group)
     if triggers.group[group] == nil then
         return false
     end
 
     for k,_ in pairs(triggers.group[group]) do
-        enable_trigger(k)
+        trigger.enable(k)
     end
     return true
 end
 
-function disable_trigger_group(group)
+function trigger.disable_group(group)
     if triggers.group[group] == nil then
         return false
     end
 
     for k,_ in pairs(triggers.group[group]) do
-        disable_trigger(k)
+        trigger.disable(k)
     end
     return true
 end
 
-function del_trigger_group(group)
+function trigger.delete_group(group)
     if triggers.group[group] == nil then
         return false
     end
 
     for k,_ in pairs(triggers.group[group]) do
-        del_trigger(k)
+        trigger.delete(k)
     end
     return true
 end

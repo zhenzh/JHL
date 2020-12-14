@@ -1,14 +1,21 @@
-HOME="/Users/ibm/go-mud"
+local HOME = string.gsub(debug.getinfo(1).source:sub(2), "script/main.lua", "")
+function get_work_path()
+    return HOME.."profiles/JHL/"
+end
+
+function get_script_path()
+    return HOME.."script/"
+end
+
 package.path = package.path..";"..
-HOME.."/script/base/?.lua;"..
-HOME.."/script/game/?.lua;"..
-HOME.."/script/gps/?.lua;"..
-HOME.."/script/control/?.lua;"..
-HOME.."/script/jobs/?.lua"
+get_script_path().."base/?.lua;"..
+get_script_path().."game/?.lua;"..
+get_script_path().."gps/?.lua;"..
+get_script_path().."control/?.lua;"..
+get_script_path().."jobs/?.lua"
 
 global = global or { flood = 0, uid = {}, buffer = { "" }, regex = {}, output = true }
 automation = automation or {}
-automation.items = automation.items or {}
 statics = statics or {}
 config = config or {}
 var = var or {}
@@ -25,21 +32,21 @@ require "gomud"
 -- global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 -- global.debug.level = global.debug["debug"] or 0
 
--- add_timer("idle", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
+-- timer.add("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
 
 -- if io.exists(get_work_path().."log/global.tmp") then
---     table.load(get_work_path().."log/global.tmp", global.buffer)
+--     global.buffer = table.load(get_work_path().."log/global.tmp")
 --     table.save(get_work_path().."log/global.tmp", {})
 -- end
 
 -- if io.exists(get_work_path().."log/automation.tmp") then
---     table.load(get_work_path().."log/automation.tmp", automation)
+--     automation = table.load(get_work_path().."log/automation.tmp")
 --     table.save(get_work_path().."log/automation.tmp", {})
 -- end
--- if table.is_empty(automation) then
---     automation.killer = {}
---     automation.npc_killer = {"猫也会心碎"}
--- end
+
+-- automation.items = automation.items or {}
+-- automation.killer = automation.killer or {}
+-- automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
 
 -- automation.skill = nil
 -- config = automation.config
@@ -64,19 +71,19 @@ require "gomud"
 
 -- statics.date = time.date("yyyyMMdd")
 -- if io.exists(get_work_path().."log/statics."..statics.date) then
---     table.load(get_work_path().."log/statics."..statics.date, statics)
+--     statics = table.load(get_work_path().."log/statics."..statics.date)
 -- end
 
 -- collectgarbage("collect")
 
 -- function init()
 --     map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "泉州新门", "开放")
---     add_trigger("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
+--     trigger.add("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
 --     if wait_line("jiali max;jiajin max;score;hp;skills;enable;prepare;set;jiajin 1;jiali none", 30, nil, 10, "^从现在起你用零点内力伤敌。$", "^> $") ~= false then
 --         if run_i() < 0 then
 --             return -1
 --         end
---         del_trigger("init_hide_ga")
+--         trigger.delete("init_hide_ga")
 --         if locate() >= 0 then
 --             if wait_line("set 初始化完成", 30, nil, 10, "^你目前还没有任何为 初始化完成 的变量设定。$", "^> $") ~= false then
 --                 show("初始化成功", "green")
@@ -84,7 +91,7 @@ require "gomud"
 --             end
 --         end
 --     end
---     del_trigger("init_hide_ga")
+--     trigger.delete("init_hide_ga")
 --     show("初始化失败", "red")
 --     return -1
 -- end

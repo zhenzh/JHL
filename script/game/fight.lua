@@ -1,9 +1,9 @@
 show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
 
-add_trigger("fight_snake", "fight_stop(1)", "fight", {Enable=false}, nil, "^忽然一阵腥风袭来，一条巨蟒从身旁大树上悬下，把你卷走了。$")
-add_trigger("fight_danger", "fight_stop()", "fight", {Enable=false}, nil, "^\\( 你(?:已经一副头重脚轻的模样，正在勉力支撑著不倒下去|已经陷入半昏迷状态，随时都可能摔倒晕去|受伤过重，已经有如风中残烛，随时都可能断气)。 \\)$")
-add_trigger("fight_faint", "fight_stop(2)", "fight", {Enable=false}, nil, "^你的眼前一黑，接著什么也不知道了....$")
-add_trigger("fight_idle", "fight_idle()", "fight", {Enable=false}, nil, "^\\S+只能对战斗中的对手使用。$|^\\S+只有在战斗中才能使用。$")
+trigger.add("fight_snake", "fight_stop(1)", "fight", {Enable=false}, nil, "^忽然一阵腥风袭来，一条巨蟒从身旁大树上悬下，把你卷走了。$")
+trigger.add("fight_danger", "fight_stop()", "fight", {Enable=false}, nil, "^\\( 你(?:已经一副头重脚轻的模样，正在勉力支撑著不倒下去|已经陷入半昏迷状态，随时都可能摔倒晕去|受伤过重，已经有如风中残烛，随时都可能断气)。 \\)$")
+trigger.add("fight_faint", "fight_stop(2)", "fight", {Enable=false}, nil, "^你的眼前一黑，接著什么也不知道了....$")
+trigger.add("fight_idle", "fight_idle()", "fight", {Enable=false}, nil, "^\\S+只能对战斗中的对手使用。$|^\\S+只有在战斗中才能使用。$")
 
 function unwield()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ unwield ］")
@@ -127,7 +127,7 @@ end
 function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ fight ］")
     var.fight = var.fight or { idle = 0, refresh = false }
-    enable_trigger_group("fight")
+    trigger.enable_group("fight")
     if run_hp() < 0 then
         return fight_return(-1)
     end
@@ -188,7 +188,7 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
                 run("jiajin "..config.fight[config.jobs[global.jid]].energy)
             end
         end
-        enable_trigger("fight_idle")
+        trigger.enable("fight_idle")
         run(set.concat(config.fight[config.jobs[global.jid]].yuns, ";")..";"..set.concat(config.fight[config.jobs[global.jid]].performs, ";"))
     end
     wait_line(nil, 2, nil, 100, "^"..(var.job.enemy_name or "\\S+").."倒在地上，挣扎了几下就死了。$|"..
@@ -202,7 +202,7 @@ function fight_return(rc)
         return rc
     end
     var.fight = nil
-    disable_trigger_group("fight")
+    trigger.disable_group("fight")
     return rc
 end
 
@@ -212,7 +212,7 @@ function fight_stop(rc)
 end
 
 function fight_idle()
-    disable_trigger("fight_idle")
+    trigger.disable("fight_idle")
     if var.fight.idle > 3 then
         fight_stop(0)
     else

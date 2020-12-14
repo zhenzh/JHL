@@ -27,11 +27,11 @@ show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lu
 function verbose(level)
     global.debug.level = global.debug[level] or 0
     if global.debug.level == 2 then
-        disable_trigger("hide_set_value")
-        disable_trigger("hide_ga")
+        trigger.disable("hide_set_value")
+        trigger.disable("hide_ga")
     else
-        enable_trigger("hide_set_value")
-        enable_trigger("hide_ga")
+        trigger.enable("hide_set_value")
+        trigger.enable("hide_ga")
     end
     if level == "none" then
         show("调试输出已关闭", "orange")
@@ -284,7 +284,7 @@ end
 
 function is_fighting() -- 0: no fight   1: fight
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ is_fighting ］")
-    add_trigger("fighting_hide_ga", "", nil, {Enable=true, StopEval=true, Gag=true}, 1, "^> $")
+    trigger.add("fighting_hide_ga", "", nil, {Enable=true, StopEval=true, Gag=true}, 1, "^> $")
     repeat
         local l = wait_line("yun lifeheal", 30, {Gag=false}, 10, "^战斗中无法运功疗伤！$|"..
                                                                  "^你要用真气为谁疗伤？$|"..
@@ -293,14 +293,14 @@ function is_fighting() -- 0: no fight   1: fight
         if l == false then
             return -1
         elseif l[0] == "你要用真气为谁疗伤？" or l[0] == "你要替谁治疗伤口？" then
-            del_trigger("fighting_hide_ga")
+            trigger.delete("fighting_hide_ga")
             if wait_line(nil, 30, {Gag=true}, 10, "^> $") == false then
                 return -1
             else
                 return 0
             end
         elseif l[0] == "战斗中无法运功疗伤！" then
-            del_trigger("fighting_hide_ga")
+            trigger.delete("fighting_hide_ga")
             if wait_line(nil, 30, {Gag=true}, 10, "^> $") == false then
                 return -1
             else
@@ -311,6 +311,18 @@ function is_fighting() -- 0: no fight   1: fight
         end
     until false
 end
+
+function dump()
+    local dump = {}
+    dump.global = global
+    dump.automation = automation
+    dump.config = config
+    dump.var = var
+    dump.triggers = triggers
+    dump.timers = timers
+    table.save(get_work_path().."log/"..time.date("yyyyMMddHHmmss")..".dump")
+end
+
 --function keep_pots(pots)
 --    local l,w
 --    if tonumber(GetVariable("pot")) + tonumber(GetVariable("pot_saved")) >= pots then

@@ -36,12 +36,12 @@ local skip_info = {
 }
 
 -- 显示过滤
-add_trigger("hide_busy", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你正忙着呢，先忍忍吧。$|^你还在忙着呢。$|^你身上没有 busy 这样食物。$|^你现在很忙，停不下来。$")
-add_trigger("hide_set_value", "", "显示过滤", {Enable=true, Gag=true}, 1, "^你目前还没有任何为 .+ 的变量设定。$")
-add_trigger("hide_npc_faint", "", "显示过滤", {Enable=true, Gag=true}, 1, "^对方还没有完全昏迷，先等等吧。$")
-add_trigger("hide_force_busy", "", "显示过滤", {Enable=true, Gag=true}, 1, "^\\( 你上一个动作还没有完成，不能施用内功。\\)$")
-add_trigger("hide_action_busy", "", "显示过滤", {Enable=true, Gag=true}, 1, "^\\( 你上一个动作还没有完成，不能施用外功。\\)$")
-add_trigger("hide_carryon", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你\\(你\\)身上携带物品的别称如下\\(右方\\)：$|"..
+trigger.add("hide_busy", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你正忙着呢，先忍忍吧。$|^你还在忙着呢。$|^你身上没有 busy 这样食物。$|^你现在很忙，停不下来。$")
+trigger.add("hide_set_value", "", "显示过滤", {Enable=true, Gag=true}, 1, "^你目前还没有任何为 .+ 的变量设定。$")
+trigger.add("hide_npc_faint", "", "显示过滤", {Enable=true, Gag=true}, 1, "^对方还没有完全昏迷，先等等吧。$")
+trigger.add("hide_force_busy", "", "显示过滤", {Enable=true, Gag=true}, 1, "^\\( 你上一个动作还没有完成，不能施用内功。\\)$")
+trigger.add("hide_action_busy", "", "显示过滤", {Enable=true, Gag=true}, 1, "^\\( 你上一个动作还没有完成，不能施用外功。\\)$")
+trigger.add("hide_carryon", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你\\(你\\)身上携带物品的别称如下\\(右方\\)：$|"..
                                                                         "^\\S+\\s+= [ \\w]+[, \\w]*$|^\\S+\\([ \\w]+\\)$|"..
                                                                         "^一只用细竹编织成的食盒。$|"..
                                                                         "^这是一条皮质的宽腰带，夹层透空，可以放各种软兵刃。$|"..
@@ -64,148 +64,147 @@ add_trigger("hide_carryon", "", "显示过滤", {Enable=false, Gag=true}, 1, "^�
                                                                         "^到女儿出嫁那天才起出，所以酒味醇厚。据说后劲也特别大。$|"..
                                                                         "^一个用来装花雕酒的酒瓶。黄酒中的上品半干类，酒质厚浓，风味优良，可长久$|"..
                                                                         "^贮藏。$")
-add_trigger("hide_i", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你身上带着\\S+件物品\\(负重\\s*\\d+%\\)：$|"..
+trigger.add("hide_i", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你身上带着\\S+件物品\\(负重\\s*\\d+%\\)：$|"..
                                                                   "^(?:□|\\s+)\\S+\\([ \\w]+\\)$|"..
                                                                   "^目前你身上没有任何东西。$")
-add_trigger("hide_score", "", "显示过滤", {Enable=false, Gag=true}, 1, "^(?:│|┌|└).*(?:│|┐|┘)$")
-add_trigger("hide_hp", "", "显示过滤", {Enable=false, Gag=true}, 1, "^ (?:精神|气血|食物|饮水)：\\s*[-\\d]+/.+$")
-add_trigger("hide_skills", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你目前所学过的技能：（共\\S+项技能）[　]+$|"..
+trigger.add("hide_score", "", "显示过滤", {Enable=false, Gag=true}, 1, "^(?:│|┌|└).*(?:│|┐|┘)$")
+trigger.add("hide_hp", "", "显示过滤", {Enable=false, Gag=true}, 1, "^ (?:精神|气血|食物|饮水)：\\s*[-\\d]+/.+$")
+trigger.add("hide_skills", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你目前所学过的技能：（共\\S+项技能）[　]+$|"..
                                                                        "^(?:│|┌|└).*(?:│|┐|┘)$|"..
                                                                        "^\\s*$")
-add_trigger("hide_enable", "", "显示过滤", {Enable=false, Gag=true}, 1, "^以下是你目前使用中的特殊技能。$|"..
+trigger.add("hide_enable", "", "显示过滤", {Enable=false, Gag=true}, 1, "^以下是你目前使用中的特殊技能。$|"..
                                                                        "^\\s+(?:轻功|内功|招架|(?:掌|指|手|爪|拳|腿|剑|刀|棒|棍|枪|斧|锤|鞭|笔|钩|杖)法) \\(\\w+\\)\\s+： \\S+\\s+有效等级：\\s*\\d+$")
-add_trigger("hide_prepare", "", "显示过滤", {Enable=false, Gag=true}, 1, "^以下是你目前组合中的特殊拳术技能。$|"..
+trigger.add("hide_prepare", "", "显示过滤", {Enable=false, Gag=true}, 1, "^以下是你目前组合中的特殊拳术技能。$|"..
                                                                         "^你现在没有组合任何特殊拳术技能。$|"..
                                                                         "^\\S+ \\(\\w+\\)\\s+\\S+$")
-add_trigger("hide_list", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你保存的物品如下:$|"..
+trigger.add("hide_list", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你保存的物品如下:$|"..
                                                                      "^-+$|"..
                                                                      "^\\d+\\s+\\S+\\s+：\\s+\\d+$")
-add_trigger("hide_set", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你目前设定的环境变量有：$|"..
+trigger.add("hide_set", "", "显示过滤", {Enable=false, Gag=true}, 1, "^你目前设定的环境变量有：$|"..
                                                                     "^\\s+\\S+ -> .*$")
-add_trigger("hide_buy", "", "显示过滤", {Enable=false, Gag=true}, 1, "^哟，抱歉啊，我这儿正忙着呢……您请稍候。$")
-add_trigger("others_come", "", "显示过滤", {Enable=false, Gag=true}, 1, "^\\S+走了过来。$|"..
+trigger.add("hide_buy", "", "显示过滤", {Enable=false, Gag=true}, 1, "^哟，抱歉啊，我这儿正忙着呢……您请稍候。$")
+trigger.add("others_come", "", "显示过滤", {Enable=false, Gag=true}, 1, "^\\S+走了过来。$|"..
                                                                        "^\\S+窜了出来，警惕地四周张望着。$")
-add_trigger("others_leave", "", "显示过滤", {Enable=false, Gag=true}, 1, "^\\S+往\\S+离开。$|"..
+trigger.add("others_leave", "", "显示过滤", {Enable=false, Gag=true}, 1, "^\\S+往\\S+离开。$|"..
                                                                         "^\\S+奔了过去。$")
 
 -- 状态记录
-local status_triggers = {}
-table.load(get_script_path().."game/status.lua", status_triggers)
+local status_triggers = table.load(get_script_path().."game/status.lua")
 for k,v in pairs(status_triggers) do
-    add_trigger(k, v[1], v[2], v[3], v[4], v[5])
+    trigger.add(k, v[1], v[2], v[3], v[4], v[5])
 end
 status_triggers = nil
 
 -- 信息采集
-add_trigger("get_room_objs", "get_room_objs(get_matches(1))", "信息采集", {Enable=false}, 3, "^  ((?:\\S+ \\S+|\\S+)(?:\\((?:\\w+ \\w+|\\w+)\\)|))(?:| <\\S+>)$")
-add_trigger("get_room_exits", "get_room_exits(get_matches(1))", "信息采集", {Enable=true}, 3, "^\\s+这里(?:明显|唯一)的出口是 (.*)。$|"..
+trigger.add("get_room_objs", "get_room_objs(get_matches(1))", "信息采集", {Enable=false}, 3, "^  ((?:\\S+ \\S+|\\S+)(?:\\((?:\\w+ \\w+|\\w+)\\)|))(?:| <\\S+>)$")
+trigger.add("get_room_exits", "get_room_exits(get_matches(1))", "信息采集", {Enable=true}, 3, "^\\s+这里(?:明显|唯一)的出口是 (.*)。$|"..
                                                                                              "^\\s+这里没有任何明显的出路。$")
-add_trigger("get_room_end", "get_room_end()", "信息采集", {Enable=false}, 3, "^> $")
-add_trigger("get_room_desc", "get_room_desc(get_matches(1))", "信息采集", {Enable=false}, 4, "^\\s*(.+)\\s*$")
-add_trigger("get_room_name", "get_room_name(get_matches(1))", "信息采集", {Enable=true}, 5, "^(\\S+)\\s+- $")
-add_trigger("get_room_abst", "get_room_abst(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^(\\S+)\\s+- ([、a-z0-9]+)$")
-add_trigger("mud_time", "env.mud_time = {get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5)}", "信息采集", {Enable=true}, 5, "^现在泥潭时间是(\\S+)年(\\S+)月(\\S+)日(\\S+)时(\\S+)。$")
-add_trigger("war_start", "map_adjust('南阳城', '关闭')", "信息采集", {Enable=true}, 5, "^【闲聊】太守\\(Tai shou\\)：蒙古大军即将入境，多亏\\S+几位江湖豪杰愿为我大宋效力抵抗蒙古。在下先行谢过。$")
-add_trigger("war_end", "map_adjust('南阳城', '开放')", "信息采集", {Enable=true}, 5, "^【闲聊】诏示天下：蒙古元帅被已被\\S+消灭，蒙古鞑子撤退啦！$")
-add_trigger("war_finish", "map_adjust('南阳城郊', '关闭')", "信息采集", {Enable=true}, 5, "^几个宋兵把城外的吊桥缓缓升起，大门随之紧闭，断绝了对外的通道。$")
-add_trigger("songhua", "map_adjust('松花江', '渡船')", "信息采集", {Enable=true}, 5, "^松花江化冻了，你喊\\(yell\\)条船过江吧。$")
-add_trigger("shaolin_close", "map_adjust('少林山门', '关闭')", "信息采集", {Enable=true}, 5, "^壮年僧人说道：这位施主请回罢，本寺不接待俗人。$")
-add_trigger("shaolin_open", "map_adjust('少林山门', '开放')", "信息采集", {Enable=true}, 5, "^壮年僧人急忙躬身道：原来是闯过罗汉大阵的大英雄驾到，请进！$")
-add_trigger("layman", "map_adjust('门派', '少林俗家')", "信息采集", {Enable=true}, 5, "^壮年僧人说道：对不起，俗家弟子不得入寺修行。$")
-add_trigger("weather_before_dawn", "weather_before_dawn()", "信息采集", {Enable=true}, 5, "^\\s+东方的天空已逐渐发白。$")
-add_trigger("time_before_dawn", "time_before_dawn()", "信息采集", {Enable=true}, 5, "^东方的天空中开始出现一丝微曦。$")
-add_trigger("weather_early_morning", "weather_early_morning()", "信息采集", {Enable=true}, 5, "^\\s+太阳刚从东方的地平线升起。$")
-add_trigger("time_early_morning", "time_early_morning()", "信息采集", {Enable=true}, 5, "^太阳从东方的地平线升起了。$")
-add_trigger("weather_morning", "weather_morning()", "信息采集", {Enable=true}, 5, "^\\s+太阳正高挂在东方的天空中。$")
-add_trigger("time_morning", "time_morning()", "信息采集", {Enable=true}, 5, "^太阳已经高高地挂在东方的天空中。$")
-add_trigger("weather_noon", "weather_noon()", "信息采集", {Enable=true}, 5, "^\\s+现在是正午时分，太阳高挂在你的头顶正上方。$")
-add_trigger("time_noon", "time_noon()", "信息采集", {Enable=true}, 5, "^已经是正午了，太阳从你正上方照耀著大地。$")
-add_trigger("weather_afternoon", "weather_afternoon()", "信息采集", {Enable=true}, 5, "^\\s+太阳正高挂在西方的天空中。$")
-add_trigger("time_afternoon", "time_afternoon()", "信息采集", {Enable=true}, 5, "^太阳开始从西方的天空中慢慢西沉。$")
-add_trigger("weather_evening", "weather_evening()", "信息采集", {Enable=true}, 5, "^\\s+一轮火红的夕阳正徘徊在西方的地平线上。$")
-add_trigger("time_evening", "time_evening()", "信息采集", {Enable=true}, 5, "^傍晚了，太阳的馀晖将西方的天空映成一片火红。$")
-add_trigger("weather_night", "weather_night()", "信息采集", {Enable=true}, 5, "^\\s+夜幕笼罩著大地。$")
-add_trigger("time_night", "time_night()", "信息采集", {Enable=true}, 5, "^夜晚降临了。$")
-add_trigger("weather_mid_night", "weather_mid_night()", "信息采集", {Enable=true}, 5, "^\\s+夜幕低垂，满天繁星。$")
-add_trigger("time_mid_night", "time_mid_night()", "信息采集", {Enable=true}, 5, "^已经是午夜了。$")
-add_trigger("get_port", "get_port(get_matches(1))", "信息采集", {Enable=true}, 5, "^船夫说：“(\\S+)到啦，上岸吧”。$")
-add_trigger("exit_out", "env.current.exits = {'out'}", "信息采集", {Enable=true}, 5, "^艄公说“到啦，上岸吧”，随即把一块踏脚板搭上堤岸。$|"..
+trigger.add("get_room_end", "get_room_end()", "信息采集", {Enable=false}, 3, "^> $")
+trigger.add("get_room_desc", "get_room_desc(get_matches(1))", "信息采集", {Enable=false}, 4, "^\\s*(.+)\\s*$")
+trigger.add("get_room_name", "get_room_name(get_matches(1))", "信息采集", {Enable=true}, 5, "^(\\S+)\\s+- $")
+trigger.add("get_room_abst", "get_room_abst(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^(\\S+)\\s+- ([、a-z0-9]+)$")
+trigger.add("mud_time", "env.mud_time = {get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5)}", "信息采集", {Enable=true}, 5, "^现在泥潭时间是(\\S+)年(\\S+)月(\\S+)日(\\S+)时(\\S+)。$")
+trigger.add("war_start", "map_adjust('南阳城', '关闭')", "信息采集", {Enable=true}, 5, "^【闲聊】太守\\(Tai shou\\)：蒙古大军即将入境，多亏\\S+几位江湖豪杰愿为我大宋效力抵抗蒙古。在下先行谢过。$")
+trigger.add("war_end", "map_adjust('南阳城', '开放')", "信息采集", {Enable=true}, 5, "^【闲聊】诏示天下：蒙古元帅被已被\\S+消灭，蒙古鞑子撤退啦！$")
+trigger.add("war_finish", "map_adjust('南阳城郊', '关闭')", "信息采集", {Enable=true}, 5, "^几个宋兵把城外的吊桥缓缓升起，大门随之紧闭，断绝了对外的通道。$")
+trigger.add("songhua", "map_adjust('松花江', '渡船')", "信息采集", {Enable=true}, 5, "^松花江化冻了，你喊\\(yell\\)条船过江吧。$")
+trigger.add("shaolin_close", "map_adjust('少林山门', '关闭')", "信息采集", {Enable=true}, 5, "^壮年僧人说道：这位施主请回罢，本寺不接待俗人。$")
+trigger.add("shaolin_open", "map_adjust('少林山门', '开放')", "信息采集", {Enable=true}, 5, "^壮年僧人急忙躬身道：原来是闯过罗汉大阵的大英雄驾到，请进！$")
+trigger.add("layman", "map_adjust('门派', '少林俗家')", "信息采集", {Enable=true}, 5, "^壮年僧人说道：对不起，俗家弟子不得入寺修行。$")
+trigger.add("weather_before_dawn", "weather_before_dawn()", "信息采集", {Enable=true}, 5, "^\\s+东方的天空已逐渐发白。$")
+trigger.add("time_before_dawn", "time_before_dawn()", "信息采集", {Enable=true}, 5, "^东方的天空中开始出现一丝微曦。$")
+trigger.add("weather_early_morning", "weather_early_morning()", "信息采集", {Enable=true}, 5, "^\\s+太阳刚从东方的地平线升起。$")
+trigger.add("time_early_morning", "time_early_morning()", "信息采集", {Enable=true}, 5, "^太阳从东方的地平线升起了。$")
+trigger.add("weather_morning", "weather_morning()", "信息采集", {Enable=true}, 5, "^\\s+太阳正高挂在东方的天空中。$")
+trigger.add("time_morning", "time_morning()", "信息采集", {Enable=true}, 5, "^太阳已经高高地挂在东方的天空中。$")
+trigger.add("weather_noon", "weather_noon()", "信息采集", {Enable=true}, 5, "^\\s+现在是正午时分，太阳高挂在你的头顶正上方。$")
+trigger.add("time_noon", "time_noon()", "信息采集", {Enable=true}, 5, "^已经是正午了，太阳从你正上方照耀著大地。$")
+trigger.add("weather_afternoon", "weather_afternoon()", "信息采集", {Enable=true}, 5, "^\\s+太阳正高挂在西方的天空中。$")
+trigger.add("time_afternoon", "time_afternoon()", "信息采集", {Enable=true}, 5, "^太阳开始从西方的天空中慢慢西沉。$")
+trigger.add("weather_evening", "weather_evening()", "信息采集", {Enable=true}, 5, "^\\s+一轮火红的夕阳正徘徊在西方的地平线上。$")
+trigger.add("time_evening", "time_evening()", "信息采集", {Enable=true}, 5, "^傍晚了，太阳的馀晖将西方的天空映成一片火红。$")
+trigger.add("weather_night", "weather_night()", "信息采集", {Enable=true}, 5, "^\\s+夜幕笼罩著大地。$")
+trigger.add("time_night", "time_night()", "信息采集", {Enable=true}, 5, "^夜晚降临了。$")
+trigger.add("weather_mid_night", "weather_mid_night()", "信息采集", {Enable=true}, 5, "^\\s+夜幕低垂，满天繁星。$")
+trigger.add("time_mid_night", "time_mid_night()", "信息采集", {Enable=true}, 5, "^已经是午夜了。$")
+trigger.add("get_port", "get_port(get_matches(1))", "信息采集", {Enable=true}, 5, "^船夫说：“(\\S+)到啦，上岸吧”。$")
+trigger.add("exit_out", "env.current.exits = {'out'}", "信息采集", {Enable=true}, 5, "^艄公说“到啦，上岸吧”，随即把一块踏脚板搭上堤岸。$|"..
                                                                                     "^(?:终于到了(?:岸|小岛)边，|)船夫把小舟靠在岸边，快下船吧。$|"..
                                                                                     "^船还没开呢。$|"..
                                                                                     "^过了良久，竹篓(?:停止下降，|)已经到达崖(?:顶|底)，快(?:上|下)去吧。$")
-add_trigger("no_exit", "env.current.exits = {}", "信息采集", {Enable=true}, 5, "^(?:艄公|船夫)把踏脚板收起来，说了一声“坐稳喽”，竹篙一点，扁舟向$|"..
+trigger.add("no_exit", "env.current.exits = {}", "信息采集", {Enable=true}, 5, "^(?:艄公|船夫)把踏脚板收起来，说了一声“坐稳喽”，竹篙一点，扁舟向$|"..
                                                                               "^只听见绞盘声响，大竹篓开始(?:慢慢上升|缓缓下降)。$|"..
                                                                               "^你大喝一声“开船”，于是船便离了岸。$")
-add_trigger("exit_change", "env.current.exits = ''", "信息采集", {Enable=true}, 5, "^(?:艄公|船夫)把踏脚板收起来，把扁舟驶向(?:江|湖)(?:中|心)。$|"..
+trigger.add("exit_change", "env.current.exits = ''", "信息采集", {Enable=true}, 5, "^(?:艄公|船夫)把踏脚板收起来，把扁舟驶向(?:江|湖)(?:中|心)。$|"..
                                                                                   "^渔船离了岸，驶向茫茫的大海。$|"..
                                                                                   "^竹篓上的人只感觉到竹篓一震，已经离开了原位。$")
-add_trigger("get_state_l1", "get_state_l1(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5), get_matches(6))", "信息采集", {Enable=true}, 5, "^\\s+精神：\\s+([-\\d]+)/\\s+([-\\d]+)\\s+\\(\\s*(\\d+)%\\)\\s+精力：\\s+([-\\d]+)\\s+/\\s+(\\d+)\\s+\\(\\+(\\d+)\\)$")
-add_trigger("get_state_l2", "get_state_l2(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5), get_matches(6))", "信息采集", {Enable=true}, 5, "^\\s+气血：\\s+([-\\d]+)/\\s+([-\\d]+)\\s+\\(\\s*(\\d+)%\\)\\s+内力：\\s+([-\\d]+)\\s+/\\s+(\\d+)\\s+\\(\\+(\\d+)\\)$")
-add_trigger("get_state_l3", "get_state_l3(get_matches(1), get_matches(2), get_matches(3), get_matches(4))", "信息采集", {Enable=true}, 5, "^\\s+食物：\\s+(\\d+)/\\s+(\\d+)\\s+潜能：\\s+([-\\d]+)\\s+/\\s+(\\d+)$")
-add_trigger("get_state_l4", "get_state_l4(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^\\s+饮水：\\s+(\\d+)/\\s+(\\d+)\\s+经验：\\s+([-\\d]+)$")
-add_trigger("get_profile_l1", "get_profile_l1(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=true}, 5, "^│姓  名：(\\S+)\\s+臂力：\\s*(\\d+)/\\s+(\\d+)\\s+悟性：\\s*([-\\d]+)/\\s+(\\d+)\\s+│$")
-add_trigger("get_profile_l2", "get_profile_l2(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=true}, 5, "^│英文ID：(\\S+)\\s+根骨：\\s*(\\d+)/\\s+(\\d+)\\s+身法：\\s*(\\d+)/\\s+(\\d+)\\s+│$")
-add_trigger("get_profile_l3", "get_profile_l3(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=true}, 5, "^│性  别：(\\S+)性人类\\s+容貌：\\s*(\\d+)/\\s+(\\d+)\\s+运气：\\s*(\\d+)/\\s+(\\d+)\\s+│$")
-add_trigger("get_profile_l4", "get_profile_l4(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│年  龄：(\\S+)岁(?:正|又(\\S+)个月)\\s+体内食物：\\s+(\\d+)\\s+\\(\\d+%\\)\\s+│$")
-add_trigger("get_profile_l5", "get_profile_l5(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│头  衔：【\\s*(\\S+\\s*\\S+)\\s*】\\s+体内饮水：\\s+(\\d+)\\s+\\(\\d+%\\)\\s+│$")
-add_trigger("get_profile_l6", "get_profile_l6(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│体  重：(\\S+)斤(?:多|)\\s+钱庄盈余：(?:亏空无余|([一二三四五六七八九十百千万亿]+)(?:多|)两黄金(?:多|正|)|(很少))\\s+│$")
-add_trigger("get_profile_l7", "get_profile_l7(get_matches(1))", "信息采集", {Enable=true}, 5, "^│\\s+在线时间：(\\S*)(?:整|多|钟|秒|钟多)\\s+│$")
-add_trigger("get_profile_l8", "get_profile_l8(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│(\\S+)：(\\d+)\\s*(?:|经验(?:增加|减少)：([-\\d]+))\\s+│$")
-add_trigger("get_profile_l9", "get_profile_l9(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│格斗经验：([,\\d]+)\\s+等级限制：\\s*(\\d+)\\s+\\(\\+差\\s*(\\d+)\\s*\\)\\s*│$")
-add_trigger("get_profile_l10", "get_profile_l10(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│江湖贡献：(\\d+)\\s+江湖潜力：\\s+(\\d+)\\s+\\(\\+存\\s+(\\d+(?:|万))\\s*\\)\\s*│$")
-add_trigger("get_profile_l11", "get_profile_l11(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│江湖伴侣：(\\S+)\\s+含恨入土：\\s+(\\d+)\\s+\\(\\+真\\s+\\d+\\s*\\)\\s*│$")
-add_trigger("get_profile_l12", "get_profile_l12(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│江湖门派：(\\S+)\\s+手下冤魂：\\s+(\\d+)\\s+\\(\\+敌\\s+\\d+\\s*\\)\\s*│$")
-add_trigger("get_profile_l13", "get_profile_l13(get_matches(1))", "信息采集", {Enable=true}, 5, "^│授业师父：(\\S+)\\s+前生仇敌：(?:|\\S+\\(\\w+ \\w+\\))\\s*│$")
-add_trigger("get_carryon_empty", "get_carryon_empty()", "信息采集", {Enable=true}, 5, "^目前你身上没有任何东西。$")
-add_trigger("get_carryon_summary", "get_carryon_summary(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^你身上带着(\\S+)件物品\\(负重\\s*(\\d+)%\\)：$")
-add_trigger("get_carryon_item", "get_carryon_item(get_matches(1))", "信息采集", {Enable=false}, 5, "^(?:\\s+|□)(\\S+\\([ \\w]+\\))$")
-add_trigger("get_carryon_wield", "get_carryon_wield(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^□(\\S+)\\(([ \\w]+)\\)$")
-add_trigger("get_carryon_detail", "get_carryon_detail()", "信息采集", {Enable=false}, 5, "^你\\(你\\)身上携带物品的别称如下\\(右方\\)：$")
-add_trigger("get_carryon_list", "get_carryon_list(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^(\\S+)\\s+=\\s+([, \\w]+)$")
-add_trigger("get_carryon_list_end", "get_carryon_list_end()", "信息采集", {Enable=false}, 5, "^> $")
-add_trigger("get_item_container", "get_item_container(get_matches(1))", "信息采集", {Enable=false}, 5, "^\\s+(\\S+\\([ \\w]+\\))$")
-add_trigger("get_water_container", "get_water_container(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^里面装((?:了(?:(?:五、六|七、八|)分满|少许)的|满了))\\S*((?:水|酒|女儿红|状元红|野菜汤|竹叶清))。$")
-add_trigger("get_repository", "get_repository()", "信息采集", {Enable=true}, 5, "^你保存的物品如下:$")
-add_trigger("get_repository_list", "get_repository_list(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=false}, 5, "^(\\d+)\\s+(\\S+)\\s+：\\s+(\\d+)$")
-add_trigger("get_repository_end", "get_repository_end()", "信息采集", {Enable=false}, 5, "^> $")
-add_trigger("get_personal_weapon_name", "get_personal_weapon_name(get_matches(1))", "信息采集", {Enable=true}, 5, '^\\s+name -> "(.*)"$')
-add_trigger("get_personal_weapon_wield_msg", "get_personal_weapon_wield_msg(get_matches(1))", "信息采集", {Enable=true}, 5, '^\\s+wieldMsg -> "(.*)"$')
-add_trigger("get_personal_weapon_unwield_msg", "get_personal_weapon_unwield_msg(get_matches(1))", "信息采集", {Enable=true}, 5, '^\\s+unwieldMsg -> "(.*)"$')
-add_trigger("update_coin-", "update_coin('-'..get_matches(1))", "信息采集", {Enable=true}, 5, "^你拿出(?:的|)(\\S+)文铜钱\\S+。$")
-add_trigger("update_silver-", "update_silver('-'..get_matches(1))", "信息采集", {Enable=true}, 5, "^你拿出(?:的|)(\\S+)两白银\\S+。$")
-add_trigger("update_gold-", "update_gold('-'..get_matches(1))", "信息采集", {Enable=true}, 5, "^你拿出(?:的|)(\\S+)两黄金\\S+。$")
-add_trigger("update_coin+", "update_coin(get_matches(1))", "信息采集", {Enable=true}, 5, "^(?:你|掌柜的点点头，)从\\S+出(\\S+)文铜板\\S*。$")
-add_trigger("update_silver+", "update_silver(get_matches(1))", "信息采集", {Enable=true}, 5, "^(?:你|掌柜的点点头，)从\\S+出(\\S+)两白银\\S*。$")
-add_trigger("update_gold+", "update_gold(get_matches(1))", "信息采集", {Enable=true}, 5, "^(?:你|掌柜的点点头，)从\\S+出(\\S+)两黄金\\S*。$")
-add_trigger("convert_currency", "convert_currency(get_matches(1), get_matches(2), get_matches(3), get_matches(4))", "信息采集", {Enable=true}, 5, "^掌柜的点点头，将你从身上取出的(\\S+)(?:文|两)(\\S+)换成了(\\S+)(?:文|两)(\\S+)。$")
-add_trigger("get_skills", "get_skills()", "信息采集", {Enable=true}, 5, "^你目前所学过的技能：（共\\S+项技能）[　]+$")
-add_trigger("get_knowledge", "get_knowledge()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+项知识\\s+[─]+┐$")
-add_trigger("get_theory", "get_theory()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+种心法\\s+[─]+┐$")
-add_trigger("get_method", "get_method()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+项技能\\s+[─]+┐$")
-add_trigger("get_basic", "get_basic()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+套基本功\\s+[─]+┐$")
-add_trigger("get_special", "get_special()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+套武技\\s+[─]+┐$")
-add_trigger("get_knowledge_skills", "get_knowledge_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│　(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
-add_trigger("get_theory_skills", "get_theory_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│　(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
-add_trigger("get_method_skills", "get_method_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│　(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
-add_trigger("get_basic_skills", "get_basic_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│　(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
-add_trigger("get_special_skills", "get_special_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│(?:　|□)(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
-add_trigger("get_skills_end", "get_skills_end()", "信息采集", {Enable=false}, 5, "^> $")
-add_trigger("get_enables", "get_enables()", "信息采集", {Enable=true}, 5, "^以下是你目前使用中的特殊技能。$")
-add_trigger("get_enable_skills", "get_enable_skills(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=false}, 5, "^\\s+\\S+ \\((\\w+)\\)\\s+： (\\S+)\\s+有效等级：\\s*(\\d+)$")
-add_trigger("get_prepares", "get_prepares()", "信息采集", {Enable=true}, 5, "^以下是你目前组合中的特殊拳术技能。$")
-add_trigger("get_prepare_skills", "get_prepare_skills(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^\\S+ \\((\\w+)\\)\\s+(\\S+)$")
-add_trigger("change_enable", "change_enable(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^你从现在起用(\\S+)作为基本(\\S+)的特殊技能。$")
-add_trigger("no_prepare", "skills.prepare = {}", "信息采集", {Enable=true}, 5, "^你现在没有组合任何特殊拳术技能。$|^取消全部技能准备。$")
-add_trigger("skill_upgrade", "skill_upgrade(get_matches(1))", "信息采集", {Enable=true}, 5, "^你的「(\\S+)」进步了！$")
-add_trigger("login", "login()", "信息采集", {Enable=true, StopEval=true}, 6, "^您目前的权限是：.*，您设定为.*显示。$|^重新连线完毕。$")
-add_trigger("get_carryon_item_end", "get_carryon_item_end()", "信息采集", {Enable=false, Gag=true, StopEval=true}, 6, "^> $")
-add_trigger("get_container_end", "get_container_end()", "信息采集", {Enable=false}, 7, "^> $")
+trigger.add("get_state_l1", "get_state_l1(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5), get_matches(6))", "信息采集", {Enable=true}, 5, "^\\s+精神：\\s+([-\\d]+)/\\s+([-\\d]+)\\s+\\(\\s*(\\d+)%\\)\\s+精力：\\s+([-\\d]+)\\s+/\\s+(\\d+)\\s+\\(\\+(\\d+)\\)$")
+trigger.add("get_state_l2", "get_state_l2(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5), get_matches(6))", "信息采集", {Enable=true}, 5, "^\\s+气血：\\s+([-\\d]+)/\\s+([-\\d]+)\\s+\\(\\s*(\\d+)%\\)\\s+内力：\\s+([-\\d]+)\\s+/\\s+(\\d+)\\s+\\(\\+(\\d+)\\)$")
+trigger.add("get_state_l3", "get_state_l3(get_matches(1), get_matches(2), get_matches(3), get_matches(4))", "信息采集", {Enable=true}, 5, "^\\s+食物：\\s+(\\d+)/\\s+(\\d+)\\s+潜能：\\s+([-\\d]+)\\s+/\\s+(\\d+)$")
+trigger.add("get_state_l4", "get_state_l4(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^\\s+饮水：\\s+(\\d+)/\\s+(\\d+)\\s+经验：\\s+([-\\d]+)$")
+trigger.add("get_profile_l1", "get_profile_l1(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=true}, 5, "^│姓  名：(\\S+)\\s+臂力：\\s*(\\d+)/\\s+(\\d+)\\s+悟性：\\s*([-\\d]+)/\\s+(\\d+)\\s+│$")
+trigger.add("get_profile_l2", "get_profile_l2(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=true}, 5, "^│英文ID：(\\S+)\\s+根骨：\\s*(\\d+)/\\s+(\\d+)\\s+身法：\\s*(\\d+)/\\s+(\\d+)\\s+│$")
+trigger.add("get_profile_l3", "get_profile_l3(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=true}, 5, "^│性  别：(\\S+)性人类\\s+容貌：\\s*(\\d+)/\\s+(\\d+)\\s+运气：\\s*(\\d+)/\\s+(\\d+)\\s+│$")
+trigger.add("get_profile_l4", "get_profile_l4(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│年  龄：(\\S+)岁(?:正|又(\\S+)个月)\\s+体内食物：\\s+(\\d+)\\s+\\(\\d+%\\)\\s+│$")
+trigger.add("get_profile_l5", "get_profile_l5(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│头  衔：【\\s*(\\S+\\s*\\S+)\\s*】\\s+体内饮水：\\s+(\\d+)\\s+\\(\\d+%\\)\\s+│$")
+trigger.add("get_profile_l6", "get_profile_l6(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│体  重：(\\S+)斤(?:多|)\\s+钱庄盈余：(?:亏空无余|([一二三四五六七八九十百千万亿]+)(?:多|)两黄金(?:多|正|)|(很少))\\s+│$")
+trigger.add("get_profile_l7", "get_profile_l7(get_matches(1))", "信息采集", {Enable=true}, 5, "^│\\s+在线时间：(\\S*)(?:整|多|钟|秒|钟多)\\s+│$")
+trigger.add("get_profile_l8", "get_profile_l8(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│(\\S+)：(\\d+)\\s*(?:|经验(?:增加|减少)：([-\\d]+))\\s+│$")
+trigger.add("get_profile_l9", "get_profile_l9(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│格斗经验：([,\\d]+)\\s+等级限制：\\s*(\\d+)\\s+\\(\\+差\\s*(\\d+)\\s*\\)\\s*│$")
+trigger.add("get_profile_l10", "get_profile_l10(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│江湖贡献：(\\d+)\\s+江湖潜力：\\s+(\\d+)\\s+\\(\\+存\\s+(\\d+(?:|万))\\s*\\)\\s*│$")
+trigger.add("get_profile_l11", "get_profile_l11(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│江湖伴侣：(\\S+)\\s+含恨入土：\\s+(\\d+)\\s+\\(\\+真\\s+\\d+\\s*\\)\\s*│$")
+trigger.add("get_profile_l12", "get_profile_l12(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│江湖门派：(\\S+)\\s+手下冤魂：\\s+(\\d+)\\s+\\(\\+敌\\s+\\d+\\s*\\)\\s*│$")
+trigger.add("get_profile_l13", "get_profile_l13(get_matches(1))", "信息采集", {Enable=true}, 5, "^│授业师父：(\\S+)\\s+前生仇敌：(?:|\\S+\\(\\w+ \\w+\\))\\s*│$")
+trigger.add("get_carryon_empty", "get_carryon_empty()", "信息采集", {Enable=true}, 5, "^目前你身上没有任何东西。$")
+trigger.add("get_carryon_summary", "get_carryon_summary(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^你身上带着(\\S+)件物品\\(负重\\s*(\\d+)%\\)：$")
+trigger.add("get_carryon_item", "get_carryon_item(get_matches(1))", "信息采集", {Enable=false}, 5, "^(?:\\s+|□)(\\S+\\([ \\w]+\\))$")
+trigger.add("get_carryon_wield", "get_carryon_wield(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^□(\\S+)\\(([ \\w]+)\\)$")
+trigger.add("get_carryon_detail", "get_carryon_detail()", "信息采集", {Enable=false}, 5, "^你\\(你\\)身上携带物品的别称如下\\(右方\\)：$")
+trigger.add("get_carryon_list", "get_carryon_list(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^(\\S+)\\s+=\\s+([, \\w]+)$")
+trigger.add("get_carryon_list_end", "get_carryon_list_end()", "信息采集", {Enable=false}, 5, "^> $")
+trigger.add("get_item_container", "get_item_container(get_matches(1))", "信息采集", {Enable=false}, 5, "^\\s+(\\S+\\([ \\w]+\\))$")
+trigger.add("get_water_container", "get_water_container(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^里面装((?:了(?:(?:五、六|七、八|)分满|少许)的|满了))\\S*((?:水|酒|女儿红|状元红|野菜汤|竹叶清))。$")
+trigger.add("get_repository", "get_repository()", "信息采集", {Enable=true}, 5, "^你保存的物品如下:$")
+trigger.add("get_repository_list", "get_repository_list(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=false}, 5, "^(\\d+)\\s+(\\S+)\\s+：\\s+(\\d+)$")
+trigger.add("get_repository_end", "get_repository_end()", "信息采集", {Enable=false}, 5, "^> $")
+trigger.add("get_personal_weapon_name", "get_personal_weapon_name(get_matches(1))", "信息采集", {Enable=true}, 5, '^\\s+name -> "(.*)"$')
+trigger.add("get_personal_weapon_wield_msg", "get_personal_weapon_wield_msg(get_matches(1))", "信息采集", {Enable=true}, 5, '^\\s+wieldMsg -> "(.*)"$')
+trigger.add("get_personal_weapon_unwield_msg", "get_personal_weapon_unwield_msg(get_matches(1))", "信息采集", {Enable=true}, 5, '^\\s+unwieldMsg -> "(.*)"$')
+trigger.add("update_coin-", "update_coin('-'..get_matches(1))", "信息采集", {Enable=true}, 5, "^你拿出(?:的|)(\\S+)文铜钱\\S+。$")
+trigger.add("update_silver-", "update_silver('-'..get_matches(1))", "信息采集", {Enable=true}, 5, "^你拿出(?:的|)(\\S+)两白银\\S+。$")
+trigger.add("update_gold-", "update_gold('-'..get_matches(1))", "信息采集", {Enable=true}, 5, "^你拿出(?:的|)(\\S+)两黄金\\S+。$")
+trigger.add("update_coin+", "update_coin(get_matches(1))", "信息采集", {Enable=true}, 5, "^(?:你|掌柜的点点头，)从\\S+出(\\S+)文铜板\\S*。$")
+trigger.add("update_silver+", "update_silver(get_matches(1))", "信息采集", {Enable=true}, 5, "^(?:你|掌柜的点点头，)从\\S+出(\\S+)两白银\\S*。$")
+trigger.add("update_gold+", "update_gold(get_matches(1))", "信息采集", {Enable=true}, 5, "^(?:你|掌柜的点点头，)从\\S+出(\\S+)两黄金\\S*。$")
+trigger.add("convert_currency", "convert_currency(get_matches(1), get_matches(2), get_matches(3), get_matches(4))", "信息采集", {Enable=true}, 5, "^掌柜的点点头，将你从身上取出的(\\S+)(?:文|两)(\\S+)换成了(\\S+)(?:文|两)(\\S+)。$")
+trigger.add("get_skills", "get_skills()", "信息采集", {Enable=true}, 5, "^你目前所学过的技能：（共\\S+项技能）[　]+$")
+trigger.add("get_knowledge", "get_knowledge()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+项知识\\s+[─]+┐$")
+trigger.add("get_theory", "get_theory()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+种心法\\s+[─]+┐$")
+trigger.add("get_method", "get_method()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+项技能\\s+[─]+┐$")
+trigger.add("get_basic", "get_basic()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+套基本功\\s+[─]+┐$")
+trigger.add("get_special", "get_special()", "信息采集", {Enable=false}, 5, "^┌\\s+\\S+套武技\\s+[─]+┐$")
+trigger.add("get_knowledge_skills", "get_knowledge_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│　(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
+trigger.add("get_theory_skills", "get_theory_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│　(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
+trigger.add("get_method_skills", "get_method_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│　(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
+trigger.add("get_basic_skills", "get_basic_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│　(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
+trigger.add("get_special_skills", "get_special_skills(get_matches(1), get_matches(2), get_matches(3), get_matches(4), get_matches(5))", "信息采集", {Enable=false}, 5, "^│(?:　|□)(\\S+) \\((\\S+)\\)\\s+- (\\S+)\\s+(\\d+)/\\s*(\\d+)│$")
+trigger.add("get_skills_end", "get_skills_end()", "信息采集", {Enable=false}, 5, "^> $")
+trigger.add("get_enables", "get_enables()", "信息采集", {Enable=true}, 5, "^以下是你目前使用中的特殊技能。$")
+trigger.add("get_enable_skills", "get_enable_skills(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=false}, 5, "^\\s+\\S+ \\((\\w+)\\)\\s+： (\\S+)\\s+有效等级：\\s*(\\d+)$")
+trigger.add("get_prepares", "get_prepares()", "信息采集", {Enable=true}, 5, "^以下是你目前组合中的特殊拳术技能。$")
+trigger.add("get_prepare_skills", "get_prepare_skills(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^\\S+ \\((\\w+)\\)\\s+(\\S+)$")
+trigger.add("change_enable", "change_enable(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^你从现在起用(\\S+)作为基本(\\S+)的特殊技能。$")
+trigger.add("no_prepare", "skills.prepare = {}", "信息采集", {Enable=true}, 5, "^你现在没有组合任何特殊拳术技能。$|^取消全部技能准备。$")
+trigger.add("skill_upgrade", "skill_upgrade(get_matches(1))", "信息采集", {Enable=true}, 5, "^你的「(\\S+)」进步了！$")
+trigger.add("login", "login()", "信息采集", {Enable=true, StopEval=true}, 6, "^您目前的权限是：.*，您设定为.*显示。$|^重新连线完毕。$")
+trigger.add("get_carryon_item_end", "get_carryon_item_end()", "信息采集", {Enable=false, Gag=true, StopEval=true}, 6, "^> $")
+trigger.add("get_container_end", "get_container_end()", "信息采集", {Enable=false}, 7, "^> $")
 
 function get_room_name(name)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_name ］参数：name = "..tostring(name))
-    enable_trigger("get_room_end")
-    enable_trigger("get_room_desc")
-    enable_trigger("get_room_objs")
+    trigger.enable("get_room_end")
+    trigger.enable("get_room_desc")
+    trigger.enable("get_room_objs")
     env.room.name = name
     env.room.desc = {}
     env.room.exits = ""
@@ -223,7 +222,7 @@ end
 
 function get_room_exits(exits)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_exits ］参数：exits = "..tostring(exits))
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     if exits == "" then
         exits = {}
     end
@@ -232,21 +231,21 @@ end
 
 function get_room_objs(obj)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_objs ］参数：obj = "..tostring(obj))
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     set.append(env.room.objs, obj)
 end
 
 function get_room_end()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_end ］")
-    disable_trigger("get_room_end")
-    disable_trigger("get_room_desc")
-    disable_trigger("get_room_objs")
+    trigger.disable("get_room_end")
+    trigger.disable("get_room_desc")
+    trigger.disable("get_room_objs")
 end
 
 function get_room_abst(name, exits)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_abst ］参数：name = "..tostring(name)..", exits = "..tostring(exits))
-    enable_trigger("get_room_end")
-    enable_trigger("get_room_objs")
+    trigger.enable("get_room_end")
+    trigger.enable("get_room_objs")
     env.room.name = name
     env.room.exits = exits
     env.room.desc = {}
@@ -256,7 +255,7 @@ function get_room_abst(name, exits)
 end
 
 function weather_before_dawn()
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     env.weather_time = "凌晨"
     map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "关闭")
 end
@@ -264,11 +263,11 @@ end
 function time_before_dawn()
     env.weather_time = "凌晨"
     map_adjust("泉州新门", "关闭")
-    add_timer(nil, 10, "map_adjust('北京城门', '开放', '北京城墙', '关闭')", nil, {Enable=true, OneShot=true})
+    timer.add(nil, 10, "map_adjust('北京城门', '开放', '北京城墙', '关闭')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_early_morning()
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     env.weather_time = "早晨"
     map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
 end
@@ -276,11 +275,11 @@ end
 function time_early_morning()
     env.weather_time = "早晨"
     map_adjust("北京城门", "开放", "北京城墙", "关闭")
-    add_timer(nil, 10, "map_adjust('泉州新门', '开放')", nil, {Enable=true, OneShot=true})
+    timer.add(nil, 10, "map_adjust('泉州新门', '开放')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_morning()
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     env.weather_time = "上午"
     map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
 end
@@ -291,7 +290,7 @@ function time_morning()
 end
 
 function weather_noon()
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     env.weather_time = "正午"
     map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
 end
@@ -302,7 +301,7 @@ function time_noon()
 end
 
 function weather_afternoon()
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     env.weather_time = "下午"
     map_adjust("北京城门", "开放", "北京城墙", "开放", "泉州新门", "关闭")
 end
@@ -313,7 +312,7 @@ function time_afternoon()
 end
 
 function weather_evening()
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     env.weather_time = "傍晚"
     map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
 end
@@ -324,18 +323,18 @@ function time_evening()
 end
 
 function weather_night()
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     env.weather_time = "夜晚"
     map_adjust("北京城门", "关闭", "泉州新门", "关闭", "北京城墙", "开放")
 end
 
 function time_night()
     env.weather_time = "夜晚"
-    add_timer(nil, 10, "map_adjust('北京城门', '关闭', '泉州新门', '关闭', '北京城墙', '开放')", nil, {Enable=true, OneShot=true})
+    timer.add(nil, 10, "map_adjust('北京城门', '关闭', '泉州新门', '关闭', '北京城墙', '开放')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_mid_night()
-    disable_trigger("get_room_desc")
+    trigger.disable("get_room_desc")
     env.weather_time = "午夜"
     map_adjust("北京城门", "关闭", "泉州新门", "关闭", "北京城墙", "开放")
 end
@@ -578,10 +577,10 @@ end
 
 function get_carryon_summary(count, weight)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_summary ］参数：count = "..tostring(count)..", weight = "..tostring(weight))
-    enable_trigger("get_carryon_item")
-    enable_trigger("get_carryon_item_end")
-    enable_trigger("get_carryon_wield")
-    enable_trigger("get_carryon_detail")
+    trigger.enable("get_carryon_item")
+    trigger.enable("get_carryon_item_end")
+    trigger.enable("get_carryon_wield")
+    trigger.enable("get_carryon_detail")
     var.wield = {}
     carryon.count = chs2num(count)
     carryon.weight = chs2num(weight)
@@ -601,10 +600,10 @@ end
 
 function get_carryon_item_end()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_item_end ］")
-    disable_trigger("get_carryon_item")
-    disable_trigger("get_carryon_item_end")
-    disable_trigger("get_carryon_wield")
-    enable_trigger("hide_carryon")
+    trigger.disable("get_carryon_item")
+    trigger.disable("get_carryon_item_end")
+    trigger.disable("get_carryon_wield")
+    trigger.enable("hide_carryon")
     if #var.wield == 0 then
         carryon.wield = {"", ""}
     elseif #var.wield == 1 then
@@ -630,9 +629,9 @@ end
 
 function get_carryon_detail()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_detail ］")
-    enable_trigger("get_carryon_list")
-    enable_trigger("get_carryon_list_end")
-    add_trigger("get_carryon_end", "get_carryon_end()", "信息采集", {Enable=true, OneShot=true, Gag=true, StopEval=true}, 6, "^> $")
+    trigger.enable("get_carryon_list")
+    trigger.enable("get_carryon_list_end")
+    trigger.add("get_carryon_end", "get_carryon_end()", "信息采集", {Enable=true, OneShot=true, Gag=true, StopEval=true}, 6, "^> $")
     var.item = {}
 end
 
@@ -643,9 +642,9 @@ end
 
 function get_carryon_list_end()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_list_end ］")
-    disable_trigger("get_carryon_detail")
-    disable_trigger("get_carryon_list")
-    disable_trigger("get_carryon_list_end")
+    trigger.disable("get_carryon_detail")
+    trigger.disable("get_carryon_list")
+    trigger.disable("get_carryon_list_end")
     local ids = {}
     var.container = {}
     for i = #var.item, 1, -1 do
@@ -659,20 +658,20 @@ function get_carryon_list_end()
         end
     end
     var.item = nil
-    enable_trigger("get_item_container")
-    enable_trigger("get_water_container")
-    enable_trigger("get_container_end")
+    trigger.enable("get_item_container")
+    trigger.enable("get_water_container")
+    trigger.enable("get_container_end")
     look_container()
 end
 
 function look_container()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ look_container ］")
     if #var.container == 0 then
-        disable_trigger("get_container_end")
-        disable_trigger("get_item_container")
-        disable_trigger("get_water_container")
-        disable_trigger("hide_carryon")
-        del_trigger("get_carryon_end")
+        trigger.disable("get_container_end")
+        trigger.disable("get_item_container")
+        trigger.disable("get_water_container")
+        trigger.disable("hide_carryon")
+        trigger.delete("get_carryon_end")
         var.container = nil
         if carryon.inventory["饱腹玉:baofu yu"] ~= nil then
             map_adjust("南疆沙漠", "开放")
@@ -740,7 +739,7 @@ end
 
 function get_carryon_end()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_end ］")
-    add_trigger("get_carryon_end", "", "信息采集", {Enable=true, Gag=true, StopEval=true}, 8, "^> $")
+    trigger.add("get_carryon_end", "", "信息采集", {Enable=true, Gag=true, StopEval=true}, 8, "^> $")
 end
 
 function update_coin(coin)
@@ -834,8 +833,8 @@ end
 
 function get_repository()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_repository ］")
-    enable_trigger("get_repository_list")
-    enable_trigger("get_repository_end")
+    trigger.enable("get_repository_list")
+    trigger.enable("get_repository_end")
     carryon.repository = {}
 end
 
@@ -848,8 +847,8 @@ end
 
 function get_repository_end()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_repository_end ］")
-    disable_trigger("get_repository_list")
-    disable_trigger("get_repository_end")
+    trigger.disable("get_repository_list")
+    trigger.disable("get_repository_end")
     if carryon.repository["《玄门内功心法》"] ~= nil then
         if items["《玄门内功心法》:xuanmen xinfa"].get[1] ~= "qu" then
             set.insert(items["《玄门内功心法》:xuanmen xinfa"].price, 1, 0)
@@ -901,12 +900,12 @@ skills = {theory = {}, knowledge = {}, method = {}, basic = {}, special = {}, en
 
 function get_skills()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_skills ］")
-    enable_trigger("get_knowledge")
-    enable_trigger("get_theory")
-    enable_trigger("get_basic")
-    enable_trigger("get_method")
-    enable_trigger("get_special")
-    enable_trigger("get_skills_end")
+    trigger.enable("get_knowledge")
+    trigger.enable("get_theory")
+    trigger.enable("get_basic")
+    trigger.enable("get_method")
+    trigger.enable("get_special")
+    trigger.enable("get_skills_end")
     skills.theory = {}
     skills.knowledge = {}
     skills.method = {}
@@ -916,47 +915,47 @@ end
 
 function get_knowledge()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_knowledge ］")
-    enable_trigger("get_knowledge_skills")
-    disable_trigger("get_theory_skills")
-    disable_trigger("get_method_skills")
-    disable_trigger("get_basic_skills")
-    disable_trigger("get_special_skills")
+    trigger.enable("get_knowledge_skills")
+    trigger.disable("get_theory_skills")
+    trigger.disable("get_method_skills")
+    trigger.disable("get_basic_skills")
+    trigger.disable("get_special_skills")
 end
 
 function get_theory()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_theory ］")
-    enable_trigger("get_theory_skills")
-    disable_trigger("get_knowledge_skills")
-    disable_trigger("get_method_skills")
-    disable_trigger("get_basic_skills")
-    disable_trigger("get_special_skills")
+    trigger.enable("get_theory_skills")
+    trigger.disable("get_knowledge_skills")
+    trigger.disable("get_method_skills")
+    trigger.disable("get_basic_skills")
+    trigger.disable("get_special_skills")
 end
 
 function get_method()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_method ］")
-    enable_trigger("get_method_skills")
-    disable_trigger("get_theory_skills")
-    disable_trigger("get_knowledge_skills")
-    disable_trigger("get_basic_skills")
-    disable_trigger("get_special_skills")
+    trigger.enable("get_method_skills")
+    trigger.disable("get_theory_skills")
+    trigger.disable("get_knowledge_skills")
+    trigger.disable("get_basic_skills")
+    trigger.disable("get_special_skills")
 end
 
 function get_basic()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_basic ］")
-    enable_trigger("get_basic_skills")
-    disable_trigger("get_knowledge_skills")
-    disable_trigger("get_method_skills")
-    disable_trigger("get_theory_skills")
-    disable_trigger("get_special_skills")
+    trigger.enable("get_basic_skills")
+    trigger.disable("get_knowledge_skills")
+    trigger.disable("get_method_skills")
+    trigger.disable("get_theory_skills")
+    trigger.disable("get_special_skills")
 end
 
 function get_special()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_special ］")
-    enable_trigger("get_special_skills")
-    disable_trigger("get_knowledge_skills")
-    disable_trigger("get_method_skills")
-    disable_trigger("get_theory_skills")
-    disable_trigger("get_basic_skills")
+    trigger.enable("get_special_skills")
+    trigger.disable("get_knowledge_skills")
+    trigger.disable("get_method_skills")
+    trigger.disable("get_theory_skills")
+    trigger.disable("get_basic_skills")
 end
 
 function get_knowledge_skills(name, id, desc, level, prof)
@@ -1043,22 +1042,22 @@ end
 
 function get_skills_end()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_skills_end ］")
-    disable_trigger("get_knowledge")
-    disable_trigger("get_theory")
-    disable_trigger("get_method")
-    disable_trigger("get_basic")
-    disable_trigger("get_special")
-    disable_trigger("get_knowledge_skills")
-    disable_trigger("get_theory_skills")
-    disable_trigger("get_basic_skills")
-    disable_trigger("get_special_skills")
-    disable_trigger("get_skills_end")
+    trigger.disable("get_knowledge")
+    trigger.disable("get_theory")
+    trigger.disable("get_method")
+    trigger.disable("get_basic")
+    trigger.disable("get_special")
+    trigger.disable("get_knowledge_skills")
+    trigger.disable("get_theory_skills")
+    trigger.disable("get_basic_skills")
+    trigger.disable("get_special_skills")
+    trigger.disable("get_skills_end")
 end
 
 function get_enables()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_enables ］")
-    enable_trigger("get_enable_skills")
-    add_trigger(nil, "disable_trigger('get_enable_skills')", "信息采集", {Enable=true, OneShot=true}, 6, "^> $")
+    trigger.enable("get_enable_skills")
+    trigger.add(nil, "trigger.disable('get_enable_skills')", "信息采集", {Enable=true, OneShot=true}, 6, "^> $")
     skills.enable = {}
 end
 
@@ -1092,8 +1091,8 @@ end
 
 function get_prepares()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_prepares ］")
-    enable_trigger("get_prepare_skills")
-    add_trigger(nil, "disable_trigger('get_prepare_skills')", "信息采集", {Enable=true, OneShot=true}, 6, "^> $")
+    trigger.enable("get_prepare_skills")
+    trigger.add(nil, "trigger.disable('get_prepare_skills')", "信息采集", {Enable=true, OneShot=true}, 6, "^> $")
     skills.prepare = {}
 end
 
@@ -1201,8 +1200,8 @@ local unknown_force_yun = {
 
 function invalid_ask_ping()
     state.buff.ask_ping = false
-    if not is_trigger_exist("invalid_ask_ping") then
-        add_timer("invalid_ask_ping", 1800, "state.buff.ask_ping = nil", "state", {Enable=true, OneShot=true})
+    if not trigger.is_exist("invalid_ask_ping") then
+        timer.add("invalid_ask_ping", 1800, "state.buff.ask_ping = nil", "state", {Enable=true, OneShot=true})
     end
 end
 
@@ -1218,7 +1217,7 @@ function invalid_ask_yuluwan()
         set.remove(items["九花玉露丸:yulu wan"].place, 1)
         set.remove(items["九花玉露丸:yulu wan"].get, 1)
     end
-    add_timer("invalid_ask_yuluwan", 1800, "valid_ask_yuluwan()", "state", {Enable=true, OneShot=true})
+    timer.add("invalid_ask_yuluwan", 1800, "valid_ask_yuluwan()", "state", {Enable=true, OneShot=true})
 end
 
 function valid_ask_yuluwan()
@@ -1229,11 +1228,11 @@ function valid_ask_yuluwan()
     end
 end
 -- 信息刷新
---add_trigger("update_i", "^你(?:捡起|丢下)\\S+。$|"..
+--trigger.add("update_i", "^你(?:捡起|丢下)\\S+。$|"..
 --                        "^你将\\S+保存了起来。$|"..
 --                        "^你(?:取(?:光|出)|卖掉|从\\S+那里买下)了\\S+$", "if get_last_cmd() ~= 'quit' then run('i') end", nil, "信息采集",
 --            bit.bor(trigger_flag.KeepEvaluating, trigger_flag.Temporary, trigger_flag.OmitFromOutput), 30)
---add_trigger("update_hp", "^你深深吸了几口气，(?:精神|脸色)看起来好多了|"..
+--trigger.add("update_hp", "^你深深吸了几口气，(?:精神|脸色)看起来好多了|"..
 --                         "^你伸了伸腰，长长地吸了口气|现在(?:(?:精|气)力充沛|精神饱满)。$|"..
 --                         "^你运功完毕，深深吸了口气，站了起来。$|"..
 --                         "^你把正在运行的真气强行压回丹田，站了起来。$|"..

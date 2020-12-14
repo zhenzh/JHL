@@ -110,17 +110,26 @@ function automation_reset_killer()
     automation.reconnect = nil
 end
 
+function automation_idle()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_idle ］")
+    if automation.idle == true then
+        automation_reset()
+    end
+    automation.idle = true
+end
+
 function start()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ start ］")
     minimal_resources()
     automation.thread = automation.thread or coroutine.running()
-    enable_trigger("others_come")
-    enable_trigger("others_leave")
-    enable_trigger("hide_busy")
-    add_trigger(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
-    add_trigger(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
-    add_trigger(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
-    add_trigger(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
+    trigger.enable("others_come")
+    trigger.enable("others_leave")
+    trigger.enable("hide_busy")
+    timer.add(nil, 180, "automation_idle()", "automation", {Enable=true})
+    trigger.add(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
+    trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
+    trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
+    trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
     run("halt")
     if flow() < 0 then
         automation_reset("automation_reset_idle()")
@@ -235,13 +244,13 @@ function flow_do_job()
     if rc == 0 then
         global.jid = 1
         automation.jid = nil
+        automation.idle = false
         var.flow.loop = 0
         if config.skill_prior == true then
             return
         end
         return 0
     else
-        show("dbg jid "..tostring(global.jid))
         if global.jid == #config.jobs then
             global.jid = 0
         end
@@ -301,7 +310,7 @@ end
 function flow_suspend()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ flow_suspend ］")
     if is_timer_exist("flow_suspend") == false then
-        add_timer("flow_suspend", 900, "automation.phase = global.phase['空闲']", nil, {Enable=true, OneShot=true})
+        timer.add("flow_suspend", 900, "automation.phase = global.phase['空闲']", nil, {Enable=true, OneShot=true})
     end
     for _,v in ipairs(config.jobs) do
          if config.jobs[v].active == true then
@@ -364,7 +373,7 @@ function plan()
             box = true
             repeat
                 local l = wait_line("get all from "..k, 30, nil, nil, "^你上一个动作还没有完成！$|"..
-                                                                               "^> $")
+                                                                      "^> $")
                 if l == false then
                     return -1
                 elseif l[0] == "你上一个动作还没有完成！" then
@@ -597,8 +606,9 @@ function prepare_skills()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ prepare_skills ］")
     local cfg,skill_id = {},{}
     if io.exists(get_work_path().."skills.cfg") then
-        table.load(get_work_path().."skills.cfg", cfg)
-    else
+        cfg = table.load(get_work_path().."skills.cfg")
+    end
+    if table.is_empty(cfg) then
         if sync_skills() < 0 then
             return -1
         else
@@ -717,7 +727,6 @@ function break_event()
             end
         end
     end
-    message("info", automation.phase, config.jobs[global.jid], config.jobs[config.jobs[global.jid]].phase)
     return false
 end
 

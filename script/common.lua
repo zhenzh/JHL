@@ -1,35 +1,35 @@
 show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
 
 local run_hide = {
-    ["hp"] =      function() enable_trigger("hide_hp")
-                             add_trigger(nil, "disable_trigger('hide_hp')", nil, {Enable=true, OneShot=true}, 10, "^\\s+饮水：\\s+\\d+/\\s+\\d+\\s+经验：\\s+[-\\d]+$")
+    ["hp"] =      function() trigger.enable("hide_hp")
+                             trigger.add(nil, "trigger.disable('hide_hp')", nil, {Enable=true, OneShot=true}, 10, "^\\s+饮水：\\s+\\d+/\\s+\\d+\\s+经验：\\s+[-\\d]+$")
                   end,
-    ["score"] =   function() enable_trigger("hide_score")
-                             add_trigger(nil, "disable_trigger('hide_score')", nil, {Enable=true, OneShot=true}, 10, "^└[─]+ Brotherhood ─┘$")
+    ["score"] =   function() trigger.enable("hide_score")
+                             trigger.add(nil, "trigger.disable('hide_score')", nil, {Enable=true, OneShot=true}, 10, "^└[─]+ Brotherhood ─┘$")
                   end,
-    ["i"] =       function() enable_trigger("hide_i")
-                             add_trigger("disable_hide_i", "disable_trigger('hide_i')", nil, {Enable=false, OneShot=true}, 10, "^> $")
-                             add_trigger(nil, "enable_trigger('disable_hide_i')", nil, {Enable=true, OneShot=true}, 10, "^你\\(你\\)身上携带物品的别称如下\\(右方\\)：$|^目前你身上没有任何东西。$")
+    ["i"] =       function() trigger.enable("hide_i")
+                             trigger.add("disable_hide_i", "trigger.disable('hide_i')", nil, {Enable=false, OneShot=true}, 10, "^> $")
+                             trigger.add(nil, "trigger.enable('disable_hide_i')", nil, {Enable=true, OneShot=true}, 10, "^你\\(你\\)身上携带物品的别称如下\\(右方\\)：$|^目前你身上没有任何东西。$")
                   end,
-    ["skills"] =  function() enable_trigger("hide_skills")
-                             add_trigger("disable_hide_skills", "disable_trigger('hide_skills')", nil, {Enable=false, OneShot=true}, 10, "^> $")
-                             add_trigger(nil, "enable_trigger('disable_hide_skills')", nil, {Enable=true, OneShot=true}, 10, "^你目前所学过的技能：（共\\S+项技能）[　]+$")
+    ["skills"] =  function() trigger.enable("hide_skills")
+                             trigger.add("disable_hide_skills", "trigger.disable('hide_skills')", nil, {Enable=false, OneShot=true}, 10, "^> $")
+                             trigger.add(nil, "trigger.enable('disable_hide_skills')", nil, {Enable=true, OneShot=true}, 10, "^你目前所学过的技能：（共\\S+项技能）[　]+$")
                   end,
-    ["enable"] =  function() enable_trigger("hide_enable")
-                             add_trigger("disable_hide_enable", "disable_trigger('hide_enable')", nil, {Enable=false, OneShot=true}, 10, "^> $")
-                             add_trigger(nil, "enable_trigger('disable_hide_enable')", nil, {Enable=true, OneShot=true}, 10, "^以下是你目前使用中的特殊技能。$")
+    ["enable"] =  function() trigger.enable("hide_enable")
+                             trigger.add("disable_hide_enable", "trigger.disable('hide_enable')", nil, {Enable=false, OneShot=true}, 10, "^> $")
+                             trigger.add(nil, "trigger.enable('disable_hide_enable')", nil, {Enable=true, OneShot=true}, 10, "^以下是你目前使用中的特殊技能。$")
                   end,
-    ["prepare"] = function() enable_trigger("hide_prepare")
-                             add_trigger("disable_hide_prepare", "disable_trigger('hide_prepare')", nil, {Enable=false, OneShot=true}, 10, "^> $")
-                             add_trigger(nil, "enable_trigger('disable_hide_prepare')", nil, {Enable=true, OneShot=true}, 10, "^以下是你目前组合中的特殊拳术技能。$|^你现在没有组合任何特殊拳术技能。$")
+    ["prepare"] = function() trigger.enable("hide_prepare")
+                             trigger.add("disable_hide_prepare", "trigger.disable('hide_prepare')", nil, {Enable=false, OneShot=true}, 10, "^> $")
+                             trigger.add(nil, "trigger.enable('disable_hide_prepare')", nil, {Enable=true, OneShot=true}, 10, "^以下是你目前组合中的特殊拳术技能。$|^你现在没有组合任何特殊拳术技能。$")
                   end,
-    ["set"] =     function() enable_trigger("hide_set")
-                             add_trigger("disable_hide_set", "disable_trigger('hide_set')", nil, {Enable=false, OneShot=true}, 10, "^> $")
-                             add_trigger(nil, "enable_trigger('disable_hide_set')", nil, {Enable=true, OneShot=true}, 10, "^你目前设定的环境变量有：$")
+    ["set"] =     function() trigger.enable("hide_set")
+                             trigger.add("disable_hide_set", "trigger.disable('hide_set')", nil, {Enable=false, OneShot=true}, 10, "^> $")
+                             trigger.add(nil, "trigger.enable('disable_hide_set')", nil, {Enable=true, OneShot=true}, 10, "^你目前设定的环境变量有：$")
                   end,
-    ["list"] =    function() enable_trigger("hide_list")
-                             add_trigger("disable_hide_list", "disable_trigger('hide_list')", nil, {Enable=false, OneShot=true}, 10, "^> $")
-                             add_trigger(nil, "enable_trigger('disable_hide_list')", nil, {Enable=true, OneShot=true}, 10, "^你保存的物品如下:$")
+    ["list"] =    function() trigger.enable("hide_list")
+                             trigger.add("disable_hide_list", "trigger.disable('hide_list')", nil, {Enable=false, OneShot=true}, 10, "^> $")
+                             trigger.add(nil, "trigger.enable('disable_hide_list')", nil, {Enable=true, OneShot=true}, 10, "^你保存的物品如下:$")
                   end
 }
 
@@ -54,7 +54,7 @@ function wait(seconds)
         show("必须使用协程", "orange")
         return false
     end
-    add_timer(name, seconds, "wait_resume('"..name.."')", nil, {Enable=true, OneShot=true})
+    timer.add(name, seconds, "wait_resume('"..name.."')", nil, {Enable=true, OneShot=true})
     return coroutine.yield()
 end
 
@@ -88,19 +88,19 @@ function wait_line(action, timeout, options, order, ...)
     if select("#", ...) > 1 then
         pattern = {...}
         threads[name][2] = {}
-        add_trigger(name.."_"..tostring(#pattern), "wait_line_trigger('"..name.."', "..tostring(#pattern)..", true)", name, options, order, set.last(pattern))
+        trigger.add(name.."_"..tostring(#pattern), "wait_line_trigger('"..name.."', "..tostring(#pattern)..", true)", name, options, order, set.last(pattern))
         for i = #pattern-1, 1, -1 do
-            add_trigger(name.."_"..tostring(i), "wait_line_trigger('"..name.."', "..tostring(i)..", false)", name, {Enable=false, OneShot=true}, order, pattern[i])
+            trigger.add(name.."_"..tostring(i), "wait_line_trigger('"..name.."', "..tostring(i)..", false)", name, {Enable=false, OneShot=true}, order, pattern[i])
         end
-        enable_trigger(name.."_1")
+        trigger.enable(name.."_1")
     else
         pattern = select(1, ...)
         options.Enable = true
-        add_trigger(name, "wait_line_trigger('"..name.."')", name, options, order, pattern)
+        trigger.add(name, "wait_line_trigger('"..name.."')", name, options, order, pattern)
     end
     timeout = timeout or 0
     if timeout > 0 then
-        add_timer(name, timeout, "wait_line_timer('"..name.."')", nil, {Enable=true, OneShot=true})
+        timer.add(name, timeout, "wait_line_timer('"..name.."')", nil, {Enable=true, OneShot=true})
     end
     run(action)
     return coroutine.yield() or false
@@ -108,29 +108,29 @@ end
 
 function wait_line_trigger(name, n, islast)
     if n == nil then
-        del_timer(name)
+        timer.delete(name)
         threads[name][2] = get_matches()
         wait_line_resume(name)
     else
         if islast == true then
-            del_timer(name)
+            timer.delete(name)
             threads[name][2][n] = get_matches()
             wait_line_resume(name)
         else
             threads[name][2][n] = get_matches()
-            enable_trigger(name.."_"..tostring(n+1))
+            trigger.enable(name.."_"..tostring(n+1))
         end
     end
 end
 
 function wait_line_timer(name)
-    del_trigger_group(name)
+    trigger.delete_group(name)
     threads[name][2] = nil
     wait_line_resume(name)
 end
 
 function wait_line_resume(name)
-    del_trigger_group(name)
+    trigger.delete_group(name)
     local thread = ((threads or {})[name] or {})[1]
     if thread == nil then
         show("Coroutine lost", "orange")
@@ -145,7 +145,7 @@ function wait_line_resume(name)
             show(debug.traceback(thread), "gray")
         end
     else
-        add_timer(nil, 0, "wait_line_resume('"..name.."')", nil, {Enable=true, OneShot=true})
+        timer.add(nil, 0, "wait_line_resume('"..name.."')", nil, {Enable=true, OneShot=true})
     end
 end
 

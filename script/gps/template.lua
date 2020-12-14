@@ -2,11 +2,16 @@ show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lu
 
 map = map or {}
 if #map == 0 then
-    table.load(get_work_path().."../../script/gps/map.lua", map)
-    ----戈壁临时调整
-    map[2991].links["north"] = 3013
-    map[3013].links["south"] = 2991
+    if io.exists(get_script_path().."gps/map.lua") then
+        map = table.load(get_script_path().."gps/map.lua")
+    else
+        flush_map()
+    end
 end
+
+----戈壁临时调整
+map[2991].links["north"] = 3013
+map[3013].links["south"] = 2991
 
 map_attr = map_attr or { mode = {} }
 map_attr.cost = map_attr.cost or {
