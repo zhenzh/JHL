@@ -122,14 +122,14 @@ function start()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ start ］")
     minimal_resources()
     automation.thread = automation.thread or coroutine.running()
-    enable_trigger("others_come")
-    enable_trigger("others_leave")
-    enable_trigger("hide_busy")
-    add_timer(nil, 180, "automation_idle()", "automation", {Enable=true})
-    add_trigger(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
-    add_trigger(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
-    add_trigger(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
-    add_trigger(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
+    trigger.enable("others_come")
+    trigger.enable("others_leave")
+    trigger.enable("hide_busy")
+    timer.add(nil, 180, "automation_idle()", "automation", {Enable=true})
+    trigger.add(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
+    trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
+    trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
+    trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
     run("halt")
     if flow() < 0 then
         automation_reset("automation_reset_idle()")
@@ -310,7 +310,7 @@ end
 function flow_suspend()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ flow_suspend ］")
     if is_timer_exist("flow_suspend") == false then
-        add_timer("flow_suspend", 900, "automation.phase = global.phase['空闲']", nil, {Enable=true, OneShot=true})
+        timer.add("flow_suspend", 900, "automation.phase = global.phase['空闲']", nil, {Enable=true, OneShot=true})
     end
     for _,v in ipairs(config.jobs) do
          if config.jobs[v].active == true then

@@ -58,18 +58,18 @@ local phase = {
 }
 
 function enable_feima_job()
-    del_trigger_group("feima_job")
-    del_trigger_group("feima_job_active")
-    add_trigger("feima_job_addenemy", "feima_job_addenemy()", "feima_job", {Enable=false}, 100, "^(\\S+)脚下一个不稳，跌在地上昏了过去。$")
-    add_trigger("feima_job_enemy", "feima_job_enemy()", "feima_job", {Enable=false}, 100, "^(\\S+)叫道：点子扎手，扯呼！$")
-    add_trigger("feima_job_complete", "feima_job_complete()", "feima_job_active", {Enable=false}, 100, "^你累了个半死，终于把镖运到了地头。$")
-    add_trigger("feima_job_count_addenemy", "feima_job_count_addenemy()", "feima_job_active", {Enable=false}, 100, "^(\\S+)(?:喝道：「你，我们的帐还没算完，看招！」|一眼瞥见你，「哼」的一声冲了过来！|喝道：「你，看招！」|和你仇人相见份外眼红，立刻打了起来！|一见到你，愣了一愣，大叫：「我宰了你！」|和你一碰面，二话不说就打了起来！|对著你大喝：「可恶，又是你！」)")
-    add_trigger("feima_job_count_enemy", "feima_job_count_enemy()", "feima_job_active", {Enable=false, Multi=true}, 100, "^(?:劫匪大声说道：“此山是我开，此树是我栽，要想过此路，留下买路财。牙嘣半个不字，管杀不管埋。|劫匪喊道：点子爪子硬！赶紧来帮忙！)\\n看起来(\\S+)想杀死你！$")
+    trigger.delete_group("feima_job")
+    trigger.delete_group("feima_job_active")
+    trigger.add("feima_job_addenemy", "feima_job_addenemy()", "feima_job", {Enable=false}, 100, "^(\\S+)脚下一个不稳，跌在地上昏了过去。$")
+    trigger.add("feima_job_enemy", "feima_job_enemy()", "feima_job", {Enable=false}, 100, "^(\\S+)叫道：点子扎手，扯呼！$")
+    trigger.add("feima_job_complete", "feima_job_complete()", "feima_job_active", {Enable=false}, 100, "^你累了个半死，终于把镖运到了地头。$")
+    trigger.add("feima_job_count_addenemy", "feima_job_count_addenemy()", "feima_job_active", {Enable=false}, 100, "^(\\S+)(?:喝道：「你，我们的帐还没算完，看招！」|一眼瞥见你，「哼」的一声冲了过来！|喝道：「你，看招！」|和你仇人相见份外眼红，立刻打了起来！|一见到你，愣了一愣，大叫：「我宰了你！」|和你一碰面，二话不说就打了起来！|对著你大喝：「可恶，又是你！」)")
+    trigger.add("feima_job_count_enemy", "feima_job_count_enemy()", "feima_job_active", {Enable=false, Multi=true}, 100, "^(?:劫匪大声说道：“此山是我开，此树是我栽，要想过此路，留下买路财。牙嘣半个不字，管杀不管埋。|劫匪喊道：点子爪子硬！赶紧来帮忙！)\\n看起来(\\S+)想杀死你！$")
 end
 
 function disable_feima_job()
-    del_trigger_group("feima_job")
-    del_trigger_group("feima_job_active")
+    trigger.delete_group("feima_job")
+    trigger.delete_group("feima_job_active")
 end
 
 function feima_job()
@@ -82,7 +82,7 @@ function feima_job()
     var.job.enemy_name = var.job.enemy_name or ("(?:"..set.concat(job_enemys, "|")..")")
     var.job.enemy = {count = 0}
     var.job.addenemy = {count = 0}
-    enable_trigger_group("feima_job_active")
+    trigger.enable_group("feima_job_active")
     local rc
     if (config.jobs["飞马镖局"].phase or 0) <= phase["任务获取"] then
         rc = feima_job_p1()
@@ -116,8 +116,8 @@ function feima_job_return(rc)
     config.jobs["飞马镖局"].recover = nil
     config.jobs["飞马镖局"].path = nil
     var.statics = var.job.statics
-    disable_trigger_group("feima_job")
-    disable_trigger_group("feima_job_active")
+    trigger.disable_group("feima_job")
+    trigger.disable_group("feima_job_active")
     var.job = nil
     return rc
 end
@@ -127,7 +127,7 @@ function feima_job_p1()
     local rc = feima_job_goto_maxingkong()
     if rc ~= nil then
         if rc == 1 then
-            disable_trigger_group("feima_job_active")
+            trigger.disable_group("feima_job_active")
             var.job = nil
             return 1
         else
@@ -197,7 +197,7 @@ function feima_job_p2()
             return feima_job_p4()
         end
     end
-    del_timer("feima_job_biaoche")
+    timer.delete("feima_job_biaoche")
     return feima_job_arrive()
 end
 
@@ -290,7 +290,7 @@ function feima_job_aquire_job()
             return feima_job_p4()
         end
     else
-        disable_trigger_group("feima_job_active")
+        trigger.disable_group("feima_job_active")
         var.job = nil
         return 1
     end
@@ -393,7 +393,7 @@ function feima_job_ganche()
         config.jobs["飞马镖局"].biaoche = env.current.id[1]
     elseif l[0] == "劫匪一声奸笑：“想跑，门都没有，把货给老子留下吧。”" then
         var.job.enemy.count = 1
-        enable_trigger("feima_job_enemy")
+        trigger.enable("feima_job_enemy")
         if var.yun_bidu ~= nil then
             if var.wait_no_busy ~= nil then
                 var.wait_no_busy.stop = true
@@ -407,7 +407,7 @@ function feima_job_ganche()
         var.job.move = false
         var.job.enemy = {count = 0}
         var.job.addenemy = {count = 0}
-        add_timer("feima_job_biaoche", 3, "feima_job_biaoche()", "feima_job", {Enable=true, OneShot=true})
+        timer.add("feima_job_biaoche", 3, "feima_job_biaoche()", "feima_job", {Enable=true, OneShot=true})
         if wait_line(nil, 30, nil, nil, "^\\S+ - ", "^> $") == false then
             return -1
         else
@@ -558,7 +558,7 @@ function feima_job_kill_enemy()
             config.jobs["飞马镖局"].phase = phase["任务放弃"]
             return feima_job_p4()
         end
-        disable_trigger("feima_job_enemy")
+        trigger.disable("feima_job_enemy")
 --        if is_fighting() == 1 then
 --            show("dbg fighting")
 --            if var.job.addenemy.count <= 0 then
@@ -578,11 +578,11 @@ function feima_job_arrive()
     if wield(config.fight["通用"].weapon) < 0 then
         return -1
     end
-    add_timer("feima_job_wait_timeout", 10, "config.jobs['飞马镖局'].phase = "..tostring(phase["任务放弃"]), "feima_job", {Enable=true, OneShot=true})
+    timer.add("feima_job_wait_timeout", 10, "config.jobs['飞马镖局'].phase = "..tostring(phase["任务放弃"]), "feima_job", {Enable=true, OneShot=true})
     while config.jobs["飞马镖局"].phase < phase["任务结算"] do
         wait(0.1)
     end
-    del_timer("feima_job_wait_timeout")
+    timer.delete("feima_job_wait_timeout")
     if config.jobs["飞马镖局"].phase == phase["任务放弃"] then
         return feima_job_p4()
     end
@@ -854,7 +854,7 @@ function feima_job_addenemy()
         var.job.addenemy[get_matches(1)] = var.job.addenemy[get_matches(1)] - 1
         var.job.addenemy.count = var.job.addenemy.count - 1
         if var.job.addenemy.count == 0 then
-            disable_trigger("feima_job_addenemy")
+            trigger.disable("feima_job_addenemy")
             if var.job.enemy.count <= 0 then
                 if var.fight ~= nil then
                     var.fight.stop = 0
@@ -870,7 +870,7 @@ function feima_job_enemy()
         var.job.enemy[get_matches(1)] = var.job.enemy[get_matches(1)] - 1
         var.job.enemy.count = var.job.enemy.count - 1
         if var.job.enemy.count == 0 then
-            disable_trigger("feima_job_enemy")
+            trigger.disable("feima_job_enemy")
             if var.job.addenemy.count <= 0 or var.job.move == true then
                 if var.fight ~= nil then
                     var.fight.stop = 0
@@ -883,20 +883,20 @@ end
 
 function feima_job_count_addenemy()
     if set.has(job_enemys, get_matches(1)) then
-        enable_trigger("feima_job_addenemy")
+        trigger.enable("feima_job_addenemy")
         var.job.addenemy[get_matches(1)] = (var.job.addenemy[get_matches(1)] or 0) + 1
         var.job.addenemy.count = var.job.addenemy.count + 1
     end
 end
 
 function feima_job_count_enemy()
-    enable_trigger("feima_job_enemy")
+    trigger.enable("feima_job_enemy")
     var.job.enemy[get_matches(1)] = (var.job.enemy[get_matches(1)] or 0) + 1
     var.job.enemy.count = var.job.enemy.count + 1
 end
 
 function feima_job_complete()
-    disable_trigger_group("feima_job")
+    trigger.disable_group("feima_job")
     config.jobs["飞马镖局"].phase = phase["任务结算"]
     if var.fight ~= nil then
         var.fight.stop = math.max(1, (var.fight.stop or 0))

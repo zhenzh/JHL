@@ -53,7 +53,7 @@ end
 function look_dir(dir)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ look_dir ］参数：dir = "..tostring(dir))
     env.room = env.nextto
-    add_trigger("look_dir", "gag()", nil, {Enable=true}, nil, "^.*")
+    trigger.add("look_dir", "", nil, {Enable=true, Gag=true}, nil, "^.*")
     local l = wait_line("look "..dir, 30, nil, 10, "^你要看什么？$|^\\S+\\s+-\\s+$")
     if l == false then
         return look_dir_return(-1)
@@ -70,7 +70,7 @@ end
 
 function look_dir_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ look_dir_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
-    del_trigger("look_dir")
+    trigger.delete("look_dir")
     env.room = env.current
     return rc,msg
 end
@@ -712,7 +712,7 @@ end
 function pack(box, list)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ pack ］box = "..tostring(box)..", list = "..table.tostring(list))
     var.pack = var.pack or { refresh = false, list = list}
-    add_trigger("hide_pack_ga", "gag()", nil, {Enable=true}, 1, "^> $")
+    trigger.add("hide_pack_ga", "", nil, {Enable=true, Gag=true}, 1, "^> $")
     for k,_ in pairs(list) do
         if items[k] == nil or 
            items[k].stack == nil then
@@ -745,7 +745,7 @@ function pack_return(rc, msg)
     if var.pack == nil then
         return rc,msg
     end
-    del_trigger("hide_pack_ga")
+    trigger.delete("hide_pack_ga")
     if var.pack.refresh == true then
         if run_i() < 0 then
             return -1
@@ -1280,8 +1280,8 @@ end
 
 function search(obj, rooms)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search ］参数：obj = "..tostring(obj)..", rooms = "..table.tostring(rooms))
-    add_trigger("search_found_obj", "search_found_obj()", "search", {Enable=true}, nil, obj)
-    add_trigger("search_check_result", "search_check_result()", "search", {Enable=false}, 90, "^> $")
+    trigger.add("search_found_obj", "search_found_obj()", "search", {Enable=true}, nil, obj)
+    trigger.add("search_check_result", "search_check_result()", "search", {Enable=false}, 90, "^> $")
     var.search = var.search or { result = {}, obj = {}, optical = {} }
     var.search.area = set.copy(rooms)
     return search_return(search_room(obj))
@@ -1293,7 +1293,7 @@ function search_return(rc, msg1, msg2)
         return rc,msg1,msg2
     end
     var.search = nil
-    del_trigger_group("search")
+    trigger.delete_group("search")
     return rc,msg1,msg2
 end
 
@@ -1340,12 +1340,12 @@ end
 function search_found_obj()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_found_obj ］")
     set.append(var.search.obj, get_matches())
-    enable_trigger("search_check_result")
+    trigger.enable("search_check_result")
 end
 
 function search_check_result()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_check_result ］")
-    disable_trigger("search_check_result")
+    trigger.disable("search_check_result")
     if #env.current.id == 1 then
         if env.current.id[1] == var.search.dest or 
            set.has(var.search.area, env.current.id[1]) then

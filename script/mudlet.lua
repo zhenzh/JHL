@@ -9,10 +9,6 @@ show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lu
 
 mudlet = mudlet or {}
 mudlet.supports = mudlet.supports or {}
-timer = timer or {}
-timers = timers or {}
-timers.group = timers.group or {}
-alias = alias or {}
 regex = regex or {}
 
 function regex.match(text, pattern)
@@ -98,7 +94,7 @@ function window_wrap()
     return 100 --getWindowWrap()
 end
 
-function add_timer(name, seconds, send, group, options)
+function timer.add(name, seconds, send, group, options)
     if name == nil or name == "" then
         name = "timer_"..unique_id()
     end
@@ -114,21 +110,21 @@ function add_timer(name, seconds, send, group, options)
     if not options.OneShot then
         timers[name].id = tempTimer(seconds, send, true)
     else
-        send = send.." del_timer('"..name.."')"
+        send = send.." timer.delete('"..name.."')"
         timers[name].id = tempTimer(seconds, send)
     end
     if group ~= nil then
         timers.group[group][name] = timers[name].id
     end
     if options.Enable == false then
-        disable_timer(name)
+        timer.disable(name)
     else
-        enable_timer(name)
+        timer.enable(name)
     end
     return name
 end
 
-function del_timer(name)
+function timer.delete(name)
     local rc = killTimer((timers[name] or {}).id or "")
     if timers[name] ~= nil and timers[name].group ~= nil then
         timers.group[timers[name].group][name] = nil
@@ -140,11 +136,11 @@ function del_timer(name)
     return rc
 end
 
-function enable_timer(name)
+function timer.enable(name)
     return enableTimer((timers[name] or {}).id or name)
 end
 
-function disable_timer(name)
+function timer.disable(name)
     return disableTimer((timers[name] or {}).id or name)
 end
 
@@ -171,26 +167,26 @@ function is_timer_enable(name)
     end
 end
 
-function enable_timer_group(group)
+function timer.enable_group(group)
     local rc = true
     for k,_ in pairs(timers.group[group] or {}) do
-        rc = rc and enable_timer(k)
+        rc = rc and timer.enable(k)
     end
     return rc
 end
 
-function disable_timer_group(group)
+function timer.disable_group(group)
     local rc = true
     for k,_ in pairs(timers.group[group] or {}) do
-        rc = rc and disable_timer(k)
+        rc = rc and timer.disable(k)
     end
     return rc
 end
 
-function del_timer_group(group)
+function timer.delete_group(group)
     local rc = true
     for k,_ in pairs(timers.group[group] or {}) do
-        rc = rc and del_timer(k)
+        rc = rc and timer.delete(k)
     end
     return rc
 end
@@ -232,7 +228,7 @@ function print(parameter)
     if type(parameter) == "nil" then
         show(" 空字符："..tostring(parameter), "gray")
     elseif type(parameter) == "string" then
-        if is_trigger_exist(parameter) == true then
+        if trigger.is_exist(parameter) == true then
             local switch,multi = {["true"] = "是", ["false"] = "否"},{["true"] = "多行", ["false"] = "单行"}
             show(" 触发："..tostring(parameter).."    属组："..tostring((triggers[parameter].group or "无")).."    优先级："..tostring(triggers[parameter].order), "gray")
             show(" 属性：  生效 - "..switch[tostring(triggers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(triggers[parameter].options.OneShot or false)].."， 隐藏显示 - "..switch[tostring(triggers[parameter].options.Gag or false)], "gray")

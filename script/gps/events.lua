@@ -63,10 +63,10 @@ end
 
 function faint()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ faint ］")
-    disable_trigger_group("goto")
+    trigger.disable_group("goto")
     var.goto.pause = function()
         var.goto.pause = nil
-        enable_trigger_group("goto")
+        trigger.enable_group("goto")
         local l = wait_line(nil, 180, {StopEval=true}, 20, "^慢慢地一阵眩晕感传来，你终于又有了知觉....$|^鬼门关 - ")
         if l == false or l[0] == "鬼门关 - " then
             return -1
@@ -86,31 +86,31 @@ end
 
 function terminate()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ die ］")
-    disable_trigger_group("goto")
+    trigger.disable_group("goto")
     var.goto.pause = function()
         var.goto.pause = nil
-        enable_trigger_group("goto")
+        trigger.enable_group("goto")
         return -1
     end
 end
 
 function lost()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ lost ］")
-    disable_trigger_group("goto")
+    trigger.disable_group("goto")
     var.goto.pause = function()
         var.goto.pause = nil
         env.current.name = ""
-        enable_trigger_group("goto")
+        trigger.enable_group("goto")
         return 0
     end
 end
 
 function tired()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ tired ］")
-    disable_trigger_group("goto")
+    trigger.disable_group("goto")
     var.goto.pause = function()
         var.goto.pause = nil
-        enable_trigger_group("goto")
+        trigger.enable_group("goto")
         if run_hp() < 0 then
             return -1
         end

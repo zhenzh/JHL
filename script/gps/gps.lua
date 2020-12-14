@@ -248,11 +248,11 @@ function gonext(mode)
             end
             var.goto.thread = coroutine.running()
             var.goto.next = true
-            add_trigger(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
-            add_trigger(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
-            add_trigger(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
-            add_trigger(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
-            add_trigger("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
+            trigger.add(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
+            trigger.add(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
+            trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
+            trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
+            trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
             goto_move()
         end
     end
@@ -271,11 +271,11 @@ function goto(dst, mode)
         var.goto.room_ids = parse(dst)
         var.goto.index = 1
         var.goto.thread = coroutine.running()
-        add_trigger(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
-        add_trigger(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
-        add_trigger(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        add_trigger(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
-        add_trigger("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
+        trigger.add(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
+        trigger.add(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
+        trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
+        trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
+        trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
         return goto_return(goto_move())
     else
         local interrupt = var.goto.pause
@@ -302,7 +302,7 @@ function goto_return(rc, msg)
     if var.goto == nil then
         return rc,msg
     end
-    del_trigger_group("goto")
+    trigger.delete_group("goto")
     if rc < 0 then
         if #var.goto.room_ids == 0 then
             show("未知目的地", "orange")
@@ -533,7 +533,7 @@ function goto_exec(current_id)
         end
     end
     if l[1] == "移动完成" then
-        disable_trigger("goto_hide_ga")
+        trigger.disable("goto_hide_ga")
         if locate() < 0 then
             return -1
         end
@@ -541,11 +541,11 @@ function goto_exec(current_id)
            set.has(env.current.id, var.goto.room_id) == true then
             env.current.id = { var.goto.room_id }
             if var.goto.event ~= nil then
-                enable_trigger("goto_hide_ga")
+                trigger.enable("goto_hide_ga")
             end
             return 0
         else
-            enable_trigger("goto_hide_ga")
+            trigger.enable("goto_hide_ga")
             return goto_move()
         end
     elseif l[1] == "稍事休息" then
