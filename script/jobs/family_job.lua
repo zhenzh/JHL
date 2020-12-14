@@ -100,6 +100,7 @@ end
 
 function family_job()
     local rc
+    automation.idle = false
     var.job = var.job or {name = "门派任务"}
     var.job.statics = var.job.statics or {name = "门派任务"}
     var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
@@ -400,7 +401,7 @@ end
 function family_job_wait_enemy(timeout, fstate)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_wait_enemy ］参数：timeout = "..tostring(timeout)..", fstate = "..tostring(fstate))
     timer.add("family_job_wait_enemy", timeout, "", "family_job", {Enable=true, OneShot=true})
-    while (var.job.fight == nil or var.job.fight == fstate) and is_timer_exist("family_job_wait_enemy") ~= false do
+    while (var.job.fight == nil or var.job.fight == fstate) and timer.is_exist("family_job_wait_enemy") ~= false do
         if config.jobs["门派任务"].phase > phase["任务执行"] then
             timer.delete("family_job_wait_enemy")
             return family_job()

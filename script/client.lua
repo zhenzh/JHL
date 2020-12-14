@@ -304,7 +304,7 @@ end
 --     return remainingTime(timers[name].id)
 -- end
 
--- function is_timer_exist(name)
+-- function timer.is_exist(name)
 --     if timers[name] == nil then
 --         return false
 --     else
@@ -312,8 +312,8 @@ end
 --     end
 -- end
 
--- function is_timer_enable(name)
---     if is_timer_exist(name) == false then
+-- function timer.is_enable(name)
+--     if timer.is_exist(name) == false then
 --         return false
 --     end
 --     if isActive(timers[name].id, "timer") == 0 then
@@ -393,7 +393,7 @@ end
 --             show(" 发送指令："..tostring(triggers[parameter].send), "gray")
 --             return
 --         end
---         if is_timer_exist(parameter) == true then
+--         if timer.is_exist(parameter) == true then
 --             local switch = {["true"] = "是", ["false"] = "否"}
 --             show(" 计时器："..tostring(parameter).."    属组："..tostring((timers[parameter].group or "无")), "gray")
 --             show(" 属性：  生效 - "..switch[tostring(timers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(timers[parameter].options.OneShot or false)], "gray")

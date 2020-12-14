@@ -1,4 +1,4 @@
-local HOME = "/"..string.gsub(debug.getinfo(1).source:sub(2), "script/main.lua", "")
+local HOME = string.gsub(debug.getinfo(1).source:gsub("^@", ""), "script/main.lua", "")
 function get_work_path()
     return HOME.."profiles/JHL/"
 end
