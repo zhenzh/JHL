@@ -23,7 +23,6 @@ function trigger_process(text)
         set.remove(global.buffer, 1)
     end
     set.append(global.buffer, text)
-    message("trace", "当前行", get_lines(-1)[1], "")
     for k,v in ipairs(triggers.fire) do
         triggers.update = false
         for i,_ in pairs(v) do

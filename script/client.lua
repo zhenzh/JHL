@@ -151,6 +151,7 @@ function show(msg, fcolor, bcolor)
 end
 --show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
 
+global.output = true
 regex = {}
 
 function OnReceive(raw, text)
@@ -174,21 +175,21 @@ end
 function trigger_regex(name)
     local capture
     if triggers[name].options.Multi == true then
-        capture = { RegEx(set.concat(get_lines(-triggers[name].multilines), "\n"), "("..triggers[name].pattern..")") }
+        capture = { regex.match(set.concat(get_lines(-triggers[name].multilines), "\n"), "("..triggers[name].pattern..")") }
     else
-        capture = { RegEx(get_lines(-1)[1], "("..triggers[name].pattern..")") }
+        capture = { regex.match(get_lines(-1)[1], "("..triggers[name].pattern..")") }
     end
-    if capture[0] == "0" then
+    if #capture == 0 then
         return false
     end
-    global.regex = { [0] = get_lines(-1)[1] }
-    for _,v in ipairs(capture) do
-        if v == "" then
+    for i=2,#capture do
+        if capture[i] == "" then
             set.append(global.regex, false)
         else
-            set.append(global.regex, v)
+            set.append(global.regex, capture[i])
         end
     end
+    global.regex[0] = capture[1]
     return true
 end
 
@@ -224,14 +225,6 @@ function gag()
     return
 end
 
--- function get_script_path()
---     return string.gsub(getMudletHomeDir(), "/mudlet/profiles/.*", "/mudlet/script/")
--- end
-
--- function get_work_path()
---     return getMudletHomeDir().."/"
--- end
-
 -- function reset()
 --     if statics ~= nil and #statics > 0 then
 --         table.save(get_work_path().."log/statics."..statics.date, statics)
@@ -243,110 +236,113 @@ end
 --         automation.repository = (carryon or {}).repository
 --     end
 --     automation.ui = ui
---     table.save(get_work_path().."log/automation.tmp", automation or {})
---     table.save(get_work_path().."log/global.tmp", global.buffer or {})
+--     table.save(get_work_path().."log/automation.tmp", automation)
+--     table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
 --     resetProfile()
 -- end
 
 -- function window_size()
 --     local width,height = getMainWindowSize()
---     return {width = width, height = height}
+--     return { width = width, height = height }
 -- end
 
 -- function window_wrap()
 --     return 100 --getWindowWrap()
 -- end
 
--- function add_timer(name, seconds, send, group, options)
---     local timer_id,timer_activity
+-- function timer.add(name, seconds, send, group, options)
 --     if name == nil or name == "" then
 --         name = "timer_"..unique_id()
 --     end
---     group = group or ""
---     timer_group[group] = timer_group[group] or {}
+--     if group == "" then
+--         group = nil
+--     end
+--     if group ~= nil then
+--         timers.group[group] = timers.group[group] or {}
+--     end
 --     options = options or {}
 
---     if not options.Enable then
---         timer_activity = disable_timer
---     else
---         timer_activity = enable_timer
---     end
-
+--     timers[name] = { send = send, group = group, seconds = seconds, options = options }
 --     if not options.OneShot then
---         timer_id = tempTimer(seconds, send, true)
+--         timers[name].id = tempTimer(seconds, send, true)
 --     else
---         send = send.." timer['"..name.."'] = nil"
---         if group ~= "" then
---             send = send..
---                    " timer_group['"..group.."']['"..name.."'] = nil"..
---                    " if table.is_empty(timer_group['"..group.."']) then "..
---                        "timer_group['"..group.."'] = nil "..
---                    "end"
---         end
---         timer_id = tempTimer(seconds, send)
+--         send = send.." timer.delete('"..name.."')"
+--         timers[name].id = tempTimer(seconds, send)
 --     end
---     timer_activity(timer_id)
---     timer[name] = {timer_id, group}
---     timer_group[group][name] = timer_id
---     timer_group[""] = {}
---     return timer_id
+--     if group ~= nil then
+--         timers.group[group][name] = timers[name].id
+--     end
+--     if options.Enable == false then
+--         timer.disable(name)
+--     else
+--         timer.enable(name)
+--     end
+--     return name
 -- end
 
--- function del_timer(name)
---     local rc = killTimer((timer[name] or {})[1] or "")
---     if rc == true then
---         timer_group[timer[name][2]][name] = nil
---         if timer[name][2] ~= "" and table.is_empty(timer_group[timer[name][2]]) then
---             timer_group[timer[name][2]] = nil
+-- function timer.delete(name)
+--     local rc = killTimer((timers[name] or {}).id or "")
+--     if timers[name] ~= nil and timers[name].group ~= nil then
+--         timers.group[timers[name].group][name] = nil
+--         if table.is_empty(timers.group[timers[name].group]) then
+--             timers.group[timers[name].group] = nil
 --         end
---         timer[name] = nil
 --     end
+--     timers[name] = nil
 --     return rc
 -- end
 
--- function enable_timer(name)
---     return enableTimer((timer[name] or {})[1] or name)
+-- function timer.enable(name)
+--     return enableTimer((timers[name] or {}).id or name)
 -- end
 
--- function disable_timer(name)
---     return disableTimer((timer[name] or {})[1] or name)
+-- function timer.disable(name)
+--     return disableTimer((timers[name] or {}).id or name)
+-- end
+
+-- function timer.remain(name)
+--     return remainingTime(timers[name].id)
 -- end
 
 -- function is_timer_exist(name)
---     return timer[name] or false
--- end
-
--- function is_timer_enable(name)
---     if is_timer_exist(name) == false then
---         return false
---     end
---     if isActive(timer[name][1], "timer") == 0 then
+--     if timers[name] == nil then
 --         return false
 --     else
 --         return true
 --     end
 -- end
 
--- function enable_timer_group(group)
+-- function is_timer_enable(name)
+--     if is_timer_exist(name) == false then
+--         return false
+--     end
+--     if isActive(timers[name].id, "timer") == 0 then
+--         return false
+--     else
+--         return true
+--     end
+-- end
+
+-- function timer.enable_group(group)
 --     local rc = true
---     for k,_ in pairs(timer_group[group] or {}) do
---         rc = rc and enable_timer(k)
+--     for k,_ in pairs(timers.group[group] or {}) do
+--         rc = rc and timer.enable(k)
 --     end
 --     return rc
 -- end
 
--- function disable_timer_group(group)
+-- function timer.disable_group(group)
 --     local rc = true
---     for k,_ in pairs(timer_group[group] or {}) do
---         rc = rc and disable_timer(k)
+--     for k,_ in pairs(timers.group[group] or {}) do
+--         rc = rc and timer.disable(k)
 --     end
 --     return rc
 -- end
 
--- function del_timer_group(group)
+-- function timer.delete_group(group)
 --     local rc = true
---     for k,_ in pairs(timer_group[group] or {}) do
---         rc = rc and del_timer(k)
+--     for k,_ in pairs(timers.group[group] or {}) do
+--         rc = rc and timer.delete(k)
 --     end
 --     return rc
 -- end
@@ -384,9 +380,45 @@ end
 --     return send(...)
 -- end
 
+-- function print(parameter)
+--     if type(parameter) == "nil" then
+--         show(" 空字符："..tostring(parameter), "gray")
+--     elseif type(parameter) == "string" then
+--         if trigger.is_exist(parameter) == true then
+--             local switch,multi = {["true"] = "是", ["false"] = "否"},{["true"] = "多行", ["false"] = "单行"}
+--             show(" 触发："..tostring(parameter).."    属组："..tostring((triggers[parameter].group or "无")).."    优先级："..tostring(triggers[parameter].order), "gray")
+--             show(" 属性：  生效 - "..switch[tostring(triggers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(triggers[parameter].options.OneShot or false)].."， 隐藏显示 - "..switch[tostring(triggers[parameter].options.Gag or false)], "gray")
+--             show(" 匹配模式："..multi[tostring(triggers[parameter].options.Multi or false)].."    匹配行数："..tostring(triggers[parameter].options.multilines or 1), "gray")
+--             show(" 匹配条件："..tostring(triggers[parameter].pattern), "gray")
+--             show(" 发送指令："..tostring(triggers[parameter].send), "gray")
+--             return
+--         end
+--         if is_timer_exist(parameter) == true then
+--             local switch = {["true"] = "是", ["false"] = "否"}
+--             show(" 计时器："..tostring(parameter).."    属组："..tostring((timers[parameter].group or "无")), "gray")
+--             show(" 属性：  生效 - "..switch[tostring(timers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(timers[parameter].options.OneShot or false)], "gray")
+--             show(" 时长："..tostring(timer.remain(parameter)).." / "..tostring(timers[parameter].seconds).." 秒", "gray")
+--             show(" 发送指令："..tostring(timers[parameter].send), "gray")
+--             return
+--         end
+--         show(" 字符串："..tostring(parameter), "gray")
+--     elseif type(parameter) == "boolean" then
+--         show(" 布尔值："..tostring(parameter), "gray")
+--     elseif type(parameter) == "function" then
+--         show(" 函数："..tostring(parameter), "gray")
+--     elseif type(parameter) == "thread" then
+--         show(" 协程："..tostring(parameter).." ( "..tostring(coroutine.status(parameter).." )"), "gray")
+--     else
+--         show(" 表：", "gray")
+--         for _,v in ipairs(table.tojson(parameter)) do
+--             show(" "..v, "gray")
+--         end
+--     end
+-- end
+
 -- function flush_map()
 --     require "luasql.sqlite3"
---     local env = assert(luasql.sqlite3():connect(get_work_path().."../../script/map.db"))
+--     local env = assert(luasql.sqlite3():connect(get_script_path().."map.db"))
 --     local db = assert(env:execute("select name,desc,exits,zone,links,esc,npcs,items,tags from rooms"))
 --     local column = { "name", "desc", "exits", "zone", "links", "esc", "npcs", "items", "tags" }
 --     map = {}
@@ -417,8 +449,8 @@ end
 --         end
 --     until row == nil
 --     env:close()
---     table.save(get_work_path().."../../script/gps/map.lua", map)
+--     table.save(get_script_path().."gps/map.lua", map)
 --     show("地图已更新", "orange")
 -- end
 
--- show(" 已加载", "green")
+--show(" 已加载", "green")
