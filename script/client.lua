@@ -144,16 +144,12 @@ local color_map = {
 }
 
 function show(msg, fcolor, bcolor)
-    if msg == nil then
-        return false
+    if type(msg) == "table" then
+        msg = table.tostring(msg)
     end
-    Echo("["..(color_map[fcolor] or "-")..":"..(color_map[bcolor] or "-")..":]"..tostring(msg).."[-:-:-]")
+    Echo("["..(color_map[fcolor] or color_map["pink"])..":"..(color_map[bcolor] or "-")..":]"..tostring(msg).."[-:-:-]")
 end
 --show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
-timer = timer or {}
-timer_group = timer_group or { [""] = {} }
-alias = alias or {}
 
 regex = {}
 
@@ -172,15 +168,15 @@ function OnSend(cmd)
 end
 
 function regex.match(message, pattern)
-    return RegEx(message, "("..pattern..")")
+    return RegEx(message, pattern)
 end
 
 function trigger_regex(name)
     local capture
     if triggers[name].options.Multi == true then
-        capture = { RegEx(set.concat(get_lines(-triggers[name].multilines), "\n"), triggers[name].pattern) }
+        capture = { RegEx(set.concat(get_lines(-triggers[name].multilines), "\n"), "("..triggers[name].pattern..")") }
     else
-        capture = { RegEx(get_lines(-1)[1], triggers[name].pattern) }
+        capture = { RegEx(get_lines(-1)[1], "("..triggers[name].pattern..")") }
     end
     if capture[0] == "0" then
         return false

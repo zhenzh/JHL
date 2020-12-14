@@ -19,7 +19,7 @@ automation = automation or {}
 statics = statics or {}
 config = config or {}
 var = var or {}
-require "gomud"
+require "client"
 -- require "alias"
 -- require "common"
 -- require "gps"
