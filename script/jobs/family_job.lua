@@ -100,6 +100,7 @@ end
 
 function family_job()
     local rc
+    automation.idle = false
     var.job = var.job or {name = "门派任务"}
     var.job.statics = var.job.statics or {name = "门派任务"}
     var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
