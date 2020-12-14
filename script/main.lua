@@ -1,4 +1,4 @@
-local HOME = string.gsub(debug.getinfo(1).source:sub(2), "script/main.lua", "")
+local HOME = "/"..string.gsub(debug.getinfo(1).source:sub(2), "script/main.lua", "")
 function get_work_path()
     return HOME.."profiles/JHL/"
 end
@@ -19,7 +19,7 @@ automation = automation or {}
 statics = statics or {}
 config = config or {}
 var = var or {}
-require "mudlet"
+require "client"
 require "alias"
 require "common"
 require "gps"
