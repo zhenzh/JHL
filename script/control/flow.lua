@@ -309,7 +309,7 @@ end
 
 function flow_suspend()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ flow_suspend ］")
-    if is_timer_exist("flow_suspend") == false then
+    if timer.is_exist("flow_suspend") == false then
         timer.add("flow_suspend", 900, "automation.phase = global.phase['空闲']", nil, {Enable=true, OneShot=true})
     end
     for _,v in ipairs(config.jobs) do
