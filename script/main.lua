@@ -1,4 +1,4 @@
-local HOME = "/"..string.gsub(debug.getinfo(1).source:sub(2), "script/main.lua", "")
+local HOME = string.gsub(debug.getinfo(1).source:sub(2), "script/main.lua", "")
 function get_work_path()
     return HOME.."profiles/JHL/"
 end
@@ -14,7 +14,7 @@ get_script_path().."gps/?.lua;"..
 get_script_path().."control/?.lua;"..
 get_script_path().."jobs/?.lua"
 
-global = global or { flood = 0, uid = {}, buffer = { "" }, regex = {} }
+global = global or { flood = 0, uid = {}, buffer = { "" }, regex = {}, output = true }
 automation = automation or {}
 statics = statics or {}
 config = config or {}
