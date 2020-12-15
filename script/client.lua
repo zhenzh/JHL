@@ -190,20 +190,20 @@ function minimal_resources()
     setConsoleBufferSize(2000, 500)
 end
 
-function add_alias(name, cmd, send)
+function alias.add(name, pattern, send)
     if name == nil or name == "" then
         name = "alias_"..unique_id()
     end
-    if alias[name] ~= nil then
-        del_alias(name)
+    if aliases[name] ~= nil then
+        alias.delete(name)
     end
-    alias[name] = tempAlias(cmd, send)
+    aliases[name] = tempAlias(pattern, send)
     return name
 end
 
-function del_alias(name)
-    local rc = killAlias(alias[name])
-    alias[name] = nil
+function alias.delete(name)
+    local rc = killAlias(aliases[name])
+    aliases[name] = nil
     return rc
 end
 
@@ -241,6 +241,8 @@ function print(parameter)
             return
         end
         show(" 字符串："..tostring(parameter), "gray")
+    elseif type(parameter) == "number" then
+        show(" 数值："..tostring(parameter), "gray")
     elseif type(parameter) == "boolean" then
         show(" 布尔值："..tostring(parameter), "gray")
     elseif type(parameter) == "function" then
