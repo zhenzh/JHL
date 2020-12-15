@@ -250,7 +250,6 @@ function alias_process(cmd)
             if #capture == 0 then
                 return
             end
-            set.remove(capture, 1)
             global.regex = capture
             assert(loadstring(v.send)())
             return
