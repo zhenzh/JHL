@@ -1,4 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
 alias = alias or {}
 aliases = aliases or {}
 
@@ -41,6 +40,23 @@ alias.add("reset", [[^\s*reset\s*$]], [[
     reset()
 ]])
 
+alias.add("repeat", [[^\s*#(\d+)\s+(.+)\s*$]], [[
+    local num,send = tonumber(get_matches(1)),get_matches(2)
+    local mch = regex.match(send, "^{(.+)}\s*;*\s*(.*)\s*")
+    if mch == nil then
+        for i=1,num do
+            send_cmd(send)
+        end
+    else
+        for i=1,tonumber(num) do
+            send_cmd(mch[1])
+        end
+        if mch[2] ~= false then
+            send_cmd(mch[2])
+        end
+    end
+]])
+
 alias.add("flush", [[^\s*flush\s*$]], [[
     flush_map()
     loadfile(get_script_path().."gps/template.lua")()
@@ -68,23 +84,6 @@ alias.add("walkto", [[^walkto\s+(.*)$]], [[
 
 alias.add("walknext", [[^\s*walknext\s*$]], [[
     coroutine.wrap(function() gonext("walk") end)()
-]])
-
-alias.add("repeat", [[^\s*#(\d+)\s+(.+)\s*$]], [[
-    local num,send = tonumber(get_matches(1)),get_matches(2)
-    local mch = regex.match(send, "^{(.+)}\s*;*\s*(.*)\s*")
-    if mch == nil then
-        for i=1,num do
-            send_cmd(send)
-        end
-    else
-        for i=1,tonumber(num) do
-            send_cmd(mch[1])
-        end
-        if mch[2] ~= false then
-            send_cmd(mch[2])
-        end
-    end
 ]])
 
 alias.add("query", [[^\s*query (.*)\s*$]], [[
@@ -116,5 +115,3 @@ alias.add("sync", [[^\s*sync\s*$]], [[
 alias.add("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[
     add_yun_desc(get_matches(1), get_matches(2), get_matches(3), get_matches(4))
 ]])
-
-show(" 已加载", "green")

@@ -1,4 +1,9 @@
-require "frame"
+require "tableEx"
+require "set"
+require "stringEx"
+require "timeEx"
+require "alias"
+require "trigger"
 require "alias"
 
 local color_map = {
@@ -143,18 +148,6 @@ local color_map = {
     yellow = "#ffff00",
     yellowgreen = "#9acd32"
 }
-
-function show(msg, fcolor, bcolor)
-    if type(msg) == "table" then
-        msg = table.tostring(msg)
-    end
-    Echo("["..(color_map[fcolor] or color_map["pink"])..":"..(color_map[bcolor] or "-")..":]"..tostring(msg).."[-:-:-]")
-end
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
-timer = timer or {}
-timers = timers or {}
-timers.group = timers.group or {}
 
 global.output = true
 regex = {}
@@ -378,6 +371,13 @@ function send_cmd(cmd)
     return false
 end
 
+function show(msg, fcolor, bcolor)
+    if type(msg) == "table" then
+        msg = table.tostring(msg)
+    end
+    Echo("["..(color_map[fcolor] or color_map["pink"])..":"..(color_map[bcolor] or "-")..":]"..tostring(msg).."[-:-:-]")
+end
+
 function print(parameter)
     if type(parameter) == "nil" then
         show(" 空字符："..tostring(parameter), "gray")
@@ -452,5 +452,3 @@ end
 --     table.save(get_script_path().."gps/map.lua", map)
 --     show("地图已更新", "orange")
 -- end
-
-show(" 已加载", "green")
