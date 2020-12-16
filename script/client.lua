@@ -149,10 +149,26 @@ function show(msg, fcolor, bcolor)
     end
     Echo("["..(color_map[fcolor] or color_map["pink"])..":"..(color_map[bcolor] or "-")..":]"..tostring(msg).."[-:-:-]")
 end
---show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
+show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
 
 global.output = true
 regex = {}
+
+function regex.match(message, pattern)
+    local msg = { RegEx(message, "("..pattern..")") }
+    if msg[1] == "0" then
+        return nil
+    end
+    local mch = { [0] = msg[2] }
+    for i=3,#msg do
+        if msg[i] == "" then
+            set.append(mch, false)
+        else
+            set.append(mch, msg[i])
+        end
+    end
+    return mch
+end
 
 function OnReceive(raw, text)
     global.output = true
@@ -161,36 +177,15 @@ function OnReceive(raw, text)
 end
 
 function OnSend(cmd)
-    local rc,msg = RegEx(cmd, "^/(.*)$")
-    if rc == "1" then
-        loadstring(tostring(msg))()
+    local mch = regex.match(cmd, "^/\\s*(.*)\\s*$")
+    if mch ~= nil then
+        loadstring(mch[1])()
         return false
     end
-end
-
-function regex.match(message, pattern)
-    return RegEx(message, pattern)
-end
-
-function trigger_regex(name)
-    local capture
-    if triggers[name].options.Multi == true then
-        capture = { regex.match(set.concat(get_lines(-triggers[name].multilines), "\n"), "("..triggers[name].pattern..")") }
-    else
-        capture = { regex.match(get_lines(-1)[1], "("..triggers[name].pattern..")") }
-    end
-    if #capture == 0 then
+    if alias_process(cmd) == true then
         return false
     end
-    for i=2,#capture do
-        if capture[i] == "" then
-            set.append(global.regex, false)
-        else
-            set.append(global.regex, capture[i])
-        end
-    end
-    global.regex[0] = capture[1]
-    return true
+    return send_cmd(cmd)
 end
 
 function get_lines(from, to)
@@ -225,7 +220,7 @@ function gag()
     return
 end
 
--- function reset()
+function reset()
 --     if statics ~= nil and #statics > 0 then
 --         table.save(get_work_path().."log/statics."..statics.date, statics)
 --     end
@@ -238,8 +233,8 @@ end
 --     automation.ui = ui
 --     table.save(get_work_path().."log/automation.tmp", automation)
 --     table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
---     resetProfile()
--- end
+--    Send("reload-lua")
+end
 
 -- function window_size()
 --     local width,height = getMainWindowSize()
@@ -351,70 +346,70 @@ end
 --     setConsoleBufferSize(2000, 500)
 -- end
 
--- function add_alias(name, cmd, send)
---     if name == nil or name == "" then
---         name = "alias_"..unique_id()
---     end
---     if alias[name] ~= nil then
---         del_alias(name)
---     end
---     alias[name] = tempAlias(cmd, send)
---     return name
--- end
-
--- function del_alias(name)
---     local rc = killAlias(alias[name])
---     alias[name] = nil
---     return rc
--- end
-
 -- function get_last_cmd()
 --     return command
 -- end
 
--- function simulate(msg)
---     return feedTriggers(msg.."\n")
--- end
+function simulate(msg)
+    return Run(msg)
+end
 
--- function send_cmd(...)
---     return send(...)
--- end
+function send_cmd(cmd)
+    local mch = regex.match(cmd, "^\\s*(.*?)\\s*;\\s*(#\\d+\\s+{.*?})\\s*;\\s*(.*)\\s*$")
+    if mch ~= nil then
+        for _,v in ipairs(mch) do
+            if alias_process(v) == false then
+                send_cmd(v)
+            end
+        end
+        return false
+    end
+    for _,v in ipairs(string.split(cmd, ";")) do
+        local send = v:trim()
+        if alias_process(send) == false then
+            Send(send)
+        end
+    end
+    return false
+end
 
--- function print(parameter)
---     if type(parameter) == "nil" then
---         show(" 空字符："..tostring(parameter), "gray")
---     elseif type(parameter) == "string" then
---         if trigger.is_exist(parameter) == true then
---             local switch,multi = {["true"] = "是", ["false"] = "否"},{["true"] = "多行", ["false"] = "单行"}
---             show(" 触发："..tostring(parameter).."    属组："..tostring((triggers[parameter].group or "无")).."    优先级："..tostring(triggers[parameter].order), "gray")
---             show(" 属性：  生效 - "..switch[tostring(triggers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(triggers[parameter].options.OneShot or false)].."， 隐藏显示 - "..switch[tostring(triggers[parameter].options.Gag or false)], "gray")
---             show(" 匹配模式："..multi[tostring(triggers[parameter].options.Multi or false)].."    匹配行数："..tostring(triggers[parameter].options.multilines or 1), "gray")
---             show(" 匹配条件："..tostring(triggers[parameter].pattern), "gray")
---             show(" 发送指令："..tostring(triggers[parameter].send), "gray")
---             return
---         end
---         if timer.is_exist(parameter) == true then
---             local switch = {["true"] = "是", ["false"] = "否"}
---             show(" 计时器："..tostring(parameter).."    属组："..tostring((timers[parameter].group or "无")), "gray")
---             show(" 属性：  生效 - "..switch[tostring(timers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(timers[parameter].options.OneShot or false)], "gray")
---             show(" 时长："..tostring(timer.remain(parameter)).." / "..tostring(timers[parameter].seconds).." 秒", "gray")
---             show(" 发送指令："..tostring(timers[parameter].send), "gray")
---             return
---         end
---         show(" 字符串："..tostring(parameter), "gray")
---     elseif type(parameter) == "boolean" then
---         show(" 布尔值："..tostring(parameter), "gray")
---     elseif type(parameter) == "function" then
---         show(" 函数："..tostring(parameter), "gray")
---     elseif type(parameter) == "thread" then
---         show(" 协程："..tostring(parameter).." ( "..tostring(coroutine.status(parameter).." )"), "gray")
---     else
---         show(" 表：", "gray")
---         for _,v in ipairs(table.tojson(parameter)) do
---             show(" "..v, "gray")
---         end
---     end
--- end
+function print(parameter)
+    if type(parameter) == "nil" then
+        show(" 空字符："..tostring(parameter), "gray")
+    elseif type(parameter) == "string" then
+        if trigger.is_exist(parameter) == true then
+            local switch,multi = {["true"] = "是", ["false"] = "否"},{["true"] = "多行", ["false"] = "单行"}
+            show(" 触发："..tostring(parameter).."    属组："..tostring((triggers[parameter].group or "无")).."    优先级："..tostring(triggers[parameter].order), "gray")
+            show(" 属性：  生效 - "..switch[tostring(triggers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(triggers[parameter].options.OneShot or false)].."， 隐藏显示 - "..switch[tostring(triggers[parameter].options.Gag or false)], "gray")
+            show(" 匹配模式："..multi[tostring(triggers[parameter].options.Multi or false)].."    匹配行数："..tostring(triggers[parameter].options.multilines or 1), "gray")
+            show(" 匹配条件："..tostring(triggers[parameter].pattern), "gray")
+            show(" 发送指令："..tostring(triggers[parameter].send), "gray")
+            return
+        end
+        if timer.is_exist(parameter) == true then
+            local switch = {["true"] = "是", ["false"] = "否"}
+            show(" 计时器："..tostring(parameter).."    属组："..tostring((timers[parameter].group or "无")), "gray")
+            show(" 属性：  生效 - "..switch[tostring(timers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(timers[parameter].options.OneShot or false)], "gray")
+            show(" 时长："..tostring(timer.remain(parameter)).." / "..tostring(timers[parameter].seconds).." 秒", "gray")
+            show(" 发送指令："..tostring(timers[parameter].send), "gray")
+            return
+        end
+        show(" 字符串："..tostring(parameter), "gray")
+    elseif type(parameter) == "number" then
+        show(" 数值："..tostring(parameter), "gray")
+    elseif type(parameter) == "boolean" then
+        show(" 布尔值："..tostring(parameter), "gray")
+    elseif type(parameter) == "function" then
+        show(" 函数："..tostring(parameter), "gray")
+    elseif type(parameter) == "thread" then
+        show(" 协程："..tostring(parameter).." ( "..tostring(coroutine.status(parameter).." )"), "gray")
+    else
+        show(" 表：", "gray")
+        for _,v in ipairs(table.tojson(parameter)) do
+            show(" "..v, "gray")
+        end
+    end
+end
 
 -- function flush_map()
 --     require "luasql.sqlite3"
@@ -453,4 +448,4 @@ end
 --     show("地图已更新", "orange")
 -- end
 
---show(" 已加载", "green")
+show(" 已加载", "green")

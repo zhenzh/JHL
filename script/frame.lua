@@ -51,8 +51,13 @@ function trigger_process_exec(name)
         return
     end
 
-    if trigger_regex(name) == false then
-        return
+    if triggers[name].options.Multi == true then
+        global.regex = regex.match(set.concat(get_lines(-triggers[name].multilines), "\n"), triggers[name].pattern)
+    else
+        global.regex = regex.match(get_lines(-1)[1], triggers[name].pattern)
+    end
+    if global.regex == nil then
+        return false
     end
 
     if triggers[name].options.Gag == true then
@@ -242,22 +247,20 @@ function trigger.delete_group(group)
 end
 
 function alias_process(cmd)
-    local capture
     for k,v in pairs(aliases) do
         if v.enable == true then
-            capture = regex.match(cmd, "("..v.pattern..")")
-            if #capture == 0 then
-                return
+            global.regex = regex.match(cmd, v.pattern)
+            if global.regex ~= nil then
+                loadstring(v.send)()
+                return true
             end
-            global.regex = capture
-            assert(loadstring(v.send)())
-            return
         end
     end
+    return false
 end
 
 function alias.add(name, pattern, send)
-    aliases[name] = { pattern = pattern, send = send, enable = true }
+    aliases[name] = { pattern = pattern, send = string.trim(send:gsub('\n', ' '):gsub('\\s+', ' ')), enable = true }
     return name
 end
 

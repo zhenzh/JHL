@@ -1,55 +1,62 @@
 show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
 
-add_alias("reset", [[^\s*reset\s*$]], [[
+alias.add("reset", [[^\s*reset\s*$]], [[
     automation = automation or {}   
     automation.reconnect = nil
     reset()
 ]])
 
-add_alias("lua", [[^/\s*(.*)\s*$]], [[
-    display(assert(loadstring(matches[2])()))
-]])
-
-add_alias("flush", [[^\s*flush\s*$]], [[
+alias.add("flush", [[^\s*flush\s*$]], [[
     flush_map()
     loadfile(get_script_path().."gps/template.lua")()
 ]])
 
-add_alias("debug", [[^\s*debug\s+(\w+)\s*$]], [[
-    verbose(matches[2])
+alias.add("debug", [[^\s*debug\s+(\w+)\s*$]], [[
+    verbose(get_matches(1))
 ]])
 
-add_alias("gps", [[^\s*gps\s*$]], [[
+alias.add("gps", [[^\s*gps\s*$]], [[
     coroutine.wrap(function() locate() end)()
 ]])
 
-add_alias("flyto", [[^flyto\s+(.+)$]], [[
-    coroutine.wrap(function() goto(matches[2]) end)()
+alias.add("flyto", [[^flyto\s+(.+)$]], [[
+    coroutine.wrap(function() goto(get_matches(1)) end)()
 ]])
 
-add_alias("flynext", [[^\s*flynext\s*$]], [[
+alias.add("flynext", [[^\s*flynext\s*$]], [[
     coroutine.wrap(function() gonext() end)()
 ]])
 
-add_alias("walkto", [[^walkto\s+(.*)$]], [[
-    coroutine.wrap(function() goto(matches[2], "walk") end)()
+alias.add("walkto", [[^walkto\s+(.*)$]], [[
+    coroutine.wrap(function() goto(get_matches(1), "walk") end)()
 ]])
 
-add_alias("walknext", [[^\s*walknext\s*$]], [[
+alias.add("walknext", [[^\s*walknext\s*$]], [[
     coroutine.wrap(function() gonext("walk") end)()
 ]])
 
-add_alias("repeat", [[^#(\d+) (.*)$]], [[
-    for i = 1, tonumber(matches[2]) do
-        expandAlias(matches[3], false)
+alias.add("repeat", [[^\s*#(\d+)\s+(.+)\s*$]], [[
+    local num,send = tonumber(get_matches(1)),get_matches(2)
+    local mch = regex.match(send, "^{(.+)}\s*;*\s*(.*)\s*")
+    if mch == nil then
+        for i=1,num do
+            send_cmd(send)
+        end
+    else
+        for i=1,tonumber(num) do
+            send_cmd(mch[1])
+        end
+        if mch[2] ~= false then
+            send_cmd(mch[2])
+        end
     end
 ]])
 
-add_alias("query", [[^\s*query (.*)\s*$]], [[
-    show(set.tostring(parse(matches[2])), "pink")
+alias.add("query", [[^\s*query (.*)\s*$]], [[
+    show(set.tostring(parse(get_matches(1))), "pink")
 ]])
 
-add_alias("start", [[^\s*rstart\s*$]], [[
+alias.add("start", [[^\s*rstart\s*$]], [[
     require "flow"
     coroutine.wrap(
         function ()
@@ -62,7 +69,7 @@ add_alias("start", [[^\s*rstart\s*$]], [[
     )()
 ]])
 
-add_alias("sync", [[^\s*sync\s*$]], [[
+alias.add("sync", [[^\s*sync\s*$]], [[
     require "flow"
     coroutine.wrap(
         function ()
@@ -71,8 +78,8 @@ add_alias("sync", [[^\s*sync\s*$]], [[
     )()
 ]])
 
-add_alias("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[
-    add_yun_desc(matches[2], matches[3], matches[4], matches[5])
+alias.add("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[
+    add_yun_desc(get_matches(1), get_matches(2), get_matches(3), get_matches(4))
 ]])
 
 show(" 已加载", "green")
