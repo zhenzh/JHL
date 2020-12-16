@@ -240,38 +240,3 @@ function trigger.delete_group(group)
     end
     return true
 end
-
-function alias_process(cmd)
-    local capture
-    for k,v in pairs(aliases) do
-        if v.enable == true then
-            capture = regex.match(cmd, "("..v.pattern..")")
-            if #capture == 0 then
-                return
-            end
-            global.regex = capture
-            assert(loadstring(v.send)())
-            return
-        end
-    end
-end
-
-function alias.add(name, pattern, send)
-    aliases[name] = { pattern = pattern, send = send, enable = true }
-    return name
-end
-
-function alias.delete(name)
-    aliases[name] = nil
-    return true
-end
-
-function alias.enable(name)
-    aliases[name].enable = true
-    return true
-end
-
-function alias.disable(name)
-    aliases[name].enable = false
-    return true
-end

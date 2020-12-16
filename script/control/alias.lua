@@ -28,6 +28,12 @@ alias.add("lua", [[^/\s*(.*)\s*$]], [[
     assert(loadstring(matches[2])())
 ]])
 
+alias.add("repeat", [[^#(\d+) (.*)$]], [[
+    for i = 1, tonumber(matches[2]) do
+        expandAlias(matches[3], false)
+    end
+]])
+
 alias.add("flush", [[^\s*flush\s*$]], [[
     flush_map()
     assert(loadfile(get_script_path().."gps/template.lua")())
@@ -55,12 +61,6 @@ alias.add("walkto", [[^walkto\s+(.*)$]], [[
 
 alias.add("walknext", [[^\s*walknext\s*$]], [[
     coroutine.wrap(function() gonext("walk") end)()
-]])
-
-alias.add("repeat", [[^#(\d+) (.*)$]], [[
-    for i = 1, tonumber(matches[2]) do
-        expandAlias(matches[3], false)
-    end
 ]])
 
 alias.add("query", [[^\s*query (.*)\s*$]], [[
