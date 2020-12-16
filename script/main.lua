@@ -126,7 +126,7 @@ if automation.reconnect == nil then
     if get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" or 
         set.has(get_lines(-3), "英文ID识别( 新玩家请输入 new 进入人物建立单元 )") then
-            show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
+            show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")
     else
         local login = true
         for _,v in ipairs(get_lines(-3)) do
@@ -135,7 +135,7 @@ if automation.reconnect == nil then
                 break
             end
         end
-        show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
+        show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")
         if login == true then
             coroutine.wrap(
                 function ()
@@ -147,7 +147,7 @@ if automation.reconnect == nil then
         end
     end
 else
-    show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
+    show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")
     require "flow"
     coroutine.wrap(
         function ()

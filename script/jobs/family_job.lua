@@ -1098,4 +1098,4 @@ end
 config.jobs["门派任务"].func = family_job
 config.jobs["门派任务"].efunc = enable_family_job
 config.jobs["门派任务"].dfunc = disable_family_job
-show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")

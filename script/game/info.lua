@@ -1239,4 +1239,4 @@ end
 --                         "^你已经精疲力尽，动弹不得。$", "run('hp')", nil, "信息采集",
 --            bit.bor(trigger_flag.KeepEvaluating, trigger_flag.Temporary, trigger_flag.OmitFromOutput), 30)
 
-show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")
