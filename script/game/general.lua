@@ -22,8 +22,6 @@
 --]]
 require "items"
 
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 function verbose(level)
     global.debug.level = global.debug[level] or 0
     if global.debug.level == 2 then
@@ -490,5 +488,3 @@ end
 --        end
 --    until false
 --end
-
-show(" 已加载", "green")

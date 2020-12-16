@@ -20,3 +20,5 @@ function add_yun_desc(force_name, yun, valid_desc, invalid_desc)
     end
     return nil
 end
+
+show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

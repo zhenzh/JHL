@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 link_dir = {
     ["tang coffin"]                                                                               = false,
     ["west;west;west;west;west;west;west;west;west;west"]                                         = false,
@@ -593,5 +591,3 @@ end
 --     scan = nil
 --     return true
 -- end
-
-show(" 已加载", "green")

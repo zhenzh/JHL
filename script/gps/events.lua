@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 function event_locate()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ event_locate ］")
     if #env.current.id > 0 then
@@ -969,7 +967,7 @@ function navigation_drive_ship(dst)
         else
             if l[2] ~= false then
                 var.goto.pause = true
-                l = wait_line("go "..dir_desc[string.sub(l[2], 1, 3)], 0.5, {StopEval=true}, 20, "^你目前还没有任何为 移动暂停 的变量设定。$|"..
+                l = wait_line("go "..get_desc_dir(string.sub(l[2], 1, 3)), 0.5, {StopEval=true}, 20, "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                                                                                                  "^船夫说：“(\\S+)到啦，上岸吧”。$|"..
                                                                                                  "^你的眼前一黑，接著什么也不知道了....$|"..
                                                                                                  "^鬼门关 - $|"..
@@ -2293,5 +2291,3 @@ function tiesuo()
         return 0
     end
 end
-
-show(" 已加载", "green")

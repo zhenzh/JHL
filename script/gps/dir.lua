@@ -1,6 +1,4 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
-dir_desc = {
+local dir_desc = {
     ["北"] =   "north",
     ["南"] =   "south",
     ["东"] =   "east",
@@ -26,7 +24,7 @@ dir_desc = {
     ["右"] =   "right"
 }
 
-dir_l2s = {
+local dir_l2s = {
     ["east"] =      "e",
     ["south"] =     "s",
     ["west"] =      "w",
@@ -50,7 +48,7 @@ dir_l2s = {
 }
 
 
-dir_s2l = {
+local dir_s2l = {
     ["e"] =  "east",
     ["s"] =  "south",
     ["w"] =  "west",
@@ -71,7 +69,7 @@ dir_s2l = {
     ["sd"] = "southdown"
 }
 
-dir_rev = {
+local dir_rev = {
     ["east"] =      "west",
     ["south"] =     "north",
     ["west"] =      "east",
@@ -142,6 +140,10 @@ function is_dir(dir)
    end
 end
 
+function get_desc_dir(desc)
+    return dir_desc[desc]
+end
+
 function get_long_dir(dir)
     if is_shortdir(dir) then
         return dir_s2l[dir]
@@ -168,5 +170,3 @@ function get_reverse_dir(dir)
         return false
     end
 end
-
-show(" 已加载", "green")

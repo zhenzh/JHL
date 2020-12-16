@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 map = map or {}
 if #map == 0 then
     if io.exists(get_script_path().."gps/map.lua") then
@@ -1035,5 +1033,3 @@ function map_adjust(...)
         end
     end
 end
-
-show(" 已加载", "green")
