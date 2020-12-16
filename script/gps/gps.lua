@@ -3,8 +3,6 @@ require "dir"
 require "locate"
 require "events"
 
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 local map_events = {
     ["yell chuan;enter"] = navigation,                  ["yell chuan"] = navigation,
     ["yell boat;enter"] = yell_boat,                    ["knock lou;enter"] = knock_lou,
@@ -643,4 +641,4 @@ function parse(dst)
     end
 end
 
-show(" 已加载", "green")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")

@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 -- 房间信息
 env = {room = {}, current = {}, nextto = {}}
 env.current = {id = {}, name = "", desc = {}, exits = "", zone = {}, objs = {}}
@@ -1241,4 +1239,4 @@ end
 --                         "^你已经精疲力尽，动弹不得。$", "run('hp')", nil, "信息采集",
 --            bit.bor(trigger_flag.KeepEvaluating, trigger_flag.Temporary, trigger_flag.OmitFromOutput), 30)
 
-show(" 已加载", "green")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")

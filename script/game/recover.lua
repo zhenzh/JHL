@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 function yun_regenerate(layer)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ yun_regenerate ］参数：layer = "..tostring(layer))
     if var.yun_regenerate == nil then
@@ -1432,5 +1430,3 @@ function recover_dazuo(nl)
     end
     return recover_dazuo(nl)
 end
-
-show(" 已加载", "green")

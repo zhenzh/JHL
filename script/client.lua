@@ -190,3 +190,5 @@ function flush_map()
     table.save(get_script_path().."gps/map.lua", map)
     show("地图已更新", "orange")
 end
+
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")

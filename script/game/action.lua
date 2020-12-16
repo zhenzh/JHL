@@ -2,8 +2,6 @@ require "general"
 require "recover"
 require "fight"
 
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 function wait_no_busy(action)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ wait_no_busy ］参数：action = "..tostring(action))
     var.wait_no_busy = var.wait_no_busy or {}
@@ -1379,4 +1377,4 @@ end
 
 end ]]
 
-show(" 已加载", "green")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")

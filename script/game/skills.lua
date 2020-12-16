@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 function skills_dazuo()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ skills_dazuo ］")
     local skills_dazuo
@@ -489,5 +487,3 @@ function lian_exec(i, j)
     end
     return
 end
-
-show(" 已加载", "green")

@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 local run_hide = {
     ["hp"] =      function() trigger.enable("hide_hp")
                              trigger.add(nil, "trigger.disable('hide_hp')", nil, {Enable=true, OneShot=true}, 10, "^\\s+饮水：\\s+\\d+/\\s+\\d+\\s+经验：\\s+[-\\d]+$")
@@ -157,4 +155,4 @@ function message(level, file, row, output, head)
     end
 end
 
-show(" 已加载", "green")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
