@@ -20,7 +20,6 @@ statics = statics or {}
 config = config or {}
 var = var or {}
 require "client"
-require "alias"
 require "common"
 require "gps"
 require "info"
