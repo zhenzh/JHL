@@ -916,4 +916,4 @@ end
 config.jobs["飞马镖局"].func = feima_job
 config.jobs["飞马镖局"].efunc = enable_feima_job
 config.jobs["飞马镖局"].dfunc = disable_feima_job
-show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")
+show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

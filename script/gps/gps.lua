@@ -641,4 +641,4 @@ function parse(dst)
     end
 end
 
-show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")
+show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")
