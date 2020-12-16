@@ -4,7 +4,7 @@ require "stringEx"
 require "timeEx"
 require "alias"
 require "trigger"
-require "alias"
+require "timer"
 
 local color_map = {
     aliceblue = "#f0f8ff",
@@ -232,7 +232,6 @@ function reset()
 --     automation.ui = ui
 --     table.save(get_work_path().."log/automation.tmp", automation)
 --     table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
---    Send("reload-lua")
 end
 
 -- function window_size()
@@ -356,3 +355,4 @@ end
 --     table.save(get_script_path().."gps/map.lua", map)
 --     show("地图已更新", "orange")
 -- end
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
