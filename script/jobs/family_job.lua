@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 family_info = {
     ["御林军"]   =   {master_name = "多隆",     master_id = "duo long",       master_place = 2286, enemy_name = "江湖反贼", enemy_id = "jianghu fanzei"},
     ["丐帮"]     =   {master_name = "洪七公",   master_id = "hong qigong",    master_place = 1121, enemy_name = "强盗",     enemy_id = "qiang dao"},
@@ -1100,4 +1098,4 @@ end
 config.jobs["门派任务"].func = family_job
 config.jobs["门派任务"].efunc = enable_family_job
 config.jobs["门派任务"].dfunc = disable_family_job
-show(" 已加载", "green")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")

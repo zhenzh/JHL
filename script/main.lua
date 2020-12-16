@@ -28,8 +28,6 @@ require "info"
 require "action"
 require "update"
 
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 global.debug.level = global.debug["debug"] or 0
 
@@ -128,7 +126,7 @@ if automation.reconnect == nil then
     if get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" or 
         set.has(get_lines(-3), "英文ID识别( 新玩家请输入 new 进入人物建立单元 )") then
-        show(" 已加载", "green")
+            show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
     else
         local login = true
         for _,v in ipairs(get_lines(-3)) do
@@ -137,7 +135,7 @@ if automation.reconnect == nil then
                 break
             end
         end
-        show(" 已加载", "green")
+        show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
         if login == true then
             coroutine.wrap(
                 function ()
@@ -149,7 +147,7 @@ if automation.reconnect == nil then
         end
     end
 else
-    show(" 已加载", "green")
+    show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
     require "flow"
     coroutine.wrap(
         function ()

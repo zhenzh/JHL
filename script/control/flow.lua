@@ -1,8 +1,6 @@
 require "skills"
 require "statics"
 
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 global.phase = {
     ["挂起"] = 0,
     ["空闲"] = 1,
@@ -742,4 +740,4 @@ function archive_statics()
     end
 end
 
-show(" 已加载", "green")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")

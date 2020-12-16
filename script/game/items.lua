@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 containers = {"食盒", "皮腰带", "布袋", "粗磁大碗", "大葫芦", "清水葫芦", "牛皮酒袋", "花雕酒袋", "酒瓶", "野菜汤碗", "水壶"}
 
 foods = {"烤鸭:kaoya", "三套鸭:santao ya", "烤鸡腿:jitui", "五香茶叶蛋:spicy egg", "烤玉米:corn", "火腿:huo tui",
@@ -264,5 +262,3 @@ items = {
     ["藏红花:zanghonghua"]                    = {name = "藏红花",                 id = "zanghonghua",           group = "misc",   reserve = true},
     ["何首乌:heshouwu"]                       = {name = "何首乌",                 id = "heshouwu",              group = "misc",   reserve = true},
 }
-
-show(" 已加载", "green")

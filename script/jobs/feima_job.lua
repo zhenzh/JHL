@@ -1,5 +1,3 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
-
 local job_target = {
     ["西域李姑娘"]       = {1331, 1333, 1335, 1334, 1336, 1332, 1337},
     ["「老把头」赫尔苏"]  = {1474, 1473, 1476, 1477, 1478, 1472, 1480, 1479, 1483, 1475},
@@ -918,4 +916,4 @@ end
 config.jobs["飞马镖局"].func = feima_job
 config.jobs["飞马镖局"].efunc = enable_feima_job
 config.jobs["飞马镖局"].dfunc = disable_feima_job
-show(" 已加载", "green")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
