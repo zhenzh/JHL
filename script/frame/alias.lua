@@ -15,7 +15,7 @@ function alias_process(cmd)
 end
 
 function alias.add(name, pattern, send)
-    aliases[name] = { pattern = pattern, send = string.trim(send:gsub('\n', ' '):gsub('\\s+', ' ')), enable = true }
+    aliases[name] = { pattern = pattern, send = send, enable = true }
     return name
 end
 
