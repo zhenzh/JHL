@@ -1,3 +1,9 @@
+global = global or { flood = 0, uid = {}, buffer = { "" }, regex = {} }
+automation = automation or {}
+statics = statics or {}
+config = config or {}
+var = var or {}
+
 local HOME = string.gsub(debug.getinfo(1).source:gsub("^@", ""), "script/main.lua", "")
 function get_work_path()
     return HOME.."profiles/JHL/"
@@ -9,16 +15,12 @@ end
 
 package.path = package.path..";"..
 get_script_path().."base/?.lua;"..
+get_script_path().."frame/?.lua;"..
 get_script_path().."game/?.lua;"..
 get_script_path().."gps/?.lua;"..
 get_script_path().."control/?.lua;"..
 get_script_path().."jobs/?.lua"
 
-global = global or { flood = 0, uid = {}, buffer = { "" }, regex = {} }
-automation = automation or {}
-statics = statics or {}
-config = config or {}
-var = var or {}
 require "client"
 require "common"
 require "gps"

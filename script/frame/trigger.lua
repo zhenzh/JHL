@@ -1,8 +1,3 @@
-require "tableEx"
-require "set"
-require "stringEx"
-require "timeEx"
-
 trigger = trigger or {}
 triggers = triggers or { update = true}
 triggers.group = triggers.group or {}

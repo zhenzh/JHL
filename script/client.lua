@@ -1,9 +1,10 @@
-require "frame"
+require "tableEx"
+require "set"
+require "stringEx"
+require "timeEx"
 require "alias"
-
-timer = timer or {}
-timers = timers or {}
-timers.group = timers.group or {}
+require "trigger"
+require "timer"
 
 mudlet = mudlet or {}
 mudlet.supports = mudlet.supports or {}
@@ -93,103 +94,6 @@ function window_wrap()
     return 100 --getWindowWrap()
 end
 
-function timer.add(name, seconds, send, group, options)
-    if name == nil or name == "" then
-        name = "timer_"..unique_id()
-    end
-    if group == "" then
-        group = nil
-    end
-    if group ~= nil then
-        timers.group[group] = timers.group[group] or {}
-    end
-    options = options or {}
-
-    timers[name] = { send = send, group = group, seconds = seconds, options = options }
-    if not options.OneShot then
-        timers[name].id = tempTimer(seconds, send, true)
-    else
-        send = send.." timer.delete('"..name.."')"
-        timers[name].id = tempTimer(seconds, send)
-    end
-    if group ~= nil then
-        timers.group[group][name] = timers[name].id
-    end
-    if options.Enable == false then
-        timer.disable(name)
-    else
-        timer.enable(name)
-    end
-    return name
-end
-
-function timer.delete(name)
-    local rc = killTimer((timers[name] or {}).id or "")
-    if timers[name] ~= nil and timers[name].group ~= nil then
-        timers.group[timers[name].group][name] = nil
-        if table.is_empty(timers.group[timers[name].group]) then
-            timers.group[timers[name].group] = nil
-        end
-    end
-    timers[name] = nil
-    return rc
-end
-
-function timer.enable(name)
-    return enableTimer((timers[name] or {}).id or name)
-end
-
-function timer.disable(name)
-    return disableTimer((timers[name] or {}).id or name)
-end
-
-function timer.remain(name)
-    return remainingTime(timers[name].id)
-end
-
-function timer.is_exist(name)
-    if timers[name] == nil then
-        return false
-    else
-        return true
-    end
-end
-
-function timer.is_enable(name)
-    if timer.is_exist(name) == false then
-        return false
-    end
-    if isActive(timers[name].id, "timer") == 0 then
-        return false
-    else
-        return true
-    end
-end
-
-function timer.enable_group(group)
-    local rc = true
-    for k,_ in pairs(timers.group[group] or {}) do
-        rc = rc and timer.enable(k)
-    end
-    return rc
-end
-
-function timer.disable_group(group)
-    local rc = true
-    for k,_ in pairs(timers.group[group] or {}) do
-        rc = rc and timer.disable(k)
-    end
-    return rc
-end
-
-function timer.delete_group(group)
-    local rc = true
-    for k,_ in pairs(timers.group[group] or {}) do
-        rc = rc and timer.delete(k)
-    end
-    return rc
-end
-
 function minimal_resources()
     setConsoleBufferSize(2000, 500)
 end
@@ -198,18 +102,18 @@ function get_last_cmd()
     return command
 end
 
-function show(msg, fcolor, bcolor, breaker)
-    bcolor = bcolor or "black"
-    fcolor = fcolor or "pink"
-    cecho("<:"..bcolor.."><"..fcolor..">"..msg..(breaker or "\n"))
-end
-
 function simulate(msg)
     return feedTriggers(msg.."\n")
 end
 
 function send_cmd(...)
     return send(...)
+end
+
+function show(msg, fcolor, bcolor, breaker)
+    bcolor = bcolor or "black"
+    fcolor = fcolor or "pink"
+    cecho("<:"..bcolor.."><"..fcolor..">"..msg..(breaker or "\n"))
 end
 
 function print(parameter)

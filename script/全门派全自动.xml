@@ -3,7 +3,7 @@
 <MudletPackage version="1.001">
 	<TriggerPackage>
 		<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
-			<name>Received</name>
+			<name>OnReceive</name>
 			<script>trigger_process(line)</script>
 			<triggerType>0</triggerType>
 			<conditonLineDelta>0</conditonLineDelta>
