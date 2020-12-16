@@ -1,18 +1,22 @@
 require "frame"
+require "alias"
 
-function show(msg, fcolor, bcolor, breaker)
-    bcolor = bcolor or "black"
-    fcolor = fcolor or "pink"
-    cecho("<:"..bcolor.."><"..fcolor..">"..msg..(breaker or "\n"))
-end
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
+timer = timer or {}
+timers = timers or {}
+timers.group = timers.group or {}
 
 mudlet = mudlet or {}
 mudlet.supports = mudlet.supports or {}
 regex = regex or {}
 
 function regex.match(text, pattern)
-    return rex.match(text, pattern)
+    local mch = { rex.match(text, "("..pattern..")") }
+    if #mch == 0 then
+        return nil
+    end
+    mch[0] = mch[1]
+    set.remove(mch, 1)
+    return mch
 end
 
 function trigger_regex(name)
@@ -190,25 +194,14 @@ function minimal_resources()
     setConsoleBufferSize(2000, 500)
 end
 
-function alias.add(name, pattern, send)
-    if name == nil or name == "" then
-        name = "alias_"..unique_id()
-    end
-    if aliases[name] ~= nil then
-        alias.delete(name)
-    end
-    aliases[name] = tempAlias(pattern, send)
-    return name
-end
-
-function alias.delete(name)
-    local rc = killAlias(aliases[name])
-    aliases[name] = nil
-    return rc
-end
-
 function get_last_cmd()
     return command
+end
+
+function show(msg, fcolor, bcolor, breaker)
+    bcolor = bcolor or "black"
+    fcolor = fcolor or "pink"
+    cecho("<:"..bcolor.."><"..fcolor..">"..msg..(breaker or "\n"))
 end
 
 function simulate(msg)
@@ -293,5 +286,3 @@ function flush_map()
     table.save(get_script_path().."gps/map.lua", map)
     show("地图已更新", "orange")
 end
-
-show(" 已加载", "green")

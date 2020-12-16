@@ -1,4 +1,22 @@
-show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
+alias = alias or {}
+aliases = aliases or {}
+
+function alias.add(name, pattern, send)
+    if name == nil or name == "" then
+        name = "alias_"..unique_id()
+    end
+    if aliases[name] ~= nil then
+        alias.delete(name)
+    end
+    aliases[name] = tempAlias(pattern, send)
+    return name
+end
+
+function alias.delete(name)
+    local rc = killAlias(aliases[name])
+    aliases[name] = nil
+    return rc
+end
 
 alias.add("reset", [[^\s*reset\s*$]], [[
     automation = automation or {}   
@@ -74,5 +92,3 @@ alias.add("sync", [[^\s*sync\s*$]], [[
 alias.add("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[
     add_yun_desc(matches[2], matches[3], matches[4], matches[5])
 ]])
-
-show(" 已加载", "green")
