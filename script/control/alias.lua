@@ -1,4 +1,39 @@
 show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
+alias = alias or {}
+aliases = aliases or {}
+
+function alias_process(cmd)
+    for k,v in pairs(aliases) do
+        if v.enable == true then
+            global.regex = regex.match(cmd, v.pattern)
+            if global.regex ~= nil then
+                loadstring(v.send)()
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function alias.add(name, pattern, send)
+    aliases[name] = { pattern = pattern, send = string.trim(send:gsub('\n', ' '):gsub('\\s+', ' ')), enable = true }
+    return name
+end
+
+function alias.delete(name)
+    aliases[name] = nil
+    return true
+end
+
+function alias.enable(name)
+    aliases[name].enable = true
+    return true
+end
+
+function alias.disable(name)
+    aliases[name].enable = false
+    return true
+end
 
 alias.add("reset", [[^\s*reset\s*$]], [[
     automation = automation or {}   

@@ -1,4 +1,5 @@
 require "frame"
+require "alias"
 
 local color_map = {
     aliceblue = "#f0f8ff",
@@ -150,6 +151,10 @@ function show(msg, fcolor, bcolor)
     Echo("["..(color_map[fcolor] or color_map["pink"])..":"..(color_map[bcolor] or "-")..":]"..tostring(msg).."[-:-:-]")
 end
 show(string.format("%-.30s", string.match(debug.getinfo(1).source, "script/(.*lua)$").." ............................."), "peru", nil, "")
+
+timer = timer or {}
+timers = timers or {}
+timers.group = timers.group or {}
 
 global.output = true
 regex = {}
