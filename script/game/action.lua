@@ -1377,4 +1377,4 @@ end
 
 end ]]
 
-show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")

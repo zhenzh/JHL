@@ -21,4 +21,4 @@ function add_yun_desc(force_name, yun, valid_desc, invalid_desc)
     return nil
 end
 
-show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "lime")
+show("加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." 成功", "chartreuse")
