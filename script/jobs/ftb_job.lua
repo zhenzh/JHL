@@ -330,8 +330,8 @@ function ftb_job_p2()
         if #dest == 0 then
             return ftb_job_p3()
         elseif #dest > 1 then
-            local near = string.split(config.jobs["斧头帮任务"].near, "[和 、]")
-            dest = get_room_id_by_roomsto(near, nil, dest)
+            local around = string.split(config.jobs["斧头帮任务"].around, "[和 、]+")
+            dest = get_room_id_by_around(around, dest)
         end
     end
     jia_min()
@@ -416,7 +416,7 @@ end
 function ftb_job_wait_info()
     config.jobs["斧头帮任务"].enemy = chs2num(get_matches(1))
     config.jobs["斧头帮任务"].info = get_matches(2)
-    config.jobs["斧头帮任务"].near = get_matches(3)
+    config.jobs["斧头帮任务"].around = get_matches(3)
     config.jobs["斧头帮任务"].range = chs2num(get_matches(4))
     if config.jobs["斧头帮任务"].info == "少林寺0" then
         config.jobs["斧头帮任务"].info = "塘沽口"  -- BUG 临时处理

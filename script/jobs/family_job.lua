@@ -579,7 +579,7 @@ function family_job_get_dir(ldir)
     local dir
     if config.jobs["门派任务"].dest[1] == 1433 then
         if type(env.current.exits) == "string" then
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
         for _,v in ipairs(env.current.exits) do
             if v ~= "westup" and v ~= "northup" and v ~= "eastdown" then
@@ -589,7 +589,7 @@ function family_job_get_dir(ldir)
         end
     elseif config.jobs["门派任务"].dest[1] == 1530 then
         if type(env.current.exits) == "string" then
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
         for _,v in ipairs(env.current.exits) do
             if v ~= "southdown" then
@@ -599,7 +599,7 @@ function family_job_get_dir(ldir)
         end
     elseif config.jobs["门派任务"].dest[1] == 1301 then 
         if type(env.current.exits) == "string" then
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
         for _,v in ipairs(env.current.exits) do
             if v ~= "northwest" and v ~= "northeast" then
@@ -617,9 +617,7 @@ function family_job_get_dir(ldir)
             end
         end
     end
-    if link_dir[dir] ~= nil and link_dir[dir] ~= false then
-        dir = link_dir[dir]
-    end
+    dir = regular_dir(dir)
     if not is_dir(dir) and is_dir(ldir) then
         dir = get_reverse_dir(ldir)
     end

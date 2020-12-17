@@ -558,7 +558,7 @@ function goto_exec(current_id)
                     if env.current.exits == "" then
                         env.current.exits = {}
                     else
-                        env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+                        env.current.exits = string.split(env.current.exits, "[和 、]+")
                     end
                 end
                 env.current.id = get_room_id_by_exits(env.current.exits, env.current.id)

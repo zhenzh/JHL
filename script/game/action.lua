@@ -125,7 +125,7 @@ function one_step_get_dir()
         if env.current.exits == "" then
             env.current.exits = {}
         else
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
     end
     if #env.current.exits == 0 then
@@ -153,8 +153,14 @@ function one_step_get_dir()
             end
             if #alternative_exits == 0 then
                 for _,v in ipairs(env.current.exits) do
-                    if is_dir(v) then
-                        set.append(alternative_exits, link_dir[v])
+                    if is_dir(v) == true then
+                        for _,i in ipairs(env.current.links) do
+                            local rdir = regular_dir(v..tostring(i))
+                            if is_dir() == true then
+                                set.append(alternative_exits, rdir)
+                                break
+                            end
+                        end
                     end
                 end
             end
@@ -1355,7 +1361,7 @@ function search_check_result()
             return search_check_result()
         elseif #env.current.id > 0 then
             if type(env.current.exits) == "string" then
-                env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+                env.current.exits = string.split(env.current.exits, "[和 、]+")
             end
             env.current.id = get_room_id_by_exits(env.current.exits, env.current.id)
             if #env.current.id == 1 then

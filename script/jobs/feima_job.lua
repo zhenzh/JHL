@@ -487,7 +487,7 @@ function feima_job_get_dir()
             end
         end
     end
-    return link_dir[dir or ""] or dir
+    return regular_dir(dir)
 end
 
 function feima_job_post_ganche()
