@@ -684,6 +684,19 @@ function sync_skills()
     return 0,cfg
 end
 
+function privilege_job(job)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ privilege_job ］参数：job = "..tostring(job))
+    for k,v in ipairs(config.jobs) do
+        if k >= set.index_of(config.jobs, job) then
+            return false
+        end
+        if config.jobs[v].enable == true and 
+           config.jobs[v].active == true then
+            return true
+        end
+    end
+end
+
 function break_event()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ break_event ］")
     if automation.phase ~= nil then

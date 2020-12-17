@@ -82,9 +82,8 @@ function feima_job()
     var.job.enemy = {count = 0}
     var.job.addenemy = {count = 0}
     trigger.enable_group("feima_job_active")
-    local rc
     if (config.jobs["飞马镖局"].phase or 0) <= phase["任务获取"] then
-        rc = feima_job_p1()
+        local rc = feima_job_p1()
         if rc ~= nil then
             return feima_job_return(rc)
         end
@@ -93,7 +92,7 @@ function feima_job()
         return feima_job_return(feima_job_p2())
     end
     if config.jobs["飞马镖局"].phase == phase["任务结算"] then
-        rc = feima_job_return(feima_job_p3())
+        local rc = feima_job_return(feima_job_p3())
         if rc ~= nil then
             return feima_job_return(rc)
         end
@@ -125,15 +124,9 @@ function feima_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_p1 ］")
     local rc = feima_job_goto_maxingkong()
     if rc ~= nil then
-        if rc == 1 then
-            trigger.disable_group("feima_job_active")
-            var.job = nil
-            return 1
-        else
-            return rc
-        end
+        return rc
     end
-    return feima_job_aquire_job()
+    return feima_job_aquire()
 end
 
 function feima_job_p2()
@@ -267,8 +260,8 @@ function feima_job_goto_maxingkong()
     return
 end
 
-function feima_job_aquire_job()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_aquire_job ］")
+function feima_job_aquire()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_aquire ］")
     local l = wait_line("ask ma xingkong about 押镖", 30, nil, nil, "^你向马行空打听有关「押镖」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
                                                                     "^\\S+忙着呢，你等会儿在问话吧。$|"..
@@ -289,8 +282,6 @@ function feima_job_aquire_job()
             return feima_job_p4()
         end
     else
-        trigger.disable_group("feima_job_active")
-        var.job = nil
         return 1
     end
     return
@@ -642,15 +633,9 @@ function feima_job_settle()
                 var.job.statics["exp"] = state.exp
                 var.job.statics["pot"] = state.pot
             end
-            for k,v in ipairs(config.jobs) do
-                if k == #config.jobs then
-                    break
-                end
-                if config.jobs[v].enable == true and 
-                   config.jobs[v].active == true then
-                    var.job.statics = nil
-                    return 0
-                end
+            if privilege_job("飞马镖局") == true then
+                var.job.statics = nil
+                return 0
             end
             return feima_job()
         end

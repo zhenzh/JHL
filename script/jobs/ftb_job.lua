@@ -1,118 +1,55 @@
-ftb_job_nick1 = {"金", "水", "超", "铁", "刚", "强", "火", "神", "震", "木","护花", "催花", "五雷", "五魁", "老", "飘香", "飘雪", "飘雨",
-                 "飞花", "飞雨","水火", "金火", "日月", "乾坤", "千万", "亿万", "月光", "火云", "泰山", "南洋","西方", "东方", "威武",
-                 "轻烟", "南方", "北方", "护法", "雷电", "闪电", "迅雷","闪光", "暴雨", "千水", "灭心", "灭情", "绝情", "断情", "失意",
-                 "春风", "秋霞","霜雪", "雪霜", "无敌", "神奇", "傲气", "冷傲", "冷血", "断情", "灭意", "断意","截血", "截穴", "断截",
-                 "情飞", "审心", "孤独", "傲情", "施于", "绝断", "深水","痴情", "痴心", "如来", "菩萨", "阎罗", "恶鬼", "雷霆", "天王",
-                 "无影", "火云", "柔情", "无痕", "无法", "无天", "无云", "君子", "铁血", "千里", "断魂", "雷震","迎风", "杀手", "追命",
-                 "追魂", "断肠", "飞雨", "冷雨", "血雨", "鬼", "七杀","金童", "玉女", "摘星", "九幽", "五毒", "六夺", "三才", "四喜",
-                 "六顺", "八步","双福", "一难", "十绝", "夺命", "夺魂", "断门", "中原", "塞北", "大漠", "海上","塞外", "沙漠", "漠北",
-                 "东海", "南海", "北海", "极乐", "黑杀", "白杀", "屠夫","伴花", "翻天", "魔", "无心", "无花", "碎心", "逍遥", "红杀",
-                 "吸血", "屠夫","威镇", "太极", "河朔", "七星", "毒", "罗汉", "玉", "无行", "五行", "拼命","百变", "千变", "万变", "百劫",
-                 "千劫", "十劫", "万劫", "八卦", "八宝", "福星"}
+local ftb_job_nick1 = {"金", "水", "超", "铁", "刚", "强", "火", "神", "震", "木","护花", "催花", "五雷", "五魁", "老", "飘香", "飘雪", "飘雨",
+                       "飞花", "飞雨","水火", "金火", "日月", "乾坤", "千万", "亿万", "月光", "火云", "泰山", "南洋","西方", "东方", "威武",
+                       "轻烟", "南方", "北方", "护法", "雷电", "闪电", "迅雷","闪光", "暴雨", "千水", "灭心", "灭情", "绝情", "断情", "失意",
+                       "春风", "秋霞","霜雪", "雪霜", "无敌", "神奇", "傲气", "冷傲", "冷血", "断情", "灭意", "断意","截血", "截穴", "断截",
+                       "情飞", "审心", "孤独", "傲情", "施于", "绝断", "深水","痴情", "痴心", "如来", "菩萨", "阎罗", "恶鬼", "雷霆", "天王",
+                       "无影", "火云", "柔情", "无痕", "无法", "无天", "无云", "君子", "铁血", "千里", "断魂", "雷震","迎风", "杀手", "追命",
+                       "追魂", "断肠", "飞雨", "冷雨", "血雨", "鬼", "七杀","金童", "玉女", "摘星", "九幽", "五毒", "六夺", "三才", "四喜",
+                       "六顺", "八步","双福", "一难", "十绝", "夺命", "夺魂", "断门", "中原", "塞北", "大漠", "海上","塞外", "沙漠", "漠北",
+                       "东海", "南海", "北海", "极乐", "黑杀", "白杀", "屠夫","伴花", "翻天", "魔", "无心", "无花", "碎心", "逍遥", "红杀",
+                       "吸血", "屠夫","威镇", "太极", "河朔", "七星", "毒", "罗汉", "玉", "无行", "五行", "拼命","百变", "千变", "万变", "百劫",
+                       "千劫", "十劫", "万劫", "八卦", "八宝", "福星"}
 
-ftb_job_nick2 = {"剑", "刀", "手", "脚", "掌", "拳", "门", "客", "人", "枪", "箭", "腿", "足", "神", "棍", "棒", "斧", "钩", "叉", "戟",
-                 "鞭", "锏", "锤", "爪", "霸", "霸天", "天霸", "游魂", "老", "王","门", "侠", "客", "霸", "霸天", "天霸", "游魂", "三郎",
-                 "老", "王","皇", "昙花", "罗刹", "鬼", "仙子", "霸王", "邪", "无邪", "老邪", "小邪","如来", "菩萨", "阎罗", "恶鬼",
-                 "柔情", "无痕", "无法", "无天", "无云", "天王","一剑", "一刀", "杀手", "之神", "之子", "少爷", "阎王", "侯爷", "土地",
-                 "判官","无常", "魔", "印", "公子"}
+local ftb_job_nick2 = {"剑", "刀", "手", "脚", "掌", "拳", "门", "客", "人", "枪", "箭", "腿", "足", "神", "棍", "棒", "斧", "钩", "叉", "戟",
+                       "鞭", "锏", "锤", "爪", "霸", "霸天", "天霸", "游魂", "老", "王","门", "侠", "客", "霸", "霸天", "天霸", "游魂", "三郎",
+                       "老", "王","皇", "昙花", "罗刹", "鬼", "仙子", "霸王", "邪", "无邪", "老邪", "小邪","如来", "菩萨", "阎罗", "恶鬼",
+                       "柔情", "无痕", "无法", "无天", "无云", "天王","一剑", "一刀", "杀手", "之神", "之子", "少爷", "阎王", "侯爷", "土地",
+                       "判官","无常", "魔", "印", "公子"}
 
-function clean_ftb_job(state)
-    if state ~= nil then
-        active_job.state = state
-    end
-    if GetAlias("ftb_job_cd") ~= 0 then
-        AddTimer("ftb_job_cd", 0, 15, 0, "jobs[\"斧头帮任务\"].cd = false", timer_flag.Enabled + timer_flag.OneShot + timer_flag.Temporary, "")
-        SetTimerOption("ftb_job_cd", "send_to", 12)
-    end
-    active_job.cd = true
-    active_job.target = false
-    active_job.enemy = 0
-    active_job.target = false
-    active_job.destination = false
-    active_job.roomto = false
-    skip_npc = nil
+function enable_ftb_job()
+    trigger.delete_group("ftb_job")
+    trigger.add("ftb_job_wait_info", "ftb_job_wait_info()", "ftb_job", {Enable=false, Multi=true}, 99, "^程金斧说道：听说有(\\S+)个家伙想对本帮不利.\\n程金斧说道：据说他们已经到了(\\S+)(?:\\(该处靠近([\\S, ]+)\\)|)方圆(\\S+)里之内.$")
 end
 
-function start_ftb_job()
-    local l,w
+function disable_ftb_job()
+    trigger.delete_group("ftb_job")
+end
 
-    repeat
-        if active_job.state ~= "搜寻目标" then
-            if GetVariable("room_id") ~= "1705" then
-                flyto(1705)
-                l,_ = wait.regexp("^[>\\s]*你目前还没有任何为 移动(?:完成|失败) 的变量设定。$", 180)
-                if no_response(l) or string.find(l, "移动失败") then
-                    clean_ftb_job("完成任务")
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 前往斧头帮失败，放弃本次任务，当前任务状态："..active_job.state)
-                    return false
-                end
-            end
-            l,w = ask("cheng jinfu", "job", "^[>\\s]*程金斧说道：听说有(\\S+)个家伙想对本帮不利.$|"..
-                                                "^[>\\s]*程金斧说道：我早就告诉过你了:$|"..
-                                                "^[>\\s]*程金斧说道：BUG|"..
-                                                "^[>\\s]*程金斧一脚正好踢中你的屁股！$|"..
-                                                "^[>\\s]*程金斧对着你竖起了右手大拇指，好样的。$|"..
-                                                "^[>\\s]*你目前还没有任何为 无回应 的变量设定。$")
-            if l == nil then
-                clean_ftb_job("完成任务")
-                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 放弃本次任务，当前任务状态："..active_job.state)
-                return false
-            elseif l == false then
-                clean_ftb_job("完成任务")
-                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 放弃本次任务，当前任务状态："..active_job.state)
-                return false
-            elseif string.find(l, "告诉过你") then
-                if active_job.state ~= "获取任务" then
-                    clean_ftb_job("放弃任务")
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 任务未刷新，放弃本次任务，当前任务状态："..active_job.state)
-                    return false
-                end
-            elseif string.find(l, "无回应") then
-                if active_job.state == "获取任务" then
-                    wait.time(1)
-                else
-                    clean_ftb_job("放弃任务")
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 任务未刷新，放弃本次任务，当前任务状态："..active_job.state)
-                    return false
-                end
-            elseif string.find(l, "对着你竖起") then
-                clean_ftb_job("完成任务")
-                active_job.cd = false
-                return true
-            elseif string.find(l, "踢中你的") or string.find(l, "BUG") then
-                clean_ftb_job("完成任务")
-                active_job.cd = false
-            else
-                if GetAlias("ftb_job_cd") ~= 0 then
-                    AddTimer("ftb_job_cd", 0, 15, 0, "jobs[\"斧头帮任务\"].cd = false", timer_flag.Enabled + timer_flag.OneShot + timer_flag.Temporary, "")
-                    SetTimerOption("ftb_job_cd", "send_to", 12)
-                end
-                active_job.state = "获取任务"
-                active_job.enemy = chs2num(w[1])
-            end
-            if active_job.state == "获取任务" and not string.find(l, "无回应") then
-                l,w = wait.regexp("^[>\\s]*程金斧说道：据说他们已经到了(\\S+)(?:\\(该处靠近([\\S, ]+)\\)|)方圆(\\S+)里之内.$", 30)
-                if not no_response(l) then
-                    if w[3] == "" then
-                        active_job.target = w[1]
-                        active_job.range = math.max(math.min(7, chs2num(w[2]) + 1), 3)
-                    else
-                        active_job.target = w[1]
-                        if string.find(w[2], ",") then
-                            active_job.roomto = string.split(string.gsub(w[2], " ", ""), ",")
-                            set.dedup(active_job.roomto)
-                        elseif w[2] ~= "" then
-                            active_job.roomto = {w[2]}
-                        end
-                        active_job.range = chs2num(w[3])
-                    end
-                    if active_job.target == "少林寺0" then -- 临时处理 BUG
-                        active_job.target = "塘沽口"
-                    end
-                    active_job.state = "搜寻目标"
-                end
-            end
+local phase = {
+    ["任务更新"] = 1,
+    ["任务执行"] = 2,
+    ["任务完成"] = 3,
+    ["任务失败"] = 4,
+}
+
+function ftb_job()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job ］")
+    automation.idle = false
+    var.job = var.job or {name = "斧头帮任务"}
+    var.job.statics = var.job.statics or {name = "斧头帮任务"}
+--    var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
+    trigger.enable_group("ftb_job_active")
+    if (config.jobs["斧头帮任务"].phase or 1) <= phase["任务更新"] then
+        local rc = ftb_job_p1()
+        if rc ~= nil then
+            return ftb_job_return(rc)
         end
+    end
+    if config.jobs["斧头帮任务"].phase == phase["任务执行"] then
+        return ftb_job_return(ftb_job_p2())
+    end
+    repeat
+        
         if active_job.state == "搜寻目标" then
             local retry = false
             local cleared_enemy = 0
@@ -358,4 +295,131 @@ function start_ftb_job()
             until false
         end
     until false
+end
+
+function ftb_job_return(rc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_return ］参数：rc = "..tostring(rc))
+    if var.job == nil then
+        return rc
+    end
+    config.jobs["斧头帮任务"].info = nil
+    config.jobs["斧头帮任务"].dest = nil
+    config.jobs["斧头帮任务"].enemy = 0
+    var.statics = var.job.statics
+    trigger.disable_group("ftb_job")
+    var.job = nil
+    return rc
+end
+
+function ftb_job_p1()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p1 ］")
+    local rc = ftb_job_goto_chengjinfu()
+    if rc ~= nil then
+        return rc
+    end
+    rc = ftb_job_refresh()
+    if rc ~= nil then
+        return rc
+    end
+end
+
+function ftb_job_p2()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p2 ］")
+    if config.jobs["斧头帮任务"].dest == nil then
+        local dest = parse(config.jobs["斧头帮任务"].info)
+        if #dest == 0 then
+            return ftb_job_p3()
+        elseif #dest > 1 then
+            local near = string.split(config.jobs["斧头帮任务"].near, "[和 、]")
+            dest = get_room_id_by_roomsto(near, nil, dest)
+        end
+    end
+    jia_min()
+    if wield(config.fight["通用"].weapon) < 0 then
+        return -1
+    end
+end
+
+function ftb_job_p3()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p3 ］")
+end
+
+function ftb_job_p4()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p4 ］")
+end
+
+function ftb_job_goto_chengjinfu()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_goto_chengjinfu ］")
+    if env.current.id[1] ~= 1705 then
+        var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
+        local rc = goto(1705)
+        if rc ~= 0 then
+            return rc
+        end
+    end
+    return
+end
+
+function ftb_job_refresh()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_refresh ］")
+    local l = wait_line("ask cheng jinfu about job", 30, nil, nil, "^你向程金斧打听有关「job」的消息。$|"..
+                                                                   "^这里没有 \\S+ 这个人$|"..
+                                                                   "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
+                                                                   "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+    if l == false then
+        return -1
+    elseif string.match(l[0], "忙着") then
+        wait(0.1)
+        if l[1] == "你" then
+            run("halt")
+        end
+        return ftb_job_refresh()
+    elseif l[0] == "你向程金斧打听有关「job」的消息。" then
+        trigger.enable("ftb_job_wait_info")
+        l = wait_line(nil, 30, nil, nil, "^程金斧说道：麻烦\\S+去查一查, 若真是刺客便替本帮主除却了吧.$|"..
+                                         "^程金斧说道：我早就告诉过你了:$|"..
+                                         "^程金斧说道：BUG|"..
+                                         "^程金斧一脚正好踢中你的屁股！$|"..
+                                         "^程金斧对着你竖起了右手大拇指，好样的。$|"..
+                                         "^> $")
+        if l == false then
+            return -1
+        elseif l[0] == "程金斧一脚正好踢中你的屁股！" then
+            if privilege_job("斧头帮任务") == true then
+                var.job.statics = nil
+                return 1
+            end
+            return ftb_job_refresh()
+        elseif l[0] == "程金斧对着你竖起了右手大拇指，好样的。" then
+            config.jobs["斧头帮任务"].phase = phase["任务完成"]
+            return ftb_job_p3()
+        elseif l[0] == "> " then
+            if privilege_job("斧头帮任务") == true then
+                var.job.statics = nil
+                return 1
+            end
+            wait(1)
+            return ftb_job_refresh()
+        else
+            if (l[0] == "程金斧说道：我早就告诉过你了:" and config.jobs["斧头帮任务"].phase == phase["任务失败"]) or 
+               string.find(l[0], "BUG") then
+                config.jobs["斧头帮任务"].active = false
+                timer.add("ftb_job_cd", 300, "config.jobs['斧头帮任务'].active = true", "ftb_job", {Enable=true, OneShot=true})
+                return ftb_job_p4()
+            else
+                return
+            end
+        end
+    end
+end
+
+function ftb_job_wait_info()
+    config.jobs["斧头帮任务"].enemy = chs2num(get_matches(1))
+    config.jobs["斧头帮任务"].info = get_matches(2)
+    config.jobs["斧头帮任务"].near = get_matches(3)
+    config.jobs["斧头帮任务"].range = chs2num(get_matches(4))
+    if config.jobs["斧头帮任务"].info == "少林寺0" then
+        config.jobs["斧头帮任务"].info = "塘沽口"  -- BUG 临时处理
+    end
+    config.jobs["斧头帮任务"].phase = phase["任务执行"]
 end

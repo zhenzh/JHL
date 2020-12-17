@@ -4,7 +4,7 @@ config = {
     flood_control = 30,
     jobs = {
         "门派任务",     ["门派任务"]     = { active = false,  enable = true,  contribution = 150 },
-        "斧头帮任务",   ["斧头帮任务"]   = { active = false,  enable = false, state = false, destination = false, target = false, range = 0,  roomto = false, enemy = 0},
+        "斧头帮任务",   ["斧头帮任务"]   = { active = false,  enable = false, enemy = 0},
         "飞马镖局",     ["飞马镖局"]     = { active = true,  enable = true },
         "寻访任务",     ["寻访任务"]     = { active = false,  enable = false },
     },
@@ -69,14 +69,12 @@ config = {
             performs  = { "perform zhangfeng", "perform jinglei" },
             power = "max", energy = 1,
         },
---        ["斧头帮任务"] =     {  -- 斧头帮任务战斗时的配置
---                                weapon         = {first = "雷乘剑:leicheng jian", second = "雷乘剑:leicheng jian"},  -- 战斗时使用的武器
---                                yuns           = {"wuji"},  -- 战斗时使用的内功
---                                performs       = {{pre = "jifa sword heijian-jindao", "daojian", post = "jifa sword xuantie-jianfa"}},  -- 战斗时使用的外功, pre 为使用外功前的准备
---                                power          = "max",  -- 战斗时所需加力
---                                energy         = "max",  -- 战斗时所需加精
---                              },
-
+        ["斧头帮任务"] = {  -- 门派任务战斗时的配置
+            weapon    = { "", "" },  -- 战斗时使用的武器
+            yuns      = { "yun yixing" },  -- 战斗时使用的内功
+            performs  = { "perform zhangfeng", "perform jinglei" },  -- 战斗时使用的外功
+            power = "max", energy = "max",  -- -- 战斗时所需加力/加精
+        },
 --        ["寻访任务"] =    {
 --                                weapon         = {first = "", second = ""},
 --                                yuns           = {},
