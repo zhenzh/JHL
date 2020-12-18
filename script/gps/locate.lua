@@ -561,3 +561,56 @@ function get_room_id_by_around(around, rooms)
     end
     return room_ids
 end
+
+function get_room_id_by_range(range, origin)
+    if origin == nil then
+        return {}
+    end
+    local room_ids,edge = { origin },{ {origin} }
+    for i=2,range do
+        set.append(edge, {})
+    end
+    for k,v in ipairs(edge) do
+        for _,m in ipairs(v) do
+            for i,j in pairs(map[m].links) do
+                if regular_dir(i) == nil then
+                    local steps = table.getn(string.split(i, ";"))
+                    if steps > 0 then
+                        if k+steps <= range then
+                            if map[j].zone ~= nil then
+                                if not set.has(room_ids, j) then
+                                    set.append(room_ids, j)
+                                    if k+steps <= #edge then
+                                        set.append(edge[k+steps], j)
+                                        for x=k+steps+1,#edge do
+                                            if set.has(edge[x], j) then
+                                                set.delete(edge[x], j)
+                                                break
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                else
+                    if map[j].zone ~= nil then
+                        if not set.has(room_ids, j) then
+                            set.append(room_ids, j)
+                            if k < #edge then
+                                set.append(edge[k+1], j)
+                                for x=k+2,#edge do
+                                    if set.has(edge[x], j) then
+                                        set.delete(edge[x], j)
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return room_ids
+end

@@ -25,7 +25,7 @@ local noisy_rooms = {
 
 function automation_reset(func)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］")
-    automation.reconnect = func or "function() automation.reconnect = nil end"
+    automation.reconnect = func or "automation.reconnect = nil"
     reset()
 end
 

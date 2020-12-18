@@ -154,7 +154,7 @@ function one_step_get_dir()
             if #alternative_exits == 0 then
                 for _,v in ipairs(env.current.exits) do
                     if is_dir(v) == true then
-                        for _,i in ipairs(env.current.links) do
+                        for _,i in ipairs(map[env.current.id[1]].links) do
                             local rdir = regular_dir(v..tostring(i))
                             if is_dir() == true then
                                 set.append(alternative_exits, rdir)

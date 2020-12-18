@@ -326,12 +326,9 @@ end
 function ftb_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p2 ］")
     if config.jobs["斧头帮任务"].dest == nil then
-        local dest = parse(config.jobs["斧头帮任务"].info)
-        if #dest == 0 then
-            return ftb_job_p3()
-        elseif #dest > 1 then
-            local around = string.split(config.jobs["斧头帮任务"].around, "[和 、]+")
-            dest = get_room_id_by_around(around, dest)
+        local rc = ftb_job_get_dest()
+        if rc ~= nil then
+            return rc
         end
     end
     jia_min()
@@ -411,6 +408,36 @@ function ftb_job_refresh()
             end
         end
     end
+end
+
+function ftb_job_get_dest()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_get_dest ］")
+    local dest = parse(config.jobs["斧头帮任务"].info)
+    if #dest == 0 then
+        return ftb_job_p4()
+    elseif #dest > 1 and string.split(config.jobs["斧头帮任务"].around) ~= false then
+        local arounds = { string.split(config.jobs["斧头帮任务"].around, "[和 、]+") }
+        for _,v in ipairs(arounds) do
+            local dests = get_room_id_by_around(v, dest)
+            if #dests > 0 then
+                dest = dests
+                break
+            end
+            if #v > 1 then
+                arounds = table.union(arounds, set.permute(v, #v-1))
+            end
+        end
+    end
+    config.jobs["斧头帮任务"].dest = { dest[1] }
+    for _,v in ipairs(dest) do
+        if get_path(config.jobs["斧头帮任务"].dest[1], v)[v].cost > 10 then
+            set.append(config.jobs["斧头帮任务"].spare, v)
+        else
+            config.jobs["斧头帮任务"].dest = set.union(config.jobs["斧头帮任务"].dest , get_room_id_by_range(config.jobs["斧头帮任务"].range, v))
+        end
+    end
+    config.jobs["斧头帮任务"].dest = get_room_id_by_tag("nojob", config.jobs["斧头帮任务"].dest, "exclude")
+    return
 end
 
 function ftb_job_wait_info()
