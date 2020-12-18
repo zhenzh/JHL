@@ -33,7 +33,10 @@ function timer.add(name, seconds, send, group, options)
 end
 
 function timer.delete(name)
-    local rc = killTimer((timers[name] or {}).id or "")
+    if not timer.is_exist(name) then
+        return false
+    end
+    local rc = killTimer(timers[name].id)
     if timers[name] ~= nil and timers[name].group ~= nil then
         timers.group[timers[name].group][name] = nil
         if table.is_empty(timers.group[timers[name].group]) then
@@ -45,14 +48,37 @@ function timer.delete(name)
 end
 
 function timer.enable(name)
-    return enableTimer((timers[name] or {}).id or name)
+    if not timer.is_exist(name) then
+        return false
+    end
+    local rc = enableTimer(timers[name].id)
+    if rc == true then
+        timers[name].enable = true
+        return true
+    else
+        timers[name].enable = false
+        return false
+    end
 end
 
 function timer.disable(name)
-    return disableTimer((timers[name] or {}).id or name)
+    if not timer.is_exist(name) then
+        return false
+    end
+    local rc = disableTimer(timers[name].id)
+    if rc == true then
+        timers[name].enable = false
+        return true
+    else
+        timers[name].enable = true
+        return false
+    end
 end
 
 function timer.remain(name)
+    if not timer.is_exist(name) then
+        return 0
+    end
     return remainingTime(timers[name].id)
 end
 

@@ -415,8 +415,8 @@ function ftb_job_get_dest()
     local dest = parse(config.jobs["斧头帮任务"].info)
     if #dest == 0 then
         return ftb_job_p4()
-    elseif #dest > 1 and string.split(config.jobs["斧头帮任务"].around) ~= false then
-        local arounds = { string.split(config.jobs["斧头帮任务"].around, "[和 、]+") }
+    elseif #dest > 1 and config.jobs["斧头帮任务"].around ~= false then
+        local arounds = { string.split(config.jobs["斧头帮任务"].around, ", ") }
         for _,v in ipairs(arounds) do
             local dests = get_room_id_by_around(v, dest)
             if #dests > 0 then
@@ -429,8 +429,10 @@ function ftb_job_get_dest()
         end
     end
     config.jobs["斧头帮任务"].dest = { dest[1] }
+    map_adjust("门派接引", "禁用", "过河", "渡船", "丐帮密道", "禁用")
     for _,v in ipairs(dest) do
         if get_path(config.jobs["斧头帮任务"].dest[1], v)[v].cost > 10 then
+            config.jobs["斧头帮任务"].spare = config.jobs["斧头帮任务"].spare or {}
             set.append(config.jobs["斧头帮任务"].spare, v)
         else
             config.jobs["斧头帮任务"].dest = set.union(config.jobs["斧头帮任务"].dest , get_room_id_by_range(config.jobs["斧头帮任务"].range, v))
@@ -450,3 +452,8 @@ function ftb_job_wait_info()
     end
     config.jobs["斧头帮任务"].phase = phase["任务执行"]
 end
+
+config.jobs["斧头帮任务"].func = ftb_job
+config.jobs["斧头帮任务"].efunc = enable_ftb_job
+config.jobs["斧头帮任务"].dfunc = disable_ftb_job
+show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

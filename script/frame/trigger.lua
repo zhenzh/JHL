@@ -162,6 +162,7 @@ function trigger.enable(name)
     end
 
     triggers.fire[triggers[name].order][name] = true
+    triggers[name].options.Enable = true
     return true
 end
 
@@ -180,6 +181,7 @@ function trigger.disable(name)
     end
 
     triggers.fire[triggers[name].order][name] = nil
+    triggers[name].options.Enable = false
     return true
 end
 

@@ -574,10 +574,16 @@ function get_room_id_by_range(range, origin)
         for _,m in ipairs(v) do
             for i,j in pairs(map[m].links) do
                 if regular_dir(i) == nil then
-                    local steps = table.getn(string.split(i, ";"))
+                    local steps = 0
+                    for _,x in ipairs(string.split(i, ";")) do
+                        if is_dir(x) == true or string.match(x, "^go%d+$") then
+                            steps = steps + 1
+                        end
+                    end
                     if steps > 0 then
                         if k+steps <= range then
-                            if map[j].zone ~= nil then
+                            if not string.match(map[j].name, "^%S+船$") and 
+                               not string.match(map[j].name, "^%S+舟$") then
                                 if not set.has(room_ids, j) then
                                     set.append(room_ids, j)
                                     if k+steps <= #edge then
@@ -594,7 +600,8 @@ function get_room_id_by_range(range, origin)
                         end
                     end
                 else
-                    if map[j].zone ~= nil then
+                    if not string.match(map[j].name, "^%S+船$") and 
+                       not string.match(map[j].name, "^%S+舟$") then
                         if not set.has(room_ids, j) then
                             set.append(room_ids, j)
                             if k < #edge then
