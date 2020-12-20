@@ -22,8 +22,8 @@
   set.inter(...)              获取并返回若干个集合的交集，重复元素只保留一个
   set.compl(...)              返回从第一个集合 s 中去除后续若干个集合所包含的元素后得到的新集合，重复元素只保留一个
   set.eq(a, b)                比较集合 a 和 b 中的元素是否相等，存在重复元素的集合将先去重后比较
-  set.lt(a, b)                比较集合 a 是否真包含集合 b，存在重复元素的集合将先去重后比较
-  set.le(a, b)                比较集合 a 是否包含集合 b，存在重复元素的集合将先去重后比较
+  set.lt(a, b)                比较集合 a 是否真包含于集合 b，存在重复元素的集合将先去重后比较
+  set.le(a, b)                比较集合 a 是否包含于集合 b，存在重复元素的集合将先去重后比较
   set.copy(s)                 复制集合 s 的值生成新的集合
   set.tokey(s)                生成以集合 s 的元素作为键值的表，存在重复元素的集合将被去重
   set.index_of(s, e)          获取元素 e 在集合 s 中位置
@@ -234,8 +234,8 @@ end
 function set.lt(a, b)
     set.dedup(a)
     set.dedup(b)
-    local s = set.tokey(a)
-    for _,v in ipairs(b) do
+    local s = set.tokey(b)
+    for _,v in ipairs(a) do
         if s[v] == true then
             s[v] = nil
         else
@@ -252,8 +252,8 @@ end
 function set.le(a, b)
     set.dedup(a)
     set.dedup(b)
-    local s = set.tokey(a)
-    for _,v in ipairs(b) do
+    local s = set.tokey(b)
+    for _,v in ipairs(a) do
         if s[v] == true then
             s[v] = nil
         else
@@ -321,6 +321,7 @@ function set.is_set(t)
 end
 
 function set.tostring(s)
+    if type(s) ~= "table" then return tostring(s) end
     local p = {}
     for _,v in ipairs(s) do
         if type(v) == "string" then

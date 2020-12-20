@@ -125,7 +125,7 @@ function one_step_get_dir()
         if env.current.exits == "" then
             env.current.exits = {}
         else
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
     end
     if #env.current.exits == 0 then
@@ -153,8 +153,14 @@ function one_step_get_dir()
             end
             if #alternative_exits == 0 then
                 for _,v in ipairs(env.current.exits) do
-                    if is_dir(v) then
-                        set.append(alternative_exits, link_dir[v])
+                    if is_dir(v) == true then
+                        for _,i in ipairs(map[env.current.id[1]].links) do
+                            local rdir = regular_dir(v..tostring(i))
+                            if is_dir() == true then
+                                set.append(alternative_exits, rdir)
+                                break
+                            end
+                        end
                     end
                 end
             end
@@ -1355,7 +1361,7 @@ function search_check_result()
             return search_check_result()
         elseif #env.current.id > 0 then
             if type(env.current.exits) == "string" then
-                env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+                env.current.exits = string.split(env.current.exits, "[和 、]+")
             end
             env.current.id = get_room_id_by_exits(env.current.exits, env.current.id)
             if #env.current.id == 1 then
@@ -1367,14 +1373,5 @@ function search_check_result()
     end
     var.search.obj = {}
 end
--- ^[>\s]*\S+摇摇头，说道：没听说过。$|^[>\s]*\S+耸了耸肩，很抱歉地说：无可奉告。$|^[>\s]*\S+睁大眼睛望着你，显然不知道你在说什么。$|
--- ^[>\s]*\S+想了一会儿，说道：对不起，你问的事我实在没有印象。$|^[>\s]*\S+说道：你在说外国话吧？我不会，你最好带个翻译来。$|
--- ^[>\s]*\S+说道：才阿八热古里古鲁。你看，我也能假装会说外国话。$|^[>\s]*\S+嘻嘻笑道：你说什么鸟语？$|^[>\s]*\S+说道：嗯....这我可不清楚，你最好问问别人吧。$
--- ^[>\s]*你向\S+打听有关「\S+」的消息。$\n.*\n
--- ^[>\s]*\S+现在的状况没有办法给你任何答覆。$|^[>\s]*这里没有 \S+ 这个人。$
---[[ function ask(npc, question)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ask ］")
-
-end ]]
 
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

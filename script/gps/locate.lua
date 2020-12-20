@@ -1,8 +1,8 @@
-link_dir = {
+local link_dir = {
     ["tang coffin"]                                                                               = false,
     ["west;west;west;west;west;west;west;west;west;west"]                                         = false,
     ["search"]                                                                                    = false,
-    ["jump 牛心石"]                                                                               = false,
+    ["jump 牛心石"]                                                                                = false,
     ["kneel"]                                                                                     = false,
     ["time"]                                                                                      = false,
     ["climb up"]                                                                                  = false,
@@ -65,7 +65,7 @@ link_dir = {
     ["swim down"]                                                                                 = false,
     ["jump valley"]                                                                               = false,
     ["tie stone;climb down"]                                                                      = false,
-    ["jump 雪坑"]                                                                                 = false,
+    ["jump 雪坑"]                                                                                  = false,
     ["drop eluan shi;swim up"]                                                                    = false,
     ["drop eluan shi;swim light"]                                                                 = false,
     ["look skeleton;"]                                                                            = false,
@@ -212,8 +212,15 @@ link_dir = {
     ["out3105"] = "out",
 }
 
+function regular_dir(dir)
+    if dir == nil or link_dir[dir] == false then
+        return nil
+    end
+    return link_dir[dir] or dir
+end
+
 function locate(ids)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ locate ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ locate ］参数：ids = "..table.tostring(ids))
     if #env.current.id == 1 then
         return locate_return(0)
     end
@@ -242,7 +249,7 @@ function locate(ids)
             if env.current.exits == "" then
                 env.current.exits = {}
             else
-                env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+                env.current.exits = string.split(env.current.exits, "[和 、]+")
             end
         end
         env.current.id = get_room_id_by_exits(env.current.exits, env.current.id)
@@ -275,7 +282,7 @@ function locate(ids)
                     env.current.id = {}
                     break
                 end
-                env.current.id = get_room_id_by_roomsto(env.nextto.id, v, env.current.id)
+                env.current.id = get_room_id_by_roomsto(env.nextto.id, env.current.id, v)
                 if #env.current.id <= 1 then
                     break
                 end
@@ -354,7 +361,7 @@ function locate_nextto()
                 if env.nextto.exits == "" then
                     env.nextto.exits = {}
                 else
-                    env.nextto.exits = string.split(string.gsub(env.nextto.exits, " 和 ", "、"), "、")
+                    env.nextto.exits = string.split(env.nextto.exits, "[和 、]+")
                 end
                 if #env.nextto.exits > 0 then
                     env.nextto.id = get_room_id_by_exits(env.nextto.exits, env.nextto.id)
@@ -379,7 +386,7 @@ function locate_nextto()
 end
 
 function get_room_id_by_name(name, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_name ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_name ］参数：name = "..tostring(name)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -393,7 +400,7 @@ function get_room_id_by_name(name, rooms)
 end
 
 function get_room_id_by_desc(desc, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_desc ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_desc ］参数：desc = "..tostring(desc)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     for _,v in ipairs(rooms) do
         if map[v].desc == desc then
@@ -404,7 +411,7 @@ function get_room_id_by_desc(desc, rooms)
 end
 
 function get_room_id_by_zones(zones, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_zones ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_zones ］参数：zones = "..table.tostring(zones)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -420,7 +427,7 @@ function get_room_id_by_zones(zones, rooms)
 end
 
 function get_room_id_by_exits(exits, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_exits ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_exits ］参数：exits = "..table.tostring(exits)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     for _,v in ipairs(rooms) do
         for _,i in ipairs(map[v].exits) do
@@ -434,7 +441,7 @@ function get_room_id_by_exits(exits, rooms)
 end
 
 function get_room_id_by_npc(npc, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_npc ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_npc ］参数：npc = "..tostring(npc)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -450,7 +457,7 @@ function get_room_id_by_npc(npc, rooms)
 end
 
 function get_room_id_by_item(item, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_item ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_item ］参数：item = "..tostring(item)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -466,7 +473,7 @@ function get_room_id_by_item(item, rooms)
 end
 
 function get_room_id_by_tag(tag, rooms, mode)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_tag ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_tag ］参数：tag = "..tostring(tag)..", rooms = "..table.tostring(rooms)..", mode = "..tostring(mode))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -489,8 +496,8 @@ function get_room_id_by_tag(tag, rooms, mode)
     return room_ids
 end
 
-function get_room_id_by_roomsfrom(roomsfrom, dir, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_roomsfrom ］")
+function get_room_id_by_roomsfrom(roomsfrom, rooms, dir)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_roomsfrom ］参数：roomsfrom = "..table.tostring(roomsfrom)..", rooms = "..table.tostring(rooms)..", dir = "..tostring(dir))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -498,7 +505,7 @@ function get_room_id_by_roomsfrom(roomsfrom, dir, rooms)
     for _,v in ipairs(roomsfrom) do
         for i,j in pairs(map[v].links) do
             if set.has(rooms, j) == true then
-                i = link_dir[i] or i
+                i = regular_dir(i)
                 if i ~= false then
                     if dir == nil then
                         set.append(room_ids, j)
@@ -513,8 +520,8 @@ function get_room_id_by_roomsfrom(roomsfrom, dir, rooms)
     return set.inter(rooms, room_ids)
 end
 
-function get_room_id_by_roomsto(roomsto, dir, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_roomsto ］")
+function get_room_id_by_roomsto(roomsto, rooms, dir)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_roomsto ］参数：roomsto = "..table.tostring(roomsto)..", rooms = "..table.tostring(rooms)..", dir = "..tostring(dir))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -522,7 +529,7 @@ function get_room_id_by_roomsto(roomsto, dir, rooms)
     for _,v in ipairs(rooms) do
         for i,j in pairs(map[v].links) do
             if set.has(roomsto, j) == true then
-                i = link_dir[i] or i
+                i = regular_dir(i)
                 if i ~= false then
                     if dir == nil or dir == i then
                         set.append(room_ids, v)
@@ -535,59 +542,100 @@ function get_room_id_by_roomsto(roomsto, dir, rooms)
     return room_ids
 end
 
--- function scan_room(rooms, start)
---     local l
---     scan = true
---     if type(rooms) == "string" then
---         rooms = string.totable(rooms)
---     elseif type(rooms) ~= "table" then
---         scan = nil
---         return false
---     end
+function get_room_id_by_around(around, rooms)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_around ］参数：around = "..table.tostring(around)..", rooms = "..table.tostring(rooms))
+    local room_ids = {}
+    if rooms == nil then
+        rooms = table.index(map)
+    end
+    for _,v in ipairs(rooms) do
+        local around_rooms = {}
+        for i,j in pairs(map[v].links) do
+            if is_dir(i) == true or is_dir(link_dir[i]) == true then
+                set.append(around_rooms, map[j].name)
+            end
+        end
+        if set.le(around, around_rooms) then
+            set.append(room_ids, v)
+        end
+    end
+    return room_ids
+end
 
---     if #rooms == 0 then
---         return true
---     end
+function get_room_id_by_range(range, origin)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_range ］参数：range = "..tostring(range)..", origin = "..tostring(origin))
+    if origin == nil then
+        return {}
+    end
+    local room_ids,edge = { origin },{ {origin} }
+    for i=2,range do
+        set.append(edge, {})
+    end
+    for k,v in ipairs(edge) do
+        for _,m in ipairs(v) do
+            for i,j in pairs(map[m].links) do
+                if regular_dir(i) == nil then
+                    local steps = 0
+                    for _,x in ipairs(string.split(i, ";")) do
+                        if is_dir(x) == true or string.match(x, "^go%d+$") then
+                            steps = steps + 1
+                        end
+                    end
+                    if steps > 0 then
+                        if k+steps <= range then
+                            if not string.match(map[j].name, "^%S+船$") and 
+                               not string.match(map[j].name, "^%S+舟$") then
+                                if not set.has(room_ids, j) then
+                                    set.append(room_ids, j)
+                                    if k+steps <= #edge then
+                                        set.append(edge[k+steps], j)
+                                        for x=k+steps+1,#edge do
+                                            if set.has(edge[x], j) then
+                                                set.delete(edge[x], j)
+                                                break
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                else
+                    if not string.match(map[j].name, "^%S+船$") and 
+                       not string.match(map[j].name, "^%S+舟$") then
+                        if not set.has(room_ids, j) then
+                            set.append(room_ids, j)
+                            if k < #edge then
+                                set.append(edge[k+1], j)
+                                for x=k+2,#edge do
+                                    if set.has(edge[x], j) then
+                                        set.delete(edge[x], j)
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return room_ids
+end
 
---     local room_string = table.concat(rooms, "|")
---     if string.find(room_string, "^[0-9]+[|0-9]*$") then
---         SetVariable("room_id_dst", room_string)
---     else
---         scan = nil
---         return false
---     end
-
---     if start == nil then start = 1 end
---     SetVariable("room_id_dstpos", start - 1)
---     while tonumber(GetVariable("room_id_dstpos")) < #rooms do
---         flynext()
---         l,_ = wait.regexp("^[>\\s]*你目前还没有任何为 移动(?:完成|失败) 的变量设定。$", 180)
---         if no_response(l) or string.find(l, "移动失败") then
---             ColourNote("orange", "", "目的地无法到达，略过 "..rooms[tonumber(GetVariable("room_id_dstpos"))])
---         end
---         if path == "nomove" or room_compare > 0 then
---             EnableTrigger("get_room_name", false)
---             EnableTrigger("get_room_exits", false)
---             Execute("look;set 搜索完成")
---             wait.regexp("^[>\\s]*你目前还没有任何为 搜索完成 的变量设定。$", 30)
---             EnableTrigger("get_room_name", true)
---             EnableTrigger("get_room_exits", true)
---             if set.eq(room_update, string.split(GetVariable("room_id"), "|")) == true then
---                 room_update = nil
---             end
---             Execute("set 更新定位")
---             wait.regexp("^[>\\s]*你目前还没有任何为 更新定位 的变量设定。$", 30)
---             flood = flood + 3
---         end
---         if scan == false then
---             scan = nil
---             return true
---         end
---         if flood > 40 then
---             wait.time(1)
---             flood = 0
---         end
---     end
---     scan = nil
---     return true
--- end
+function get_room_id_around()
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_around ］")
+    local room_ids = {}
+    if #env.current.id ~= 1 then
+        return room_ids
+    end
+    for k,v in pairs(map[env.current.id[1]].links) do
+        if is_dir(regular_dir(k)) == true or string.match(k, "^go%d+$") then
+            if not string.match(map[v].name, "^%S+船$") and 
+               not string.match(map[v].name, "^%S+舟$") then
+                set.append(room_ids, v)
+            end
+        end
+    end
+    return room_ids
+end

@@ -111,30 +111,28 @@ function get_path(src, dst)
     trace[src] = {step = "", cost = 0}
     local analyzing = {src}
     while #analyzing > 0 do
-        local next = {}
+        local nxt = {}
         for _,i in ipairs(analyzing) do
             if trace[i].cost < trace[dst].cost - 1 then
                 for k,v in pairs(map[i].links) do
                     local cost = (trace[i].cost or 0) + (map_attr.cost[k..tostring(v)] or map_attr.cost[k] or 1)
                     if trace[v] == nil then
                         trace[v] = {step = k, cost = cost, last = i}
-                        set.append(next, v)
+                        set.append(nxt, v)
                     elseif cost < trace[v].cost then
                         trace[v] = {step = k, cost = cost, last = i}
-                        set.append(next, v)
+                        set.append(nxt, v)
                     end
                 end
             end
         end
-        analyzing = next
+        analyzing = nxt
     end
-    local path = {}
-    local next
-    local crt = dst
+    local path,crt,nxt = {},dst,nil
     while crt ~= nil do
         path[crt] = trace[crt]
-        path[crt].next = next
-        next = crt
+        path[crt].next = nxt
+        nxt = crt
         crt = trace[crt].last
     end
     return path
@@ -150,7 +148,7 @@ function get_multipath(src, dst)
     trace[src] = {step = "", cost = 0}
     local analyzing = {src}
     while #analyzing > 0 do
-        local next = {}
+        local nxt = {}
         for _,i in ipairs(analyzing) do
             if trace[i].cost < set.max(table.values(cost)) - 1 then
                 for k,v in pairs(map[i].links) do
@@ -160,21 +158,21 @@ function get_multipath(src, dst)
                         if cost[v] ~= nil then
                             cost[v] = curent_cost
                         end
-                        set.append(next, v)
+                        set.append(nxt, v)
                     elseif curent_cost < trace[v].cost then
                         trace[v] = {step = k, cost = curent_cost, last = i}
                         if cost[v] ~= nil then
                             cost[v] = curent_cost
                         end
-                        set.append(next, v)
+                        set.append(nxt, v)
                     end
                 end
             end
         end
-        analyzing = next
+        analyzing = nxt
     end
     local path = var.goto.multipath or {}
-    local crt,next
+    local crt,nxt
     for k,_ in pairs(cost) do
         if trace[k].cost >= 100000 then
             cost[k] = nil
@@ -193,7 +191,7 @@ function get_multipath(src, dst)
                             temp[i] = temp[i] or {}
                             temp[i][crt] = trace[crt]
                             if i ~= crt then
-                                temp[i][crt].next = next
+                                temp[i][crt].next = nxt
                                 if cost[crt] ~= nil then
                                     path[i][crt] = table.deepcopy(temp[i])
                                 elseif crt == src then
@@ -202,7 +200,7 @@ function get_multipath(src, dst)
                             end
                         end
                     end
-                    next = crt
+                    nxt = crt
                     crt = trace[crt].last
                 else
                     for i,_ in pairs(temp) do
@@ -210,11 +208,11 @@ function get_multipath(src, dst)
                             for j,_ in pairs(path[crt][src]) do
                                 if cost[j] ~= nil then
                                     path[i][j] = table.union((path[i][j] or {}), (path[crt][j] or {[crt] = trace[crt]}))
-                                    path[i][j][crt].next = next
+                                    path[i][j][crt].next = nxt
                                     path[i][j] = table.union(path[i][j], temp[i])
                                 elseif j == src then
                                     path[i][j] = table.union(path[crt][j], temp[i])
-                                    path[i][j][crt].next = next
+                                    path[i][j][crt].next = nxt
                                 end
                             end
                         end
@@ -558,7 +556,7 @@ function goto_exec(current_id)
                     if env.current.exits == "" then
                         env.current.exits = {}
                     else
-                        env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+                        env.current.exits = string.split(env.current.exits, "[和 、]+")
                     end
                 end
                 env.current.id = get_room_id_by_exits(env.current.exits, env.current.id)

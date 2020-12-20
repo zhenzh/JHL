@@ -97,14 +97,14 @@ function disable_family_job()
 end
 
 function family_job()
-    local rc
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job ］")
     automation.idle = false
     var.job = var.job or {name = "门派任务"}
     var.job.statics = var.job.statics or {name = "门派任务"}
     var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
     trigger.enable_group("family_job_active")
     if (config.jobs["门派任务"].phase or 0) <= phase["任务获取"] then
-        rc = family_job_p1()
+        local rc = family_job_p1()
         if rc ~= nil then
             return family_job_return(rc)
         end
@@ -116,7 +116,7 @@ function family_job()
         var.job.statics["exp"] = var.job.statics["exp"] or state.exp
         var.job.statics["pot"] = var.job.statics["pot"] or state.pot
         config.jobs["门派任务"].dest = nil
-        rc = family_job_p3()
+        local rc = family_job_p3()
         if rc ~= nil then
             return family_job_return(rc)
         end
@@ -579,7 +579,7 @@ function family_job_get_dir(ldir)
     local dir
     if config.jobs["门派任务"].dest[1] == 1433 then
         if type(env.current.exits) == "string" then
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
         for _,v in ipairs(env.current.exits) do
             if v ~= "westup" and v ~= "northup" and v ~= "eastdown" then
@@ -589,7 +589,7 @@ function family_job_get_dir(ldir)
         end
     elseif config.jobs["门派任务"].dest[1] == 1530 then
         if type(env.current.exits) == "string" then
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
         for _,v in ipairs(env.current.exits) do
             if v ~= "southdown" then
@@ -599,7 +599,7 @@ function family_job_get_dir(ldir)
         end
     elseif config.jobs["门派任务"].dest[1] == 1301 then 
         if type(env.current.exits) == "string" then
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
         for _,v in ipairs(env.current.exits) do
             if v ~= "northwest" and v ~= "northeast" then
@@ -617,9 +617,7 @@ function family_job_get_dir(ldir)
             end
         end
     end
-    if link_dir[dir] ~= nil and link_dir[dir] ~= false then
-        dir = link_dir[dir]
-    end
+    dir = regular_dir(dir)
     if not is_dir(dir) and is_dir(ldir) then
         dir = get_reverse_dir(ldir)
     end
