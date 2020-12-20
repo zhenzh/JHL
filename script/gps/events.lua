@@ -623,7 +623,7 @@ function quicksand()
         end
     else
         if type(env.current.exits) == "string" then
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
         for _,v in ipairs(env.current.exits) do
             rc = look_dir(v)
@@ -1884,7 +1884,7 @@ function dynamic_exit()
         if env.current.exits == "" then
             env.current.exits = {}
         else
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
     end
     if #env.current.exits == 0 then
@@ -1894,7 +1894,7 @@ function dynamic_exit()
         if env.current.exits == "" then
             env.current.exits = {}
         else
-            env.current.exits = string.split(string.gsub(env.current.exits, " 和 ", "、"), "、")
+            env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
     end
     if var.goto.pause ~= nil then

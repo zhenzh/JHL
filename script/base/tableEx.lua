@@ -211,7 +211,7 @@ function table.transfer(s, f)
 end
 
 function table.tostring(t)
-    if t == nil then return "" end
+    if type(t) ~= "table" then return tostring(t) end
     if type(t) == "boolean" then return tostring(t) end
     local s,i = { "{" },1
     for k,v in pairs(t) do
