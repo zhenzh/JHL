@@ -37,264 +37,14 @@ function ftb_job()
     automation.idle = false
     var.job = var.job or {name = "斧头帮任务"}
     var.job.statics = var.job.statics or {name = "斧头帮任务"}
---    var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
     trigger.enable_group("ftb_job_active")
-    if (config.jobs["斧头帮任务"].phase or 1) <= phase["任务更新"] then
+    if config.jobs["斧头帮任务"].phase ~= phase["任务执行"] then
         local rc = ftb_job_p1()
         if rc ~= nil then
             return ftb_job_return(rc)
         end
     end
-    if config.jobs["斧头帮任务"].phase == phase["任务执行"] then
-        return ftb_job_return(ftb_job_p2())
-    end
-    repeat
-        
-        if active_job.state == "搜寻目标" then
-            local retry = false
-            local cleared_enemy = 0
-            local leave = true
-            local search_area = false
-            local enemy_name = false
-            local enemy = 0
-            prepare("斧头帮任务")
-            repeat
-                if active_job.destination == false then
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 目的地未知")
-                    active_job.destination = parseDest(active_job.target)
-                    if active_job.destination == false then
-                        clean_ftb_job("放弃任务")
-                        verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 没有可用目的地，放弃任务，当前任务状态："..active_job.state)
-                        return false
-                    end
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 获得目的地："..table.tostring(active_job.destination))
-                    if #active_job.destination > 1 and active_job.roomto ~= false then
-                        for _,v in ipairs(active_job.roomto) do
-                            active_job.destination = get_room_id_by_roomsto(get_room_id_by_name(v), nil, active_job.destination)
-                            if active_job.destination == false then
-                                clean_ftb_job("放弃任务")
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 没有可用目的地，放弃任务，当前任务状态："..active_job.state)
-                                return false
-                            end
-                            verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 更新目的地："..table.tostring(active_job.destination))
-                            if #active_job.destination == 1 then
-                                break
-                            end
-                        end
-                    end
-                    active_job.destination = get_range(active_job.destination, active_job.range)
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 获得目的地范围："..table.tostring(active_job.destination))
-                    active_job.destination = get_room_id_by_tags("nojob", active_job.destination, "exclude")
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 去除非任务区")
-                    if active_job.destination == false then
-                        clean_ftb_job("放弃任务")
-                        verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 没有可用目的地，放弃任务，当前任务状态："..active_job.state)
-                        return false
-                    end
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 确认任务区域："..table.tostring(active_job.destination))
-                end
-                if search_area == false then
-                    search_area = copytable.shallow(active_job.destination)
-                end
-                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 获得最终任务区域："..table.tostring(search_area))
-                if #search_area > 200 then
-                    clean_ftb_job("放弃任务")
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 目的地太多，放弃任务，当前任务状态："..active_job.state)
-                    return false
-                end
-                repeat
-                    flyto(search_area[1])
-                    l,_ = wait.regexp("^[>\\s]*你目前还没有任何为 移动(?:完成|失败) 的变量设定。$", 180)
-                    if not no_response(l) then
-                        if string.find(l, "移动失败") then
-                            if #active_job.destination > 1 then
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 目的地"..search_area[1].." 无法到达")
-                                table.remove(active_job.destination, 1)
-                                search_area = copytable.shallow(active_job.destination)
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 更新任务区域："..table.tostring(search_area))
-                            else
-                                clean_ftb_job("放弃任务")
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 所有目的地无法到达，放弃本次任务，当前任务状态："..active_job.state)
-                                return false
-                            end
-                        else
-                            break
-                        end
-                    end
-                until false
-                if search_npc("「(?:"..table.concat(ftb_job_nick1, "|")..")(?:"..table.concat(ftb_job_nick2, "|")..")」(\\S{4,8})", search_area) == true then
-                    for i = 1, tonumber(GetVariable("room_id_destpos")) do
-                        table.remove(search_area, 1)
-                    end
-                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 剩余未搜索目的地："..table.tostring(search_area))
-                    for _,v in ipairs(found_npc) do
-                        for _,i in ipairs(found_npc[v]) do
-                            repeat
-                                if GetVariable("room_id") ~= v then
-                                    flyto(v)
-                                    l,_ = wait.regexp("^[>\\s]*你目前还没有任何为 移动(?:完成|失败) 的变量设定。$", 180)
-                                end
-                                if GetVariable("room_id") == v or string.find(l, "移动完成") then
-                                    if enemy_name == false then
-                                        l,w = ask(string.lower(i), "刺客", "^[>\\s]*(\\S+)说道：老子怎么看都觉得你比我像杀手!$|"..
-                                                                               "^[>\\s]*(\\S+)说道：青天白日的, 哪里有刺客\\? 笑话.$")
-                                        if l then
-                                            if string.find(l, "你比我像") then
-                                                enemy_name = w[1]
-                                            else
-                                                if skip_npc == nil then
-                                                    skip_npc = {}
-                                                end
-                                                for _,m in ipairs(w) do
-                                                    if m ~= "" then
-                                                        set.append(skip_npc, m)
-                                                    end
-                                                end
-                                            end
-                                        end
-                                    end
-                                    if enemy_name ~= false then
-                                        Execute("kill "..string.lower(i))
-                                        l,_ = wait.regexp("^[>\\s]*你对著"..enemy_name.."喝道：「\\S+」$|"..
-                                                          "^[>\\s]*这里没有这个人。$|"..
-                                                          "^[>\\s]*你现在正忙着呢。$|"..
-                                                          "^[>\\s]*这里不准战斗。$", 30)
-                                        if no_response(l) then
-                                            clean_ftb_job("放弃任务")
-                                            verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 战斗无响应，放弃任务，当前任务状态："..active_job.state)
-                                            return false
-                                        elseif string.find(l, "正忙") then
-                                            wait_nobusy()
-                                        elseif string.find(l, "喝道") then
-                                            action_state = "主动战斗"
-                                            fight_enemy = {enemy_name}
-                                            verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 状态："..action_state..", 敌人："..tostring(enemy_name))
-                                            local fight_result = fight()
-                                            fight_enemy = nil
-                                            if fight_result == true then
-                                                enemy = enemy + 1
-                                                set.append(skip_npc, enemy_name)
-                                                enemy_name = false
-                                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 清除当前目标，累计清除目标数："..tostring(cleared_enemy + enemy))
-                                                wait_nobusy()
-                                                full_state(config.mana)
-                                                break
-                                            else
-                                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 战斗失败，立刻逃跑")
-                                                leave = leave_room()
-                                                if leave == true then
-                                                    if not full_state(config.mana) then
-                                                        if enemy > 0 then
-                                                            active_job.state = "回复任务"
-                                                            break
-                                                        else
-                                                            clean_ftb_job("放弃任务")
-                                                            verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 无法恢复状态，放弃任务")
-                                                            return false
-                                                        end
-                                                    end
-                                                else
-                                                    enemy_name = false
-                                                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 放弃当前目标，去下一目的地")
-                                                    break
-                                                end
-                                            end
-                                        elseif string.find(l, "没有这个") then
-                                            enemy_name = false
-                                            verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 未找到攻击目标")
-                                            break
-                                        else
-                                            verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 处于禁止战斗房间")
-                                            l,w = ask(string.lower(i), "程金斧", "^[>\\s]*"..enemy_name.."(?:急步|)往(\\S+)(?:离开|走了出去)。$")
-                                            local npc_dir = nil
-                                            if w ~= nil and w[1] ~= "" then
-                                                npc_dir = dir_desc[w[1]]
-                                            end
-                                            for _,m in ipairs(get_room_id_by_tags("nojob", get_room_id_by_roomsfrom(GetVariable("room_id"), npc_dir, table.keys(map[GetVariable("room_id")].links)), "exclude")) do
-                                                if found_npc[m] ~= nil then
-                                                    set.append(found_npc[m], i)
-                                                else
-                                                    set.append(found_npc, m)
-                                                    found_npc[m] = {i}
-                                                end
-                                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 更新目的地列表："..table.tostring(found_npc))
-                                            end
-                                            enemy_name = false
-                                            break
-                                        end
-                                    else
-                                        verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 不是任务目标，处理下个目标")
-                                        break
-                                    end
-                                else
-                                    verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 前往目的地失败，去下一目的地")
-                                    break
-                                end
-                            until false
-                            if GetVariable("room_id") ~= v then
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 已离开当前搜索目的地，去下一目的地")
-                                break
-                            end
-                            if leave == false then
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 逃跑失败，去下一目的地")
-                                break
-                            end
-                            if active_job.state == "回复任务" then
-                                break
-                            end
-                        end
-                        if active_job.state == "回复任务" then
-                            break
-                        end
-                        found_npc[v] = nil
-                    end
-                    if active_job.state ~= "回复任务" then
-                        if enemy > 0 then
-                            cleared_enemy = cleared_enemy + enemy
-                            enemy = 0
-                            if cleared_enemy < active_job.enemy then
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 目标未完全清除："..tostring(cleared_enemy).." / "..tostring(active_job.enemy))
-                                if #search_area == 0 then
-                                    search_area = copytable.shallow(active_job.destination)
-                                end
-                            else
-                                active_job.state = "回复任务"
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 所有目标都已清除")
-                            end
-                        else
-                            if #search_area == 0 then
-                                search_area = copytable.shallow(active_job.destination)
-                            end
-                        end
-                    end
-                else
-                    if #active_job.destination == #search_area then
-                        if retry == false then
-                            active_job.range = math.min(9, active_job.range + 3)
-                            active_job.destination = false
-                            search_area = false
-                            idle = false
-                            retry = true
-                        else
-                            if cleared_enemy > 0 then
-                                active_job.state = "回复任务"
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 部分目标已清除")
-                            else
-                                clean_ftb_job("放弃任务")
-                                verbose("#"..debug.getinfo(1).currentline.." [start_ftb_job] 未找到目标，放弃任务，当前任务状态："..active_job.state)
-                                return false
-                            end
-                        end
-                    else
-                        search_area = copytable.shallow(active_job.destination)
-                    end
-                end
-                if active_job.state == "回复任务" then
-                    break
-                end
-            until false
-        end
-    until false
+    return ftb_job_return(ftb_job_p2())
 end
 
 function ftb_job_return(rc)
@@ -305,6 +55,8 @@ function ftb_job_return(rc)
     config.jobs["斧头帮任务"].info = nil
     config.jobs["斧头帮任务"].dest = nil
     config.jobs["斧头帮任务"].enemy = 0
+    config.jobs["斧头帮任务"].confirm = {}
+    config.jobs["斧头帮任务"].exclude = {}
     var.statics = var.job.statics
     trigger.disable_group("ftb_job")
     var.job = nil
@@ -335,14 +87,21 @@ function ftb_job_p2()
     if wield(config.fight["通用"].weapon) < 0 then
         return -1
     end
+    return ftb_job_exec()
 end
 
 function ftb_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p3 ］")
+    config.jobs["斧头帮任务"].phase = phase["任务完成"]
 end
 
 function ftb_job_p4()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p4 ］")
+    config.jobs["斧头帮任务"].phase = phase["任务失败"]
+    config.jobs["斧头帮任务"].active = false
+    if timer.is_exist("ftb_job_cd") == false then
+        timer.add("ftb_job_cd", 300, "config.jobs['斧头帮任务'].active = true", "ftb_job", {Enable=true, OneShot=true})
+    end
 end
 
 function ftb_job_goto_chengjinfu()
@@ -382,6 +141,7 @@ function ftb_job_refresh()
         if l == false then
             return -1
         elseif l[0] == "程金斧一脚正好踢中你的屁股！" then
+            config.jobs["斧头帮任务"].phase = phase["任务更新"]
             if privilege_job("斧头帮任务") == true then
                 var.job.statics = nil
                 return 1
@@ -397,15 +157,21 @@ function ftb_job_refresh()
             end
             wait(1)
             return ftb_job_refresh()
-        else
-            if (l[0] == "程金斧说道：我早就告诉过你了:" and config.jobs["斧头帮任务"].phase == phase["任务失败"]) or 
-               string.find(l[0], "BUG") then
-                config.jobs["斧头帮任务"].active = false
-                timer.add("ftb_job_cd", 300, "config.jobs['斧头帮任务'].active = true", "ftb_job", {Enable=true, OneShot=true})
+        elseif string.find(l[0], "BUG") then
+            timer.add("ftb_job_cd", 900, "ftb_job_active()", "ftb_job", {Enable=true, OneShot=true})
+            return ftb_job_p4()
+        elseif l[0] == "程金斧说道：我早就告诉过你了:" then
+            if config.jobs["斧头帮任务"].phase == phase["任务失败"] then
+                timer.delete("ftb_job_cd")
                 return ftb_job_p4()
-            else
-                return
             end
+            if config.jobs["斧头帮任务"].phase >= phase["任务执行"] then
+                return ftb_job_p4()
+            end
+            return
+        else
+            timer.add("ftb_job_cd", 900, "ftb_job_active()", "ftb_job", {Enable=true, OneShot=true})
+            return
         end
     end
 end
@@ -428,18 +194,221 @@ function ftb_job_get_dest()
             end
         end
     end
+    ftb_job_get_area(dest)
+    return
+end
+
+function ftb_job_get_area(dest)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_get_area ］参数：dest = "..table.tostring(dest))
     config.jobs["斧头帮任务"].dest = { dest[1] }
     map_adjust("门派接引", "禁用", "过河", "渡船", "丐帮密道", "禁用")
     for _,v in ipairs(dest) do
         if get_path(config.jobs["斧头帮任务"].dest[1], v)[v].cost > 10 then
-            config.jobs["斧头帮任务"].spare = config.jobs["斧头帮任务"].spare or {}
-            set.append(config.jobs["斧头帮任务"].spare, v)
+            var.job.spare = var.job.spare or {}
+            set.append(var.job.spare, v)
         else
-            config.jobs["斧头帮任务"].dest = set.union(config.jobs["斧头帮任务"].dest , get_room_id_by_range(config.jobs["斧头帮任务"].range, v))
+            config.jobs["斧头帮任务"].dest = set.union(config.jobs["斧头帮任务"].dest , get_room_id_by_range(var.job.range, v))
         end
     end
     config.jobs["斧头帮任务"].dest = get_room_id_by_tag("nojob", config.jobs["斧头帮任务"].dest, "exclude")
+end
+
+function ftb_job_exec()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_exec ］")
+    if var.job.npc == nil then
+        local rc = ftb_job_search()
+        if rc ~= nil then
+            return rc
+        end
+    end
+    for k,v in pairs(var.job.npc) do
+        local rc = ftb_job_ask_npc(k, v)
+        if rc == nil then
+            rc = ftb_job_kill_npc(k, v)
+        elseif rc == -1 then
+            return -1
+        end
+        if config.jobs["斧头帮任务"].enemy == 0 then
+            if config.jobs["斧头帮任务"].progress ~= nil then
+                return ftb_job_p3()
+            else
+                return ftb_job_p4()
+            end
+        end
+    end
+    var.job.npc = nil
+    return ftb_job_exec()
+end
+
+function ftb_job_search()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_search ］")
+    local rc
+    rc,var.job.npc,config.jobs["斧头帮任务"].dest = search("^\\s+「(?:"..set.concat(ftb_job_nick1, "|")..")(?:"..set.concat(ftb_job_nick2, "|")..")」(\\S+)\\((\\w+ \\w+)\\)$", config.jobs["斧头帮任务"].dest)
+    if rc == -1 then
+        return -1
+    elseif rc > 0 then
+        if var.job.range >= 7 then
+            if var.job.spare ~= nil then
+                var.job.range = config.jobs["斧头帮任务"].range
+                local spare = var.job.spare
+                var.job.spare = nil
+                ftb_job_get_area(spare)
+                return ftb_job_p2()
+            end
+            return ftb_job_p4()
+        end
+        var.job.range = 7
+        config.jobs["斧头帮任务"].dest = nil
+        var.job.spare = nil
+        return ftb_job_p2()
+    end
     return
+end
+
+function ftb_job_ask_npc(room, npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_ask_npc ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
+    if table.is_empty(npc) then
+        return 1
+    end
+    if set.has(config.jobs["斧头帮任务"].exclude, set.last(npc)[2][1]) then
+        set.pop(npc)
+        return ftb_job_ask_npc(room, npc)
+    end
+    if env.current.id[1] ~= room then
+        if goto(room) ~= 0 then
+            var.job.npc[room] = nil
+            return 1
+        end
+    end
+    if set.has(config.jobs["斧头帮任务"].confirm, set.last(npc)[2][1]) then
+        return
+    end
+    local l = wait_line("ask "..string.lower(set.last(npc)[2][2]).." about 刺客", 30, nil, nil, "^"..set.last(npc)[2][1].."说道：老子怎么看都觉得你比我像杀手!$|"..
+                                                                                               "^"..set.last(npc)[2][1].."说道：青天白日的, 哪里有刺客\\? 笑话.$|"..
+                                                                                               "^你忙着呢，你等会儿在问话吧。$|"..
+                                                                                               "^这里没有 \\S+ 这个人$|"..
+                                                                                               "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
+                                                                                               "^"..set.last(npc)[2][1].."忙着呢，你等会儿在问话吧。$|"..
+                                                                                               "^"..set.last(npc)[2][1].."摇摇头，说道：没听说过。$|"..
+                                                                                               "^"..set.last(npc)[2][1].."耸了耸肩，很抱歉地说：无可奉告。$|"..
+                                                                                               "^"..set.last(npc)[2][1].."睁大眼睛望着你，显然不知道你在说什么。$|"..
+                                                                                               "^"..set.last(npc)[2][1].."想了一会儿，说道：对不起，你问的事我实在没有印象。$|"..
+                                                                                               "^"..set.last(npc)[2][1].."说道：你在说外国话吧？我不会，你最好带个翻译来。$|"..
+                                                                                               "^"..set.last(npc)[2][1].."说道：才阿八热古里古鲁。你看，我也能假装会说外国话。$|"..
+                                                                                               "^"..set.last(npc)[2][1].."嘻嘻笑道：你说什么鸟语？$|"..
+                                                                                               "^"..set.last(npc)[2][1].."说道：嗯....这我可不清楚，你最好问问别人吧。$")
+    if l == false then
+        return -1
+    elseif string.match(l[0], "像杀手") then
+        set.append(config.jobs["斧头帮任务"].confirm, set.last(npc)[2][1])
+        return
+    elseif string.match(l[0], "你忙着呢，你等会儿在问话吧。") then
+        wait(0.1)
+    elseif string.match(l[0], "这里没有") then
+        local around = get_room_id_around()
+        config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
+        set.pop(npc)
+    else
+        set.append(config.jobs["斧头帮任务"].exclude, set.last(npc)[2][1])
+        set.pop(npc)
+    end
+    return ftb_job_ask_npc(room, npc)
+end
+
+function ftb_job_kill_npc(npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］参数：npc = "..table.tostring(npc))
+    local l = wait_line("kill "..string.lower(set.last(npc)[2][2]), 30, nil, nil, "^你对著"..set.last(npc)[2][1].."喝道：「\\S+」$|"..
+                                                                                  "^这里没有这个人。$|"..
+                                                                                  "^你现在正忙着呢。$|"..
+                                                                                  "^这里不准战斗。$")
+    if l == false then
+        return -1
+    elseif l[0] == "你现在正忙着呢。" then
+        wait(0.1)
+    elseif l[0] == "这里没有这个人。" then
+        local around = get_room_id_around()
+        config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
+        return
+    elseif l[0] == "这里不准战斗。" then
+        local rc = ftb_job_drive_npc(npc)
+        timer.delete("ftb_job_timeout")
+        return rc
+    else
+        var.job.enemy_name = set.last(npc)[2][1]
+        local rc = fight()
+        if rc == 0 then
+            config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy - 1
+            set.pop(npc)
+            config.jobs["斧头帮任务"].progress = (config.jobs["斧头帮任务"].progress or 0) + 1
+            return
+        elseif rc == 2 then
+            return ftb_job_one_step()
+        elseif rc == 1 then
+            if var.job.npc[1718] == nil then
+                config.jobs["斧头帮任务"].dest = set.union({1718}, config.jobs["斧头帮任务"].dest)
+            end
+            if env.current.name ~= "树上" then
+                set.pop(npc)
+            end
+            return
+        end
+    end
+    return ftb_job_kill_npc(npc)
+end
+
+function ftb_job_drive_npc(npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］npc = "..table.tostring(npc))
+    local l = wait_line("ask "..string.lower(set.last(npc)[2][2]).." about 程金斧", 30, nil, nil, "^你忙着呢，你等会儿在问话吧。$|"..
+                                                                                                 "^这里没有 \\S+ 这个人$|"..
+                                                                                                 "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
+                                                                                                 "^"..set.last(npc)[2][1].."忙着呢，你等会儿在问话吧。$")
+    if l == false then
+        return -1
+    elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
+        if wait_no_busy("halt") < 0 then
+            return -1
+        end
+        return ftb_job_drive_npc(npc)
+    elseif string.match(l[0], "这里没有") then
+        local around = get_room_id_around()
+        config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
+    else
+        if config.jobs["斧头帮任务"].enemy > 1 then
+            config.jobs["斧头帮任务"].dest = set.union(get_room_id_around(), config.jobs["斧头帮任务"].dest)
+            set.insert(config.jobs["斧头帮任务"].dest, env.current.id[1], 1)
+            return
+        else
+            if var.job.timeout == true then
+                config.jobs["斧头帮任务"].enemy = 0
+                return
+            end
+            if var.job.timeout == nil then
+                timer.add("ftb_job_timeout", 60, "var.job.timeout = true")
+            end
+            local nl = state.nl
+            local rc = dazuo()
+            if rc < 0 then
+                return -1
+            elseif rc ~= 0 or state.nl == nl then
+                wait(1)
+            end
+            return ftb_job_drive_npc(npc)
+        end
+    end
+    return
+end
+
+function ftb_job_one_step()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_one_step ］")
+    local rc = one_step()
+    if rc ~= 0 then
+        return -1
+    else
+        if recover(config.job_nl) ~= 0 then
+            return -1
+        end
+        return
+    end
 end
 
 function ftb_job_wait_info()
@@ -447,10 +416,16 @@ function ftb_job_wait_info()
     config.jobs["斧头帮任务"].info = get_matches(2)
     config.jobs["斧头帮任务"].around = get_matches(3)
     config.jobs["斧头帮任务"].range = chs2num(get_matches(4))
+    var.job.range = config.jobs["斧头帮任务"].range
     if config.jobs["斧头帮任务"].info == "少林寺0" then
         config.jobs["斧头帮任务"].info = "塘沽口"  -- BUG 临时处理
     end
     config.jobs["斧头帮任务"].phase = phase["任务执行"]
+end
+
+function ftb_job_active()
+    config.jobs["斧头帮任务"].active = true
+    config.jobs["斧头帮任务"].phase = phase["任务更新"]
 end
 
 config.jobs["斧头帮任务"].func = ftb_job

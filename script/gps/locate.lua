@@ -543,7 +543,7 @@ function get_room_id_by_roomsto(roomsto, rooms, dir)
 end
 
 function get_room_id_by_around(around, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_near ］参数：around = "..table.tostring(around)..", rooms = "..table.tostring(rooms))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_around ］参数：around = "..table.tostring(around)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -563,6 +563,7 @@ function get_room_id_by_around(around, rooms)
 end
 
 function get_room_id_by_range(range, origin)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_range ］参数：range = "..tostring(range)..", origin = "..tostring(origin))
     if origin == nil then
         return {}
     end
@@ -616,6 +617,23 @@ function get_room_id_by_range(range, origin)
                         end
                     end
                 end
+            end
+        end
+    end
+    return room_ids
+end
+
+function get_room_id_around()
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_around ］")
+    local room_ids = {}
+    if #env.current.id ~= 1 then
+        return room_ids
+    end
+    for k,v in pairs(map[env.current.id[1]].links) do
+        if is_dir(regular_dir(k)) == true or string.match(k, "^go%d+$") then
+            if not string.match(map[v].name, "^%S+船$") and 
+               not string.match(map[v].name, "^%S+舟$") then
+                set.append(room_ids, v)
             end
         end
     end
