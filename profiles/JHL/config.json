@@ -1,0 +1,15 @@
+{
+    "UI": {
+        "AmbiguousWidth": "3",
+        "HistoryLines": 100000,
+        "RTTVHeight": 10
+    },
+    "Mud": {
+        "Host": "118.25.151.226",
+        "Port": 5555
+    },
+    "Lua": {
+        "Enable": true,
+        "Path": "/Users/ibm/go-mud/script"
+    }
+}

@@ -14,7 +14,7 @@ function trigger_process(text)
         set.remove(global.buffer, 1)
     end
     set.append(global.buffer, text)
-    for k,v in ipairs(triggers.fire) do
+    for _,v in ipairs(triggers.fire) do
         triggers.update = false
         for i,_ in pairs(v) do
             if trigger_process_exec(i) == true then
@@ -54,16 +54,17 @@ function trigger_process_exec(name)
         gag()
     end
 
+    local rc
+    if triggers[name].options.StopEval == true then
+        rc = true
+    end
+
     if triggers[name].options.OneShot == true then
         trigger.delete(name)
     end
 
     loadstring(triggers[name].send)()
-
-    if triggers[name].options.StopEval == true then
-        return true
-    end
-    return
+    return rc
 end
 
 function unique_id()

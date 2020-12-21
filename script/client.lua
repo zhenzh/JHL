@@ -2,6 +2,7 @@ require "tableEx"
 require "set"
 require "stringEx"
 require "timeEx"
+require "ioEx"
 require "alias"
 require "trigger"
 require "timer"
@@ -252,7 +253,7 @@ function get_last_cmd()
 end
 
 function simulate(msg)
-    return Run(msg)
+    return Echo(msg)
 end
 
 function send_cmd(cmd)
@@ -278,7 +279,7 @@ function show(msg, fcolor, bcolor)
     if type(msg) == "table" then
         msg = table.tostring(msg)
     end
-    Echo("["..(color_map[fcolor] or color_map["pink"])..":"..(color_map[bcolor] or "-")..":]"..tostring(msg).."[-:-:-]")
+    Print("["..(color_map[fcolor] or color_map["pink"])..":"..(color_map[bcolor] or "-")..":]"..tostring(msg).."[-:-:-]")
 end
 
 function print(parameter)

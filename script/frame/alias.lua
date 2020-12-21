@@ -90,7 +90,7 @@ alias.add("query", [[^\s*query (.*)\s*$]], [[
     show(set.tostring(parse(get_matches(1))), "pink")
 ]])
 
-alias.add("start", [[^\s*rstart\s*$]], [[
+alias.add("auto", [[^\s*auto\s*$]], [[
     require "flow"
     coroutine.wrap(
         function ()
