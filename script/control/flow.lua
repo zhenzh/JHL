@@ -744,9 +744,9 @@ end
 function archive_statics()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statics ］")
     if var.statics ~= nil then
-        if time.toepoch(statics.date, "%Y%m%d") + 86400000 <= var.statics["end"] then
+        if time.toepoch(statics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statics["end"] then
             table.save(get_work_path().."log/statics."..statics.date, statics)
-            statics = { date = time.date("yyyyMMdd") }
+            statics = { date = time.date("%Y%m%d") }
         end
         set.append(statics, var.statics)
         var.statics = nil
