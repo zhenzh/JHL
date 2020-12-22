@@ -7,7 +7,7 @@
   set.remove(s, p)            从集合 s 中去除位置在 p 的元素
   set.delete(s, o)            从集合 s 中去除所有值等于 o 的元素，元素值 o 必须是数字或字符串，允许存在重复元素
   set.reverse(s)              将集合 s 中的所有元素顺序逆向排列
-  set.sort(s, c)              将集合 s 中的所有元素升序排列, 排序规则可由函数 c 指定
+  set.sort(s)                 将集合 s 中的所有元素升序排列
   set.permute(s, n)           返回集合 s 中任意 n 个元素的排列
   set.combine(s, n)           返回集合 s 中任意 n 个元素的组合
   set.concat(s, p)            将集合 s 中的所有元素用连接符 p 串连接成一个字符串
@@ -65,8 +65,8 @@ function set.reverse(s)
     end
 end
 
-function set.sort(s, c)
-    return table.sort(s, c)
+function set.sort(s)
+    return table.sort(s)
 end
 
 function set.permute(s, n)
