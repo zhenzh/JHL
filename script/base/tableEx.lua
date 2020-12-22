@@ -237,6 +237,7 @@ function table.tostring(t)
 end
 
 function table.save(f, t)
+    os.remove(f)
     local file,err = io.open(f, "w")
     if err then return _,err end
     if t == nil then return "" end

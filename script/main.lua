@@ -1,4 +1,4 @@
-global = global or { flood = 0, uid = {}, buffer = { "" }, regex = {} }
+global = global or { flood = 0, uid = {}, buffer = {}, regex = {} }
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
 statics = statics or {}
@@ -33,12 +33,12 @@ timer.add("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", 
 
 if io.exists(get_work_path().."log/global.tmp") then
     global.buffer = table.load(get_work_path().."log/global.tmp")
-    table.save(get_work_path().."log/global.tmp", {})
+    os.remove(get_work_path().."log/global.tmp")
 end
 
 if io.exists(get_work_path().."log/automation.tmp") then
     automation = table.load(get_work_path().."log/automation.tmp")
-    table.save(get_work_path().."log/automation.tmp", {})
+    os.remove(get_work_path().."log/automation.tmp")
 end
 
 automation.items = automation.items or {}
@@ -117,10 +117,11 @@ function load_jobs()
 end
 
 if automation.reconnect == nil then
-    if get_lines(-1)[1] == "请输入您的英文ID：" or 
+    if #global.buffer == 0 or 
+       get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" or 
-        set.has(get_lines(-3), "英文ID识别( 新玩家请输入 new 进入人物建立单元 )") then
-            show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")
+       set.has(get_lines(-3), "英文ID识别( 新玩家请输入 new 进入人物建立单元 )") then
+        show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")
     else
         local login = true
         for _,v in ipairs(get_lines(-3)) do

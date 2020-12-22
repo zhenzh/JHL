@@ -45,6 +45,8 @@ function run(cmd)
 end
 
 threads = threads or {}
+waits = waits or {}
+
 function wait(seconds)
     local name = "wait_"..unique_id()
     threads[name] = coroutine.running()
@@ -52,6 +54,7 @@ function wait(seconds)
         show("必须使用协程", "orange")
         return false
     end
+    waits[name] = true
     timer.add(name, seconds, "wait_resume('"..name.."')", nil, {Enable=true, OneShot=true})
     return coroutine.yield()
 end
@@ -63,6 +66,7 @@ function wait_resume(name)
         return false
     end
     threads[name] = nil
+    waits[name] = nil
     local success,msg = coroutine.resume(thread)
     if success == false then
         show(msg, "red")
@@ -97,6 +101,7 @@ function wait_line(action, timeout, options, order, ...)
         trigger.add(name, "wait_line_trigger('"..name.."')", name, options, order, pattern)
     end
     timeout = timeout or 0
+    waits[name] = true
     if timeout > 0 then
         timer.add(name, timeout, "wait_line_timer('"..name.."')", nil, {Enable=true, OneShot=true})
     end
@@ -137,6 +142,7 @@ function wait_line_resume(name)
     if coroutine.status(thread) == "suspended" then
         local args = threads[name][2]
         threads[name] = nil
+        waits[name] = nil
         local success,msg = coroutine.resume(thread, args)
         if success == false then
             show(msg, "red")
