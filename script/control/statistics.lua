@@ -1,4 +1,4 @@
-function statics_list(time_shift)
+function statistics_list(time_shift)
     if time_shift == nil then
         time_shift = time.epoch() - 3600000
     elseif type(time_shift) == "number" then
@@ -19,16 +19,16 @@ function statics_list(time_shift)
     local format = "%"..tostring(c1).."s%-"..tostring(c2).."s%-"..tostring(c3).."s%-"..tostring(c4).."s%"..tostring(c5).."s%"..tostring(c6).."s%"..tostring(c7).."s%-"..tostring(c8).."s"
     show(string.format(format, "", "完成时间", "任务名", "结果", "获得经验", "获得潜能", "", "用时"), "white", "gray")
     local history,list = {},{}
-    for i=#statics,1,-1 do
-        if statics[i]["end"] >= time_shift then
-            set.append(list, statics[i])
+    for i=#statistics,1,-1 do
+        if statistics[i]["end"] >= time_shift then
+            set.append(list, statistics[i])
         else
-            return statics_list_print(list, format)
+            return statistics_list_print(list, format)
         end
     end
-    for i=time_shift,time.toepoch(statics.date, "^(%d%d%d%d)(%d%d)(%d%d)$")+86399999,86400000 do
-        if io.exists(get_work_path().."log/statics."..time.todate(i, "%Y%m%d")) then
-            history = table.load(get_work_path().."log/statics."..time.todate(i, "%Y%m%d"))
+    for i=time_shift,time.toepoch(statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$")+86399999,86400000 do
+        if io.exists(get_work_path().."log/statistics."..time.todate(i, "%Y%m%d")) then
+            history = table.load(get_work_path().."log/statistics."..time.todate(i, "%Y%m%d"))
         end
     end
     for i=#history,1,-1 do
@@ -38,10 +38,10 @@ function statics_list(time_shift)
             break
         end
     end
-    return statics_list_print(list, format)
+    return statistics_list_print(list, format)
 end
 
-function statics_list_print(list, format)
+function statistics_list_print(list, format)
     local font_color = "yellow"
     local back_color = "gray"
     for _,v in ipairs(list) do
@@ -54,5 +54,5 @@ function statics_list_print(list, format)
     end
 end
 
-function statics_classify()
+function statistics_classify()
 end

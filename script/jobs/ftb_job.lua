@@ -36,7 +36,10 @@ function ftb_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job ］")
     automation.idle = false
     var.job = var.job or {name = "斧头帮任务"}
-    var.job.statics = var.job.statics or {name = "斧头帮任务"}
+    var.job.statistics = var.job.statistics or {name = "斧头帮任务"}
+    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
+    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
     trigger.enable_group("ftb_job_active")
     if config.jobs["斧头帮任务"].phase ~= phase["任务执行"] then
         local rc = ftb_job_p1()
@@ -57,7 +60,7 @@ function ftb_job_return(rc)
     config.jobs["斧头帮任务"].enemy = 0
     config.jobs["斧头帮任务"].confirm = {}
     config.jobs["斧头帮任务"].exclude = {}
-    var.statics = var.job.statics
+    var.statistics = var.job.statistics
     trigger.disable_group("ftb_job")
     var.job = nil
     return rc
@@ -77,6 +80,9 @@ end
 
 function ftb_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p2 ］")
+    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
+    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
     if config.jobs["斧头帮任务"].dest == nil then
         local rc = ftb_job_get_dest()
         if rc ~= nil then
@@ -93,6 +99,20 @@ end
 function ftb_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p3 ］")
     config.jobs["斧头帮任务"].phase = phase["任务完成"]
+    if recover(config.job_nl) < 0 then
+        return -1
+    end
+    if prepare_items() < 0 then
+        return -1
+    end
+    if run_score() < 0 then
+        return -1
+    end
+    var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
+    var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
+    var.job.statistics["result"] = "成功"
+    var.job.statistics["end"] = time.epoch()
+    return 0
 end
 
 function ftb_job_p4()
@@ -102,12 +122,19 @@ function ftb_job_p4()
     if timer.is_exist("ftb_job_cd") == false then
         timer.add("ftb_job_cd", 300, "config.jobs['斧头帮任务'].active = true", "ftb_job", {Enable=true, OneShot=true})
     end
+    if var.job.statistics ~= nil then
+        var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
+        var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
+        var.job.statistics["result"] = "失败"
+        var.job.statistics["end"] = time.epoch()
+    end
+    return 1
 end
 
 function ftb_job_goto_chengjinfu()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_goto_chengjinfu ］")
     if env.current.id[1] ~= 1705 then
-        var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
+        var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
         local rc = goto(1705)
         if rc ~= 0 then
             return rc
@@ -143,16 +170,15 @@ function ftb_job_refresh()
         elseif l[0] == "程金斧一脚正好踢中你的屁股！" then
             config.jobs["斧头帮任务"].phase = phase["任务更新"]
             if privilege_job("斧头帮任务") == true then
-                var.job.statics = nil
+                var.job.statistics = nil
                 return 1
             end
             return ftb_job_refresh()
         elseif l[0] == "程金斧对着你竖起了右手大拇指，好样的。" then
-            config.jobs["斧头帮任务"].phase = phase["任务完成"]
             return ftb_job_p3()
         elseif l[0] == "> " then
             if privilege_job("斧头帮任务") == true then
-                var.job.statics = nil
+                var.job.statistics = nil
                 return 1
             end
             wait(1)
@@ -229,6 +255,10 @@ function ftb_job_exec()
             return -1
         end
         if config.jobs["斧头帮任务"].enemy == 0 then
+            jia_min()
+            if wield(config.fight["通用"].weapon) < 0 then
+                return -1
+            end
             if config.jobs["斧头帮任务"].progress ~= nil then
                 return ftb_job_p3()
             else
@@ -317,6 +347,12 @@ end
 
 function ftb_job_kill_npc(npc)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］参数：npc = "..table.tostring(npc))
+    if prepare_skills() < 0 then
+        return -1
+    end
+    if wield(config.fight["斧头帮任务"].weapon) ~= 0 then
+        return -1
+    end
     local l = wait_line("kill "..string.lower(set.last(npc)[2][2]), 30, nil, nil, "^你对著"..set.last(npc)[2][1].."喝道：「\\S+」$|"..
                                                                                   "^这里没有这个人。$|"..
                                                                                   "^你现在正忙着呢。$|"..

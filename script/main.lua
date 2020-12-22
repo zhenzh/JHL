@@ -1,7 +1,7 @@
 global = global or { flood = 0, uid = {}, buffer = {}, regex = {} }
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
-statics = statics or {}
+statistics = statistics or {}
 config = config or {}
 var = var or {}
 
@@ -61,9 +61,9 @@ if automation.repository ~= nil then
     automation.repository = nil
 end
 
-statics.date = time.date("%Y%m%d")
-if io.exists(get_work_path().."log/statics."..statics.date) then
-    statics = table.load(get_work_path().."log/statics."..statics.date)
+statistics.date = time.date("%Y%m%d")
+if io.exists(get_work_path().."log/statistics."..statistics.date) then
+    statistics = table.load(get_work_path().."log/statistics."..statistics.date)
 end
 
 collectgarbage("collect")

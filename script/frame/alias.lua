@@ -89,6 +89,10 @@ alias.add("sync", [[^\s*sync\s*$]], [[
     )()
 ]])
 
+alias.add("statistics", [[^\s*statistics\s*$]], [[
+    statistics_list()
+]])
+
 alias.add("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[
     add_yun_desc(matches[2], matches[3], matches[4], matches[5])
 ]])

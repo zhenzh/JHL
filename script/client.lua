@@ -70,8 +70,8 @@ function gag()
 end
 
 function reset()
-    if statics ~= nil and #statics > 0 then
-        table.save(get_work_path().."log/statics."..statics.date, statics)
+    if statistics ~= nil and #statistics > 0 then
+        table.save(get_work_path().."log/statistics."..statistics.date, statistics)
     end
     if automation.thread ~= nil then
         automation.thread = nil

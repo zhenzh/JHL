@@ -1,5 +1,5 @@
 require "skills"
-require "statics"
+require "statistics"
 
 global.phase = {
     ["挂起"] = 0,
@@ -237,7 +237,7 @@ function flow_do_job()
         end
     end
     if rc ~= nil then
-        archive_statics()
+        archive_statistics()
     end
     if rc == 0 then
         global.jid = 1
@@ -741,15 +741,15 @@ function break_event()
     return false
 end
 
-function archive_statics()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statics ］")
-    if var.statics ~= nil then
-        if time.toepoch(statics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statics["end"] then
-            table.save(get_work_path().."log/statics."..statics.date, statics)
-            statics = { date = time.date("%Y%m%d") }
+function archive_statistics()
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statistics ］")
+    if var.statistics ~= nil then
+        if time.toepoch(statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statistics["end"] then
+            table.save(get_work_path().."log/statistics."..statistics.date, statistics)
+            statistics = { date = time.date("%Y%m%d") }
         end
-        set.append(statics, var.statics)
-        var.statics = nil
+        set.append(statistics, var.statistics)
+        var.statistics = nil
     end
 end
 
