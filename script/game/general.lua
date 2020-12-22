@@ -318,7 +318,7 @@ function dump()
     dump.var = var
     dump.triggers = triggers
     dump.timers = timers
-    table.save(get_work_path().."log/"..time.date("yyyyMMddHHmmss")..".dump")
+    table.save(get_work_path().."log/"..time.date("%Y%m%d%H%M%S")..".dump")
 end
 
 --function keep_pots(pots)

@@ -1,4 +1,5 @@
 global = global or { flood = 0, uid = {}, buffer = { "" }, regex = {} }
+global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
 statics = statics or {}
 config = config or {}
@@ -27,9 +28,6 @@ require "gps"
 require "info"
 require "action"
 require "update"
-
-global.debug = { level = 0, none = 0, info = 1, trace = 2 }
-global.debug.level = global.debug["debug"] or 0
 
 timer.add("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
 
@@ -63,12 +61,7 @@ if automation.repository ~= nil then
     automation.repository = nil
 end
 
-ui = automation.ui
---if ui == nil then
---    require "ui"
---end
-
-statics.date = time.date("yyyyMMdd")
+statics.date = time.date("%Y%m%d")
 if io.exists(get_work_path().."log/statics."..statics.date) then
     statics = table.load(get_work_path().."log/statics."..statics.date)
 end
