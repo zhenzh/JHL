@@ -221,18 +221,17 @@ function gag()
 end
 
 function reset()
---     if statics ~= nil and #statics > 0 then
---         table.save(get_work_path().."log/statics."..statics.date, statics)
---     end
---     if automation.thread ~= nil then
---         automation.thread = nil
---         automation.jid = (var or {}).jid
---         automation.config = config
---         automation.repository = (carryon or {}).repository
---     end
---     automation.ui = ui
---     table.save(get_work_path().."log/automation.tmp", automation)
---     table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
+    if statics ~= nil and #statics > 0 then
+        table.save(get_work_path().."log/statics."..statics.date, statics)
+    end
+    if automation.thread ~= nil then
+        automation.thread = nil
+        automation.jid = (var or {}).jid
+        automation.config = config
+        automation.repository = (carryon or {}).repository
+    end
+    table.save(get_work_path().."log/automation.tmp", automation)
+    table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
 end
 
 -- function window_size()
@@ -293,7 +292,9 @@ function print(parameter)
             show(" 匹配模式："..multi[tostring(triggers[parameter].options.Multi or false)].."    匹配行数："..tostring(triggers[parameter].multilines or 1), "gray")
             show(" 匹配条件："..tostring(triggers[parameter].pattern), "gray")
             show(" 发送指令："..tostring(triggers[parameter].send), "gray")
-            return
+            if timer.is_exist(parameter) == false then
+                return
+            end
         end
         if timer.is_exist(parameter) == true then
             local switch = {["true"] = "是", ["false"] = "否"}
