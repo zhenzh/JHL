@@ -623,7 +623,8 @@ end
 
 function take_drugs_exec(drug)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ take_drugs_exec ］参数：drug = "..tostring(drug))
-    local msg,rc = is_own(drug)
+    local msg = is_own(drug)
+    local rc
     if msg == true then
         rc = take(items[drug].id)
         if rc ~= 1 then

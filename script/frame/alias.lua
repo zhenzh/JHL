@@ -25,7 +25,7 @@ alias.add("reset", [[^\s*reset\s*$]], [[
 ]])
 
 alias.add("lua", [[^/\s*(.*)\s*$]], [[
-    assert(loadstring(matches[2])())
+    assert(loadstring(matches[2]))()
 ]])
 
 alias.add("repeat", [[^#(\d+) (.*)$]], [[
@@ -36,7 +36,7 @@ alias.add("repeat", [[^#(\d+) (.*)$]], [[
 
 alias.add("flush", [[^\s*flush\s*$]], [[
     flush_map()
-    assert(loadfile(get_script_path().."gps/template.lua")())
+    assert(loadfile(get_script_path().."gps/template.lua"))()
 ]])
 
 alias.add("debug", [[^\s*debug\s+(\w+)\s*$]], [[
