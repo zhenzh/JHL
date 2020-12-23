@@ -130,7 +130,6 @@ function print(parameter)
             if timer.is_exist(parameter) == false then
                 return
             end
-
         end
         if timer.is_exist(parameter) == true then
             local switch = {["true"] = "是", ["false"] = "否"}

@@ -130,7 +130,7 @@ function start()
     trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
     run("halt")
     if flow() < 0 then
-        automation_reset("automation_reset_idle()")
+        automation_reset()
     else
         return 0
     end

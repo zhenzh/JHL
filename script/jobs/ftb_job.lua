@@ -29,7 +29,7 @@ local phase = {
     ["任务更新"] = 1,
     ["任务执行"] = 2,
     ["任务完成"] = 3,
-    ["任务失败"] = 4,
+    ["任务失败"] = 4
 }
 
 function ftb_job()
@@ -57,6 +57,7 @@ function ftb_job_return(rc)
     end
     config.jobs["斧头帮任务"].info = nil
     config.jobs["斧头帮任务"].dest = nil
+    config.jobs["斧头帮任务"].progress = nil
     config.jobs["斧头帮任务"].enemy = 0
     config.jobs["斧头帮任务"].confirm = {}
     config.jobs["斧头帮任务"].exclude = {}
@@ -80,6 +81,7 @@ end
 
 function ftb_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p2 ］")
+    var.job.range = var.job.range or config.jobs["斧头帮任务"].range
     var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
     var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
     var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
@@ -191,8 +193,11 @@ function ftb_job_refresh()
                 timer.delete("ftb_job_cd")
                 return ftb_job_p4()
             end
-            if config.jobs["斧头帮任务"].phase >= phase["任务执行"] then
+            if (config.jobs["斧头帮任务"].phase or 0) >= phase["任务执行"] then
                 return ftb_job_p4()
+            end
+            if wait_line(nil, 30, nil, nil, "^程金斧说道：麻烦老爷子去查一查, 若真是刺客便替本帮主除却了吧.$") == false then
+                return -1
             end
             return
         else
@@ -300,7 +305,7 @@ function ftb_job_ask_npc(room, npc)
     if table.is_empty(npc) then
         return 1
     end
-    if set.has(config.jobs["斧头帮任务"].exclude, set.last(npc)[2][1]) then
+    if set.has(config.jobs["斧头帮任务"].exclude, set.last(npc)[1]) then
         set.pop(npc)
         return ftb_job_ask_npc(room, npc)
     end
@@ -310,27 +315,27 @@ function ftb_job_ask_npc(room, npc)
             return 1
         end
     end
-    if set.has(config.jobs["斧头帮任务"].confirm, set.last(npc)[2][1]) then
+    if set.has(config.jobs["斧头帮任务"].confirm, set.last(npc)[1]) then
         return
     end
-    local l = wait_line("ask "..string.lower(set.last(npc)[2][2]).." about 刺客", 30, nil, nil, "^"..set.last(npc)[2][1].."说道：老子怎么看都觉得你比我像杀手!$|"..
-                                                                                               "^"..set.last(npc)[2][1].."说道：青天白日的, 哪里有刺客\\? 笑话.$|"..
-                                                                                               "^你忙着呢，你等会儿在问话吧。$|"..
-                                                                                               "^这里没有 \\S+ 这个人$|"..
-                                                                                               "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
-                                                                                               "^"..set.last(npc)[2][1].."忙着呢，你等会儿在问话吧。$|"..
-                                                                                               "^"..set.last(npc)[2][1].."摇摇头，说道：没听说过。$|"..
-                                                                                               "^"..set.last(npc)[2][1].."耸了耸肩，很抱歉地说：无可奉告。$|"..
-                                                                                               "^"..set.last(npc)[2][1].."睁大眼睛望着你，显然不知道你在说什么。$|"..
-                                                                                               "^"..set.last(npc)[2][1].."想了一会儿，说道：对不起，你问的事我实在没有印象。$|"..
-                                                                                               "^"..set.last(npc)[2][1].."说道：你在说外国话吧？我不会，你最好带个翻译来。$|"..
-                                                                                               "^"..set.last(npc)[2][1].."说道：才阿八热古里古鲁。你看，我也能假装会说外国话。$|"..
-                                                                                               "^"..set.last(npc)[2][1].."嘻嘻笑道：你说什么鸟语？$|"..
-                                                                                               "^"..set.last(npc)[2][1].."说道：嗯....这我可不清楚，你最好问问别人吧。$")
+    local l = wait_line("ask "..string.lower(set.last(npc)[2]).." about 刺客", 30, nil, nil, "^"..set.last(npc)[1].."说道：老子怎么看都觉得你比我像杀手!$|"..
+                                                                                            "^"..set.last(npc)[1].."说道：青天白日的, 哪里有刺客\\? 笑话.$|"..
+                                                                                            "^你忙着呢，你等会儿在问话吧。$|"..
+                                                                                            "^这里没有 \\S+ 这个人$|"..
+                                                                                            "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
+                                                                                            "^"..set.last(npc)[1].."忙着呢，你等会儿在问话吧。$|"..
+                                                                                            "^"..set.last(npc)[1].."摇摇头，说道：没听说过。$|"..
+                                                                                            "^"..set.last(npc)[1].."耸了耸肩，很抱歉地说：无可奉告。$|"..
+                                                                                            "^"..set.last(npc)[1].."睁大眼睛望着你，显然不知道你在说什么。$|"..
+                                                                                            "^"..set.last(npc)[1].."想了一会儿，说道：对不起，你问的事我实在没有印象。$|"..
+                                                                                            "^"..set.last(npc)[1].."说道：你在说外国话吧？我不会，你最好带个翻译来。$|"..
+                                                                                            "^"..set.last(npc)[1].."说道：才阿八热古里古鲁。你看，我也能假装会说外国话。$|"..
+                                                                                            "^"..set.last(npc)[1].."嘻嘻笑道：你说什么鸟语？$|"..
+                                                                                            "^"..set.last(npc)[1].."说道：嗯....这我可不清楚，你最好问问别人吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "像杀手") then
-        set.append(config.jobs["斧头帮任务"].confirm, set.last(npc)[2][1])
+        set.append(config.jobs["斧头帮任务"].confirm, set.last(npc)[1])
         return
     elseif string.match(l[0], "你忙着呢，你等会儿在问话吧。") then
         wait(0.1)
@@ -339,24 +344,24 @@ function ftb_job_ask_npc(room, npc)
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
         set.pop(npc)
     else
-        set.append(config.jobs["斧头帮任务"].exclude, set.last(npc)[2][1])
+        set.append(config.jobs["斧头帮任务"].exclude, set.last(npc)[1])
         set.pop(npc)
     end
     return ftb_job_ask_npc(room, npc)
 end
 
-function ftb_job_kill_npc(npc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］参数：npc = "..table.tostring(npc))
+function ftb_job_kill_npc(room, npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
     if prepare_skills() < 0 then
         return -1
     end
     if wield(config.fight["斧头帮任务"].weapon) ~= 0 then
         return -1
     end
-    local l = wait_line("kill "..string.lower(set.last(npc)[2][2]), 30, nil, nil, "^你对著"..set.last(npc)[2][1].."喝道：「\\S+」$|"..
-                                                                                  "^这里没有这个人。$|"..
-                                                                                  "^你现在正忙着呢。$|"..
-                                                                                  "^这里不准战斗。$")
+    local l = wait_line("kill "..string.lower(set.last(npc)[2]), 30, nil, nil, "^你对著"..set.last(npc)[1].."喝道：「\\S+」$|"..
+                                                                               "^这里没有这个人。$|"..
+                                                                               "^你现在正忙着呢。$|"..
+                                                                               "^这里不准战斗。$")
     if l == false then
         return -1
     elseif l[0] == "你现在正忙着呢。" then
@@ -366,16 +371,17 @@ function ftb_job_kill_npc(npc)
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
         return
     elseif l[0] == "这里不准战斗。" then
-        local rc = ftb_job_drive_npc(npc)
+        local rc = ftb_job_drive_npc(room, npc)
         timer.delete("ftb_job_timeout")
         return rc
     else
-        var.job.enemy_name = set.last(npc)[2][1]
+        var.job.enemy_name = set.last(npc)[1]
+        trigger.add("ftb_job_enemy_die", "ftb_job_enemy_die()", "ftb_job", {Enable=true}, 99, "^"..var.job.enemy_name.."倒在地上，挣扎了几下就死了。$")
         local rc = fight()
         if rc == 0 then
             config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy - 1
-            set.pop(npc)
             config.jobs["斧头帮任务"].progress = (config.jobs["斧头帮任务"].progress or 0) + 1
+            set.pop(npc)
             return
         elseif rc == 2 then
             return ftb_job_one_step()
@@ -392,12 +398,12 @@ function ftb_job_kill_npc(npc)
     return ftb_job_kill_npc(npc)
 end
 
-function ftb_job_drive_npc(npc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］npc = "..table.tostring(npc))
-    local l = wait_line("ask "..string.lower(set.last(npc)[2][2]).." about 程金斧", 30, nil, nil, "^你忙着呢，你等会儿在问话吧。$|"..
-                                                                                                 "^这里没有 \\S+ 这个人$|"..
-                                                                                                 "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
-                                                                                                 "^"..set.last(npc)[2][1].."忙着呢，你等会儿在问话吧。$")
+function ftb_job_drive_npc(room, npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］room = "..tostring(room)..", npc = "..table.tostring(npc))
+    local l = wait_line("ask "..string.lower(set.last(npc)[2]).." about 程金斧", 30, nil, nil, "^你忙着呢，你等会儿在问话吧。$|"..
+                                                                                              "^这里没有 \\S+ 这个人$|"..
+                                                                                              "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
+                                                                                              "^"..set.last(npc)[1].."忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
@@ -408,6 +414,9 @@ function ftb_job_drive_npc(npc)
     elseif string.match(l[0], "这里没有") then
         local around = get_room_id_around()
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
+    elseif l[1] ~= false then
+        var.job.npc[room] = var.job.npc[room] or {}
+        set.append(var.job.npc[room], set.pop(npc))
     else
         if config.jobs["斧头帮任务"].enemy > 1 then
             config.jobs["斧头帮任务"].dest = set.union(get_room_id_around(), config.jobs["斧头帮任务"].dest)
@@ -457,6 +466,12 @@ function ftb_job_wait_info()
         config.jobs["斧头帮任务"].info = "塘沽口"  -- BUG 临时处理
     end
     config.jobs["斧头帮任务"].phase = phase["任务执行"]
+end
+
+function ftb_job_enemy_die()
+    if var.fight ~= nil then
+        var.fight.stop = 0
+    end
 end
 
 function ftb_job_active()

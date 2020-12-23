@@ -184,6 +184,7 @@ end
 
 function family_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p2 ］")
+    timer.delete("family_job_inactive")
     var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
     var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
     var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot

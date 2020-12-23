@@ -105,6 +105,7 @@ end
 function load_jobs()
     require "family_job"
     require "feima_job"
+    require "ftb_job"
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
             config.jobs[v].efunc()

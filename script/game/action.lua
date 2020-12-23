@@ -1292,7 +1292,7 @@ function search(obj, rooms)
 end
 
 function search_return(rc, msg1, msg2)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_return ］参数：rc = "..tostring(rc)..", msg1 = "..tostring(msg1)..", msg2 = "..tostring(msg2))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_return ］参数：rc = "..tostring(rc)..", msg1 = "..table.tostring(msg1)..", msg2 = "..table.tostring(msg2))
     if var.search == nil then
         return rc,msg1,msg2
     end
@@ -1306,6 +1306,10 @@ function search_room(obj)
     if #var.search.area == 0 then
         return 1
     end
+    if #env.current.id > 0 and 
+       set.le(env.current.id, var.search.area) then
+        var.search.area = set.union(set.compl(var.search.area, env.current.id), env.current.id)
+    end
     var.search.dest = set.pop(var.search.area)
     local rc = goto(var.search.dest)
     if rc < 0 then
@@ -1314,8 +1318,8 @@ function search_room(obj)
     if #env.current.objs > 0 then
         if var.search.result[env.current.id[1]] == nil then
             for _,v in ipairs(env.current.objs) do
-                local msg = set.union({v}, {regex.match("  "..v, obj)})
-                if #msg > 1 then
+                local msg = regex.match("  "..v, obj)
+                if msg ~= nil then
                     var.search.result[env.current.id[1]] = var.search.result[env.current.id[1]] or {}
                     set.append(var.search.result[env.current.id[1]], msg)
                 end
