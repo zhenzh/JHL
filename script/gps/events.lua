@@ -2212,7 +2212,8 @@ function xiyu_desert()
         return rc, msg
     end
     repeat
-        local l = wait_line(xiyu_desert_dir[var.goto.path[msg].next], 30, {StopEval=true}, 20, "^(\\S+) - |"..
+        local next_id = var.goto.adjust or var.goto.path[msg].next
+        local l = wait_line(xiyu_desert_dir[next_id], 30, {StopEval=true}, 20, "^(\\S+) - |"..
                                                                                                "^你的眼前一黑，接著什么也不知道了....$|"..
                                                                                                "^你已经精疲力尽，动弹不得。$|"..
                                                                                                "^鬼门关 - $|"..
@@ -2222,7 +2223,7 @@ function xiyu_desert()
         elseif var.goto.pause ~= nil then
             return 1,"移动暂停"
         elseif l[1] ~= "大沙漠" then
-            env.current.id = { var.goto.path[msg].next }
+            env.current.id = { next_id }
             return 0
         end
     until false

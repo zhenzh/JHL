@@ -1312,8 +1312,8 @@ function search_room(obj)
     end
     var.search.dest = set.pop(var.search.area)
     local rc = goto(var.search.dest)
-    if rc < 0 then
-        return -1
+    if rc ~= 0 then
+        return search_room(obj)
     end
     if #env.current.objs > 0 then
         if var.search.result[env.current.id[1]] == nil then

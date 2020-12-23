@@ -430,7 +430,7 @@ function get_room_id_by_exits(exits, rooms)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_exits ］参数：exits = "..table.tostring(exits)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     for _,v in ipairs(rooms) do
-        for _,i in ipairs(map[v].exits) do
+        for _,i in ipairs((map[v].exits or {})) do
             if set.eq(i, exits) then
                 set.append(room_ids, v)
                 break

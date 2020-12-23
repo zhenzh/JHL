@@ -249,7 +249,7 @@ function gonext(mode)
             trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
             trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
             trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
-            goto_move()
+            return goto_return(goto_move())
         end
     end
 end
@@ -329,9 +329,9 @@ function goto_relocate()
     end
     if #set.inter(env.current.id, {1827, 2988, 2989, 2990}) > 0 then
         if map[var.goto.room_ids[var.goto.index]].zone == "西域白驼山" then
-            var.goto.path[2990] = {next = 1826}
+            var.goto.adjust = 1826
         else
-            var.goto.path[2990] = {next = 1327}
+            var.goto.adjust = 1327
         end
         env.current.id = { 2990 }
         local rc = xiyu_desert()
@@ -421,6 +421,7 @@ function goto_move()
         if rc ~= nil then
             return rc
         end
+        var.goto.adjust = nil
     end
     -- local room_id    全路径规划方案
     -- if false and #var.goto.room_ids > 1 then
