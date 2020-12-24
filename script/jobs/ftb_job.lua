@@ -28,9 +28,11 @@ end
 local phase = {
     ["任务更新"] = 1,
     ["任务执行"] = 2,
-    ["任务完成"] = 3,
-    ["任务失败"] = 4
+    ["任务失败"] = 3,
+    ["任务完成"] = 4
 }
+
+local low_priority = { 2724, 1977, 290, 2399, 2400, 971, 2042, 2043, 2044, 1017, 86, 25, 286 }
 
 function ftb_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job ］")
@@ -105,15 +107,6 @@ end
 
 function ftb_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p3 ］")
-    config.jobs["斧头帮任务"].phase = phase["任务完成"]
-    if recover(config.job_nl) < 0 then
-        return -1
-    end
-    return ftb_job_p1()
-end
-
-function ftb_job_p4()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p4 ］")
     config.jobs["斧头帮任务"].phase = phase["任务失败"]
     config.jobs["斧头帮任务"].active = false
     if timer.is_exist("ftb_job_cd") == false then
@@ -172,6 +165,9 @@ function ftb_job_refresh()
             end
             return ftb_job_refresh()
         elseif l[0] == "程金斧对着你竖起了右手大拇指，好样的。" then
+            if recover(config.job_nl) < 0 then
+                return -1
+            end
             if run_score() < 0 then
                 return -1
             end
@@ -189,14 +185,14 @@ function ftb_job_refresh()
             return ftb_job_refresh()
         elseif string.find(l[0], "BUG") then
             timer.add("ftb_job_cd", 900, "ftb_job_active()", "ftb_job", {Enable=true, OneShot=true})
-            return ftb_job_p4()
+            return ftb_job_p3()
         elseif l[0] == "程金斧说道：我早就告诉过你了:" then
             if config.jobs["斧头帮任务"].phase == phase["任务失败"] then
                 timer.delete("ftb_job_cd")
-                return ftb_job_p4()
+                return ftb_job_p3()
             end
             if (config.jobs["斧头帮任务"].phase or 0) >= phase["任务执行"] then
-                return ftb_job_p4()
+                return ftb_job_p3()
             end
             if wait_line(nil, 30, nil, nil, "^程金斧说道：麻烦老爷子去查一查, 若真是刺客便替本帮主除却了吧.$") == false then
                 return -1
@@ -213,7 +209,7 @@ function ftb_job_get_dest()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_get_dest ］")
     local dest = parse(config.jobs["斧头帮任务"].info)
     if #dest == 0 then
-        return ftb_job_p4()
+        return ftb_job_p3()
     elseif #dest > 1 and config.jobs["斧头帮任务"].around ~= false then
         local arounds = { string.split(config.jobs["斧头帮任务"].around, ", ") }
         for _,v in ipairs(arounds) do
@@ -244,6 +240,8 @@ function ftb_job_get_area(dest)
         end
     end
     config.jobs["斧头帮任务"].dest = get_room_id_by_tag("nojob", config.jobs["斧头帮任务"].dest, "exclude")
+    config.jobs["斧头帮任务"].dest = set.union(low_priority, config.jobs["斧头帮任务"].dest)
+    var.job.search = config.jobs["斧头帮任务"].dest
 end
 
 function ftb_job_exec()
@@ -267,9 +265,10 @@ function ftb_job_exec()
                 return -1
             end
             if config.jobs["斧头帮任务"].progress ~= nil then
-                return ftb_job_p3()
+                config.jobs["斧头帮任务"].phase = phase["任务完成"]
+                return ftb_job_p1()
             else
-                return ftb_job_p4()
+                return ftb_job_p3()
             end
         end
     end
@@ -292,7 +291,7 @@ function ftb_job_search()
                 ftb_job_get_area(spare)
                 return ftb_job_p2()
             end
-            return ftb_job_p4()
+            return ftb_job_p3()
         end
         var.job.range = 7
         config.jobs["斧头帮任务"].dest = nil

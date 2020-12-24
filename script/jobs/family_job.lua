@@ -455,7 +455,7 @@ function family_job_select_enemy()
         return family_job_confirm_enemy()
     end
     local l = wait_line("look "..family_info[profile.family].enemy_id, 30, nil, nil, "你要看什么？$|"..
-                                                                                           "^(\\S+)弟子 "..family_info[profile.family].enemy_name.."\\(\\w+ \\w+\\)$")
+                                                                                     "^(\\S+)弟子 "..family_info[profile.family].enemy_name.."\\(\\w+ \\w+\\)$")
     local safe
     if l == false then
         return -1
@@ -755,7 +755,11 @@ end
 
 function family_job_kill_enemy()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_kill_enemy ］")
+    if enemy_choose["全杀"] == false then
+        trigger.add("family_job_enemy_change", "family_job_enemy_change()", "family_job_active", {Enable=false, OneShot=true, StopEval=true}, 100, "^"..family_info[profile.family].enemy_name.."只觉得手中\\S+把持不定，脱手飞出！")
+    end
     local rc = fight()
+    trigger.delete("family_job_enemy_change")
     if rc < 0 then
         return -1
     elseif rc == 2 then
@@ -764,6 +768,10 @@ function family_job_kill_enemy()
         if rc == 1 then
             if env.current.name == "树上" then
                 return family_job_exec()
+            end
+            if var.job.change ~= nil then
+                var.job.change = nil
+                return family_job_select_enemy()
             end
             return family_job_one_step()
         end
@@ -1074,6 +1082,15 @@ end
 function family_job_snake_break()
     if var.fight ~= nil then
         var.fight.stop = 1
+    end
+end
+
+function family_job_enemy_change()
+    if var.fight ~= nil then
+        if var.fight.stop == nil then
+            var.job.change = true
+            var.fight.stop = 1
+        end
     end
 end
 

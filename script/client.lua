@@ -79,6 +79,7 @@ function reset()
         automation.config = config
         automation.repository = (carryon or {}).repository
     end
+    automation.debug = global.debug.level
     automation.ui = ui
     table.save(get_work_path().."log/automation.tmp", automation)
     table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
@@ -95,7 +96,7 @@ function window_wrap()
 end
 
 function minimal_resources()
-    setConsoleBufferSize(2000, 500)
+    setConsoleBufferSize(20000, 1000)
 end
 
 function get_last_cmd()

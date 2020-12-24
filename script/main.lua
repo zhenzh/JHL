@@ -61,6 +61,8 @@ if automation.repository ~= nil then
     automation.repository = nil
 end
 
+global.debug.level = automation.debug or global.debug.level
+
 statistics.date = time.date("%Y%m%d")
 if io.exists(get_work_path().."log/statistics."..statistics.date) then
     statistics = table.load(get_work_path().."log/statistics."..statistics.date)
