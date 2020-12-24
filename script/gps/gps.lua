@@ -302,8 +302,6 @@ function goto_return(rc, msg)
     if rc < 0 then
         if #var.goto.room_ids == 0 then
             show("未知目的地", "orange")
-        elseif var.goto.path[var.goto.room_id].cost >= 10000 then
-            show("未连通目的地", "orange")
         end
         show("移动失败", "red")
         var.goto = nil
