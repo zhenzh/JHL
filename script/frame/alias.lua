@@ -92,8 +92,14 @@ alias.add("sync", [[^\s*sync\s*$]], [[
     )()
 ]])
 
-alias.add("statistics", [[^\s*statistics\s*$]], [[
-    statistics_list()
+alias.add("statistics", [[^\s*statistics(?:\s+(\d+)|\s*)$]], [[
+    local shift = matches[2]    
+    if shift == false then
+        shift = nil
+    else
+        shift = tonumber(shift)
+    end
+    statistics_list(shift)
 ]])
 
 alias.add("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[
