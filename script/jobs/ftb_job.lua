@@ -240,7 +240,7 @@ function ftb_job_get_area(dest)
         end
     end
     config.jobs["斧头帮任务"].dest = get_room_id_by_tag("nojob", config.jobs["斧头帮任务"].dest, "exclude")
-    config.jobs["斧头帮任务"].dest = set.union(low_priority, config.jobs["斧头帮任务"].dest)
+    config.jobs["斧头帮任务"].dest = set.union(set.inter(low_priority, config.jobs["斧头帮任务"].dest), config.jobs["斧头帮任务"].dest)
     var.job.search = config.jobs["斧头帮任务"].dest
 end
 
@@ -285,7 +285,6 @@ function ftb_job_search()
     elseif rc > 0 then
         if var.job.range >= 7 then
             if var.job.spare ~= nil then
-                var.job.range = config.jobs["斧头帮任务"].range
                 local spare = var.job.spare
                 var.job.spare = nil
                 ftb_job_get_area(spare)

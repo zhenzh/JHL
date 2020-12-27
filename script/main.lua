@@ -63,10 +63,14 @@ end
 
 global.debug.level = automation.debug or global.debug.level
 
-statistics.date = time.date("%Y%m%d")
+statistics.date = statistics.date or time.date("%Y%m%d")
 if io.exists(get_work_path().."log/statistics."..statistics.date) then
     statistics = table.load(get_work_path().."log/statistics."..statistics.date)
 end
+statistics.death = statistics.death or {}
+statistics.idle = statistics.idle or {}
+statistics.reset = statistics.reset or {}
+statistics.connect = statistics.connect or {}
 
 collectgarbage("collect")
 

@@ -26,6 +26,7 @@ local noisy_rooms = {
 function automation_reset(func)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］")
     automation.reconnect = func or "automation.reconnect = nil"
+    set.append(statistics.reset, time.date("%Y%m%d%H%M%S"))
     reset()
 end
 
@@ -48,6 +49,7 @@ end
 function automation_reset_die()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_die ］")
     automation.reconnect = nil
+    set.append(statistics.death, time.date("%Y%m%d%H%M%S"))
     if config.jobs[global.jid] == "飞马镖局" then
         if config.jobs["飞马镖局"].phase == 2 then
             config.jobs["飞马镖局"].biaoche = nil
@@ -77,6 +79,7 @@ end
 function automation_reset_connect()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_connect ］")
     automation.reconnect = nil
+    set.append(statistics.connect, time.date("%Y%m%d%H%M%S"))
     if get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" then
         local last_line = get_lines(-1)[1]
@@ -110,6 +113,7 @@ end
 
 function automation_idle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_idle ］")
+    set.append(statistics.idle, time.date("%Y%m%d%H%M%S"))
     if automation.idle == true then
         automation_reset()
     end

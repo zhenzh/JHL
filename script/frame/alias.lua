@@ -30,7 +30,7 @@ alias.add("lua", [[^/\s*(.*)\s*$]], [[
 
 alias.add("repeat", [[^#(\d+) (.*)$]], [[
     for i = 1, tonumber(matches[2]) do
-        expandAlias(matches[3], false)
+        expandAlias(string.gsub(matches[3], " %%i", " "..tostring(i)), false)
     end
 ]])
 
@@ -67,8 +67,16 @@ alias.add("query", [[^\s*query (.*)\s*$]], [[
     show(set.tostring(parse(matches[2])), "pink")
 ]])
 
-alias.add("auto", [[^\s*auto\s*$]], [[
+alias.add("auto", [[^\s*auto(?:\s+(\d+)|\s*)$]], [[
     require "flow"
+    if string.match(tostring(matches[2]), "-f") then
+        statistics.death = {}
+        statistics.idle = {}
+        statistics.reset = {}
+        statistics.connect = {}
+        global.jid = 1
+        automation.jid = nil
+    end
     coroutine.wrap(
         function ()
             load_jobs()
@@ -92,7 +100,7 @@ alias.add("sync", [[^\s*sync\s*$]], [[
     )()
 ]])
 
-alias.add("statistics", [[^\s*statistics(?:\s+(\d+)|\s*)$]], [[
+alias.add("statistics", [[^\s*stat(?:\s+(\d+)|\s*)$]], [[
     local shift = matches[2]    
     if shift == false then
         shift = nil
