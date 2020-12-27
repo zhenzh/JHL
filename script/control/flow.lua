@@ -1,5 +1,5 @@
 require "skills"
-require "statics"
+require "statistics"
 
 global.phase = {
     ["挂起"] = 0,
@@ -26,6 +26,7 @@ local noisy_rooms = {
 function automation_reset(func)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］")
     automation.reconnect = func or "automation.reconnect = nil"
+    set.append(statistics.reset, time.date("%Y%m%d%H%M%S"))
     reset()
 end
 
@@ -48,6 +49,7 @@ end
 function automation_reset_die()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_die ］")
     automation.reconnect = nil
+    set.append(statistics.death, time.date("%Y%m%d%H%M%S"))
     if config.jobs[global.jid] == "飞马镖局" then
         if config.jobs["飞马镖局"].phase == 2 then
             config.jobs["飞马镖局"].biaoche = nil
@@ -77,6 +79,7 @@ end
 function automation_reset_connect()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_connect ］")
     automation.reconnect = nil
+    set.append(statistics.connect, time.date("%Y%m%d%H%M%S"))
     if get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" then
         local last_line = get_lines(-1)[1]
@@ -110,6 +113,7 @@ end
 
 function automation_idle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_idle ］")
+    set.append(statistics.idle, time.date("%Y%m%d%H%M%S"))
     if automation.idle == true then
         automation_reset()
     end
@@ -130,7 +134,8 @@ function start()
     trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
     run("halt")
     if flow() < 0 then
-        automation_reset("automation_reset_idle()")
+        show("dbg", "red")
+        --automation_reset()
     else
         return 0
     end
@@ -205,13 +210,19 @@ function flow_prepare_job()
         if goto(2399) ~= 0 then
             return -1
         end
-        local l
-        if pots > 0 then
-            l = wait_line("cun;qu "..tostring(pots), 30, nil, nil, "^你取出了\\d+点潜能。$", "^你当前储存的潜能有\\d+点。$")
-        else
-            l = wait_line("cun", 30, nil, nil, "^你当前储存的潜能有\\d+点。$")
-        end
+        local l = wait_line("cun", 30, nil, nil, "^你存储了(\\d+)点潜能。$")
         if l == false then
+            return -1
+        end
+        state.pot = state.pot - tonumber(l[1])
+        if pots > 0 then
+            l = wait_line("qu "..tostring(pots), 30, nil, nil, "^你取出了(\\d+)点潜能。$")
+            if l == false then
+                return -1
+            end
+            state.pot = state.pot + tonumber(l[1])
+        end
+        if wait_line(nil, 30, nil, nil, "^你当前储存的潜能有\\d+点。$") == false then
             return -1
         end
     end
@@ -237,7 +248,7 @@ function flow_do_job()
         end
     end
     if rc ~= nil then
-        archive_statics()
+        archive_statistics()
     end
     if rc == 0 then
         global.jid = 1
@@ -741,15 +752,15 @@ function break_event()
     return false
 end
 
-function archive_statics()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statics ］")
-    if var.statics ~= nil then
-        if time.toepoch(statics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statics["end"] then
-            table.save(get_work_path().."log/statics."..statics.date, statics)
-            statics = { date = time.date("%Y%m%d") }
+function archive_statistics()
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statistics ］")
+    if var.statistics ~= nil then
+        if time.toepoch(statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statistics["end"] then
+            table.save(get_work_path().."log/statistics."..statistics.date, statistics)
+            statistics = { date = time.date("%Y%m%d") }
         end
-        set.append(statics, var.statics)
-        var.statics = nil
+        set.append(statistics, var.statistics)
+        var.statistics = nil
     end
 end
 

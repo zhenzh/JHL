@@ -4,7 +4,7 @@ config = {
     flood_control = 30,
     jobs = {
         "门派任务",     ["门派任务"]     = { active = false,  enable = true,  contribution = 150 },
-        "斧头帮任务",   ["斧头帮任务"]   = { active = false,  enable = false, enemy = 0, confirm = {}, exclude = {} },
+        "斧头帮任务",   ["斧头帮任务"]   = { active = true,  enable = true, enemy = 0, confirm = {}, exclude = {} },
         "飞马镖局",     ["飞马镖局"]     = { active = true,  enable = true },
         "寻访任务",     ["寻访任务"]     = { active = false,  enable = false },
     },

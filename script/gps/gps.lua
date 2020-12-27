@@ -107,7 +107,7 @@ local maze = {
 
 function get_path(src, dst)
     local trace = {}
-    trace[dst] = {cost = 100000}
+    trace[dst] = {cost = 10000}
     trace[src] = {step = "", cost = 0}
     local analyzing = {src}
     while #analyzing > 0 do
@@ -141,8 +141,8 @@ end
 function get_multipath(src, dst)
     local trace,cost = {},{}
     for _,v in ipairs(dst) do
-        trace[v] = {cost = 100000}
-        cost[v] = 100000
+        trace[v] = {cost = 10000}
+        cost[v] = 10000
     end
     cost[src] = nil
     trace[src] = {step = "", cost = 0}
@@ -174,7 +174,7 @@ function get_multipath(src, dst)
     local path = var.goto.multipath or {}
     local crt,nxt
     for k,_ in pairs(cost) do
-        if trace[k].cost >= 100000 then
+        if trace[k].cost >= 10000 then
             cost[k] = nil
             trace[k] = nil
             set.delete(dst, k)
@@ -249,7 +249,7 @@ function gonext(mode)
             trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
             trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
             trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
-            goto_move()
+            return goto_return(goto_move())
         end
     end
 end
@@ -302,8 +302,6 @@ function goto_return(rc, msg)
     if rc < 0 then
         if #var.goto.room_ids == 0 then
             show("未知目的地", "orange")
-        elseif var.goto.path[var.goto.room_id].cost == 100000 then
-            show("未连通目的地", "orange")
         end
         show("移动失败", "red")
         var.goto = nil
@@ -329,9 +327,9 @@ function goto_relocate()
     end
     if #set.inter(env.current.id, {1827, 2988, 2989, 2990}) > 0 then
         if map[var.goto.room_ids[var.goto.index]].zone == "西域白驼山" then
-            var.goto.path[2990] = {next = 1826}
+            var.goto.adjust = 1826
         else
-            var.goto.path[2990] = {next = 1327}
+            var.goto.adjust = 1327
         end
         env.current.id = { 2990 }
         local rc = xiyu_desert()
@@ -421,6 +419,7 @@ function goto_move()
         if rc ~= nil then
             return rc
         end
+        var.goto.adjust = nil
     end
     -- local room_id    全路径规划方案
     -- if false and #var.goto.room_ids > 1 then
@@ -437,12 +436,12 @@ function goto_move()
     --                 local sub_cost = (var.goto.multipath[to] or {})[from] or {}
     --                 sub_cost = ((sub_cost[to] or {}).cost or 0) - ((sub_cost[from] or {}).cost or 0)
     --                 all_cost[#all_cost] = set.last(all_cost) + sub_cost
-    --                 if set.last(all_cost) >= (all_cost[#all_cost-1] or 100000) then
+    --                 if set.last(all_cost) >= (all_cost[#all_cost-1] or 10000) then
     --                     all_cost[#all_cost] = all_cost[#all_cost-1]
     --                     break
     --                 end
     --             end
-    --             if all_cost[#all_cost] < (all_cost[#all_cost-1] or 100000) then
+    --             if all_cost[#all_cost] < (all_cost[#all_cost-1] or 10000) then
     --                 var.goto.room_ids = v
     --             end
     --         end
@@ -467,7 +466,7 @@ function goto_move()
         show("准备前往："..tostring(var.goto.room_id).."（"..tostring(var.goto.index).." / "..tostring(#var.goto.room_ids).."）", "white")
         var.goto.report = true
     end
-    if var.goto.path[var.goto.room_id].cost == 100000 then
+    if var.goto.path[var.goto.room_id].cost >= 10000 then
         return -1
     end
     return goto_exec(env.current.id[1])

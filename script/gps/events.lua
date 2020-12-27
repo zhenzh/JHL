@@ -571,15 +571,19 @@ function walk_ice()
         map_adjust("松花江", "渡船")
         if calibration["过河"][1] == "大圣" then
             var.goto.path[var.goto.path[3036].last].next = var.goto.path[3036].next
-            var.goto.path[var.goto.path[3036].next].last = var.goto.path[3036].last
-            var.goto.path[var.goto.path[3036].next].step = "yell 大圣"
+            if var.goto.path[3036].next ~= nil then
+                var.goto.path[var.goto.path[3036].next].last = var.goto.path[3036].last
+                var.goto.path[var.goto.path[3036].next].step = "yell 大圣"
+            end
             return 0
         else
             var.goto.path[var.goto.path[3036].last].next = 1963
             var.goto.path[1963] = var.goto.path[3036]
             var.goto.path[1963].step = "yell boat;enter"
-            var.goto.path[var.goto.path[3036].next].last = 1963
-            var.goto.path[var.goto.path[3036].next].step = "out"
+            if var.goto.path[3036].next ~= nil then
+                var.goto.path[var.goto.path[3036].next].last = 1963
+                var.goto.path[var.goto.path[3036].next].step = "out"
+            end
             return yell_boat()
         end
     end
@@ -2212,7 +2216,8 @@ function xiyu_desert()
         return rc, msg
     end
     repeat
-        local l = wait_line(xiyu_desert_dir[var.goto.path[msg].next], 30, {StopEval=true}, 20, "^(\\S+) - |"..
+        local next_id = var.goto.adjust or var.goto.path[msg].next
+        local l = wait_line(xiyu_desert_dir[next_id], 30, {StopEval=true}, 20, "^(\\S+) - |"..
                                                                                                "^你的眼前一黑，接著什么也不知道了....$|"..
                                                                                                "^你已经精疲力尽，动弹不得。$|"..
                                                                                                "^鬼门关 - $|"..
@@ -2222,7 +2227,7 @@ function xiyu_desert()
         elseif var.goto.pause ~= nil then
             return 1,"移动暂停"
         elseif l[1] ~= "大沙漠" then
-            env.current.id = { var.goto.path[msg].next }
+            env.current.id = { next_id }
             return 0
         end
     until false

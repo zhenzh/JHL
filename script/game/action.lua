@@ -1286,13 +1286,14 @@ function search(obj, rooms)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search ］参数：obj = "..tostring(obj)..", rooms = "..table.tostring(rooms))
     trigger.add("search_found_obj", "search_found_obj()", "search", {Enable=true}, nil, obj)
     trigger.add("search_check_result", "search_check_result()", "search", {Enable=false}, 90, "^> $")
-    var.search = var.search or { result = {}, obj = {}, optical = {} }
+    trigger.add("search_locate", "search_locate()", "search", {Enable=true}, 90, "^\\S+\\s+- [、a-z0-9]+$")
+    var.search = var.search or { result = {}, obj = {}, optical = {}, past = {} }
     var.search.area = set.copy(rooms)
     return search_return(search_room(obj))
 end
 
 function search_return(rc, msg1, msg2)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_return ］参数：rc = "..tostring(rc)..", msg1 = "..tostring(msg1)..", msg2 = "..tostring(msg2))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_return ］参数：rc = "..tostring(rc)..", msg1 = "..table.tostring(msg1)..", msg2 = "..table.tostring(msg2))
     if var.search == nil then
         return rc,msg1,msg2
     end
@@ -1306,16 +1307,20 @@ function search_room(obj)
     if #var.search.area == 0 then
         return 1
     end
+    if #env.current.id > 0 and 
+       set.le(env.current.id, var.search.area) then
+        var.search.area = set.union(set.compl(var.search.area, env.current.id), env.current.id)
+    end
     var.search.dest = set.pop(var.search.area)
     local rc = goto(var.search.dest)
-    if rc < 0 then
-        return -1
+    if rc ~= 0 then
+        return search_room(obj)
     end
     if #env.current.objs > 0 then
         if var.search.result[env.current.id[1]] == nil then
             for _,v in ipairs(env.current.objs) do
-                local msg = set.union({v}, {regex.match("  "..v, obj)})
-                if #msg > 1 then
+                local msg = regex.match("  "..v, obj)
+                if msg ~= nil then
                     var.search.result[env.current.id[1]] = var.search.result[env.current.id[1]] or {}
                     set.append(var.search.result[env.current.id[1]], msg)
                 end
@@ -1334,6 +1339,9 @@ function search_room(obj)
         end
         var.search.optical = {}
     end
+    if #var.search.past > 0 then
+        var.search.area = set.compl(var.search.area, var.search.past)
+    end
     if not table.is_empty(var.search.result) then
         var.search.area = set.compl(var.search.area, table.keys(var.search.result))
         return 0,var.search.result,var.search.area
@@ -1351,9 +1359,14 @@ function search_check_result()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_check_result ］")
     trigger.disable("search_check_result")
     if #env.current.id == 1 then
-        if env.current.id[1] == var.search.dest or 
-           set.has(var.search.area, env.current.id[1]) then
+        if env.current.id[1] == var.search.dest then
             var.search.result[env.current.id[1]] = var.search.obj
+        elseif set.has(var.search.area, env.current.id[1]) then
+            var.search.result[env.current.id[1]] = var.search.obj
+        elseif var.job ~= nil and var.job.search ~= nil then
+            if set.has(var.job.search, env.current.id[1]) then
+                var.search.result[env.current.id[1]] = var.search.obj
+            end
         end
     else
         env.current.id = get_room_id_by_name(env.current.name)
@@ -1372,6 +1385,18 @@ function search_check_result()
         end
     end
     var.search.obj = {}
+end
+
+function search_locate()
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_locate ］")
+    env.current.id = get_room_id_by_name(env.current.name)
+    if #env.current.id > 1 then
+        env.current.exits = string.split(env.current.exits, "[ 、]+")
+        env.current.id = get_room_id_by_exits(env.current.exits, env.current.id)
+    end
+    if #env.current.id == 1 then
+        set.append(var.search.past, env.current.id[1])
+    end
 end
 
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

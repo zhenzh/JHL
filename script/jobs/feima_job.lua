@@ -74,10 +74,10 @@ function feima_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job ］")
     automation.idle = false
     var.job = var.job or {name = "飞马镖局"}
-    var.job.statics = var.job.statics or {name = "飞马镖局"}
-    var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
-    var.job.statics["exp"] = var.job.statics["exp"] or state.exp
-    var.job.statics["pot"] = var.job.statics["pot"] or state.pot
+    var.job.statistics = var.job.statistics or {name = "飞马镖局"}
+    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
+    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
     var.job.enemy_name = var.job.enemy_name or ("(?:"..set.concat(job_enemys, "|")..")")
     var.job.enemy = {count = 0}
     var.job.addenemy = {count = 0}
@@ -113,7 +113,7 @@ function feima_job_return(rc)
     config.jobs["飞马镖局"].dest = nil
     config.jobs["飞马镖局"].recover = nil
     config.jobs["飞马镖局"].path = nil
-    var.statics = var.job.statics
+    var.statistics = var.job.statistics
     trigger.disable_group("feima_job")
     trigger.disable_group("feima_job_active")
     var.job = nil
@@ -139,6 +139,9 @@ function feima_job_p2()
     if rc ~= nil then
         return rc
     end
+    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
+    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
     map_adjust("门派接引", "禁用", "过河", "渡船", "丐帮密道", "禁用")
     if calibration["南阳城"][1] == "开放" then
         map_attr.cost["north2401"] = 10000
@@ -221,9 +224,10 @@ function feima_job_p4()
     if feima_job_goto_maxingkong() == nil then
         rc = feima_job_abandon_job()
     end
-    if var.job ~= nil then
-        var.job.statics["result"] = "失败"
-        var.job.statics["end"] = time.epoch()
+    if var.job ~= nil and 
+       var.job.statistics ~= nil then
+        var.job.statistics["result"] = "失败"
+        var.job.statistics["end"] = time.epoch()
         return 1
     else
         return rc
@@ -251,7 +255,7 @@ end
 function feima_job_goto_maxingkong()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_goto_maxingkong ］")
     if env.current.id[1] ~= 2921 then
-        var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
+        var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
         local rc = goto(2921)
         if rc ~= 0 then
             return rc
@@ -587,10 +591,10 @@ function feima_job_arrive()
         var.job.thread_suspend = false
         coroutine.resume(var.job.thread)
     end
-    var.job.statics["result"] = "成功"
-    var.job.statics["end"] = time.epoch()
-    var.job.statics["exp"] = state.exp - var.job.statics["exp"]
-    var.job.statics["pot"] = state.pot - var.job.statics["pot"]
+    var.job.statistics["result"] = "成功"
+    var.job.statistics["end"] = time.epoch()
+    var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
+    var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
     return 0
 end
 
@@ -623,18 +627,18 @@ function feima_job_settle()
                 if run_score() < 0 then
                     return -1
                 end
-                for i = #statics, 1, -1 do
-                    if statics[i]["name"] == "飞马镖局" and 
-                       statics[i]["result"] == "成功" then
-                        statics[i]["exp"] = (statics[i]["exp"] or 0) + state.exp - var.job.statics["exp"]
-                        statics[i]["pot"] = (statics[i]["pot"] or 0) + state.pot - var.job.statics["pot"]
+                for i = #statistics, 1, -1 do
+                    if statistics[i]["name"] == "飞马镖局" and 
+                       statistics[i]["result"] == "成功" then
+                        statistics[i]["exp"] = (statistics[i]["exp"] or 0) + state.exp - var.job.statistics["exp"]
+                        statistics[i]["pot"] = (statistics[i]["pot"] or 0) + state.pot - var.job.statistics["pot"]
                     end
                 end
-                var.job.statics["exp"] = state.exp
-                var.job.statics["pot"] = state.pot
+                var.job.statistics["exp"] = state.exp
+                var.job.statistics["pot"] = state.pot
             end
             if privilege_job("飞马镖局") == true then
-                var.job.statics = nil
+                var.job.statistics = nil
                 return 0
             end
             return feima_job()
@@ -647,7 +651,7 @@ function feima_job_settle()
             var.job.thread_suspend = false
             coroutine.resume(var.job.thread)
         end
-        var.job.statics["end"] = time.epoch()
+        var.job.statistics["end"] = time.epoch()
         return 1
     end
 end
@@ -682,6 +686,15 @@ function feima_job_abandon_job()
                 end
             elseif l[0] == "你可以重新开始押镖了。" or 
                    l[0] == "马行空似乎不懂你是什么意思。" then
+                if l[0] == "你可以重新开始押镖了。" then
+                    for i = #statistics, 1, -1 do
+                        if statistics[i]["name"] == "飞马镖局" and 
+                           statistics[i]["result"] == nil then
+                            statistics[i]["exp"] = (statistics[i]["exp"] or 0) + state.exp - var.job.statistics["exp"]
+                            statistics[i]["pot"] = (statistics[i]["pot"] or 0) + state.pot - var.job.statistics["pot"]
+                        end
+                    end
+                end
                 config.jobs["飞马镖局"].phase = phase["任务获取"]
                 if config.jobs["飞马镖局"].dest == nil then
                     return feima_job()

@@ -1,7 +1,7 @@
 global = global or { flood = 0, uid = {}, buffer = {}, regex = {} }
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
-statics = statics or {}
+statistics = statistics or {}
 config = config or {}
 var = var or {}
 
@@ -61,16 +61,22 @@ if automation.repository ~= nil then
     automation.repository = nil
 end
 
-statics.date = time.date("%Y%m%d")
-if io.exists(get_work_path().."log/statics."..statics.date) then
-    statics = table.load(get_work_path().."log/statics."..statics.date)
+global.debug.level = automation.debug or global.debug.level
+
+statistics.date = statistics.date or time.date("%Y%m%d")
+if io.exists(get_work_path().."log/statistics."..statistics.date) then
+    statistics = table.load(get_work_path().."log/statistics."..statistics.date)
 end
+statistics.death = statistics.death or {}
+statistics.idle = statistics.idle or {}
+statistics.reset = statistics.reset or {}
+statistics.connect = statistics.connect or {}
 
 collectgarbage("collect")
 
 function init()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ init ］")
-    map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "泉州新门", "开放")
+    map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "泉州新门", "开放", "古墓水道", "禁用")
     trigger.add("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
     if wait_line("jiali max;jiajin max;score;hp;skills;enable;prepare;set;jiajin 1;jiali none", 30, nil, 10, "^从现在起你用零点内力伤敌。$", "^> $") ~= false then
         if run_i() < 0 then
@@ -105,6 +111,7 @@ end
 function load_jobs()
     require "family_job"
     require "feima_job"
+    require "ftb_job"
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
             config.jobs[v].efunc()

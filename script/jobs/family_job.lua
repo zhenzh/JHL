@@ -100,8 +100,11 @@ function family_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job ］")
     automation.idle = false
     var.job = var.job or {name = "门派任务"}
-    var.job.statics = var.job.statics or {name = "门派任务"}
+    var.job.statistics = var.job.statistics or {name = "门派任务"}
     var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
+    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
+    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
     trigger.enable_group("family_job_active")
     if (config.jobs["门派任务"].phase or 0) <= phase["任务获取"] then
         local rc = family_job_p1()
@@ -113,8 +116,8 @@ function family_job()
         return family_job_return(family_job_p2())
     end
     if config.jobs["门派任务"].phase == phase["任务结算"] then
-        var.job.statics["exp"] = var.job.statics["exp"] or state.exp
-        var.job.statics["pot"] = var.job.statics["pot"] or state.pot
+        var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
+        var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
         config.jobs["门派任务"].dest = nil
         local rc = family_job_p3()
         if rc ~= nil then
@@ -122,13 +125,6 @@ function family_job()
         end
     end
     if config.jobs["门派任务"].phase == phase["任务完成"] then
-        if run_score() < 0 then
-            return family_job_return(-1)
-        end
-        if var.job.statics["exp"] ~= nil then
-            var.job.statics["exp"] = state.exp - var.job.statics["exp"]
-            var.job.statics["pot"] = state.pot - var.job.statics["pot"]
-        end
         return family_job_return(family_job_p4())
     end
     if config.jobs["门派任务"].phase > phase["任务完成"] then
@@ -141,7 +137,7 @@ function family_job_return(rc)
     if var.job == nil then
         return rc
     end
-    var.statics = var.job.statics
+    var.statistics = var.job.statistics
     config.jobs["门派任务"].active = false
     trigger.disable_group("family_job_active")
     var.job = nil
@@ -188,9 +184,10 @@ end
 
 function family_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p2 ］")
-    var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
-    var.job.statics["exp"] = var.job.statics["exp"] or state.exp
-    var.job.statics["pot"] = var.job.statics["pot"] or state.pot
+    timer.delete("family_job_inactive")
+    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
+    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
     if config.jobs["门派任务"].phase == phase["任务执行"] then
         jia_min()
         if wield(config.fight["通用"].weapon) < 0 then
@@ -252,20 +249,24 @@ function family_job_p4()
     if recover(config.job_nl) < 0 then
         return -1
     end
-    if prepare_items() < 0 then
+    if run_score() < 0 then
         return -1
     end
-    var.job.statics["result"] = "成功"
-    var.job.statics["end"] = time.epoch()
+    var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
+    var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
+    var.job.statistics["result"] = "成功"
+    var.job.statistics["end"] = time.epoch()
     return 0
 end
 
 function family_job_p5()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p5 ］")
     config.jobs["门派任务"].dest = nil
-    if var.job.statics ~= nil then
-        var.job.statics["result"] = "失败"
-        var.job.statics["end"] = time.epoch()
+    if var.job.statistics ~= nil then
+        var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
+        var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
+        var.job.statistics["result"] = "失败"
+        var.job.statistics["end"] = time.epoch()
     end
     if config.jobs["门派任务"].phase == phase["任务放弃"] then
         local rc = family_job_goto_master()
@@ -279,7 +280,7 @@ function family_job_p5()
         elseif (rc or -1) < 0 then
             trigger.add("family_job_giveup", "", "family_job", {Enable=false, StopEval=true}, 90, "^\\S+已派你去\\S+附近完成重要任务，赶快去执行吧。$")
             trigger.add(nil, "trigger.delete('family_job_giveup')", "family_job", {Enable=false, OneShot=true, StopEval=true}, 90, "^唉！你耽误的时间太久了，这次任务取消了。$")
-            var.job.statics["end"] = time.epoch()
+            var.job.statistics["end"] = time.epoch()
             return (rc or 1)
         end
         rc = family_job_open_job()
@@ -293,8 +294,8 @@ function family_job_p5()
     if recover(config.job_nl) < 0 then
          return -1
     end
-    if var.job.statics ~= nil then
-        var.job.statics["end"] = time.epoch()
+    if var.job.statistics ~= nil then
+        var.job.statistics["end"] = time.epoch()
     end
     return 1
 end
@@ -302,7 +303,7 @@ end
 function family_job_goto_master()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_goto_master ］")
     if env.current.id[1] ~= family_info[profile.family].master_place then
-        var.job.statics["begin"] = var.job.statics["begin"] or time.epoch()
+        var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
         local rc = goto(family_info[profile.family].master_place)
         if rc == 1 then
             config.jobs["门派任务"].phase = phase["任务失败"]
@@ -454,7 +455,7 @@ function family_job_select_enemy()
         return family_job_confirm_enemy()
     end
     local l = wait_line("look "..family_info[profile.family].enemy_id, 30, nil, nil, "你要看什么？$|"..
-                                                                                           "^(\\S+)弟子 "..family_info[profile.family].enemy_name.."\\(\\w+ \\w+\\)$")
+                                                                                     "^(\\S+)弟子 "..family_info[profile.family].enemy_name.."\\(\\w+ \\w+\\)$")
     local safe
     if l == false then
         return -1
@@ -754,7 +755,11 @@ end
 
 function family_job_kill_enemy()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_kill_enemy ］")
+    if enemy_choose["全杀"] == false then
+        trigger.add("family_job_enemy_change", "family_job_enemy_change()", "family_job_active", {Enable=false, OneShot=true, StopEval=true}, 100, "^"..family_info[profile.family].enemy_name.."只觉得手中\\S+把持不定，脱手飞出！")
+    end
     local rc = fight()
+    trigger.delete("family_job_enemy_change")
     if rc < 0 then
         return -1
     elseif rc == 2 then
@@ -763,6 +768,10 @@ function family_job_kill_enemy()
         if rc == 1 then
             if env.current.name == "树上" then
                 return family_job_exec()
+            end
+            if var.job.change ~= nil then
+                var.job.change = nil
+                return family_job_select_enemy()
             end
             return family_job_one_step()
         end
@@ -1025,8 +1034,9 @@ function family_job_received()
 end
 
 function family_job_inactive()
-    var.job.statics = nil
+    var.job.statistics = nil
     config.jobs["门派任务"].phase = phase["任务失败"]
+    var.job.statistics = nil
     if automation.skill ~= nil then
         run("set 中断事件")
     end
@@ -1072,6 +1082,15 @@ end
 function family_job_snake_break()
     if var.fight ~= nil then
         var.fight.stop = 1
+    end
+end
+
+function family_job_enemy_change()
+    if var.fight ~= nil then
+        if var.fight.stop == nil then
+            var.job.change = true
+            var.fight.stop = 1
+        end
     end
 end
 
