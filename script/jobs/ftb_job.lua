@@ -32,7 +32,7 @@ local phase = {
     ["任务完成"] = 4
 }
 
-local low_priority = { 2724, 1977, 290, 2399, 2400, 971, 2042, 2043, 2044, 1017, 86, 25, 286 }
+local low_priority = { 2724, 1977, 290, 2399, 2400, 969, 971, 2042, 2043, 2044, 1017, 86, 25, 286 }
 
 function ftb_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job ］")
@@ -290,7 +290,12 @@ function ftb_job_search()
                 ftb_job_get_area(spare)
                 return ftb_job_p2()
             end
-            return ftb_job_p3()
+            if config.jobs["斧头帮任务"].progress ~= nil then
+                config.jobs["斧头帮任务"].phase = phase["任务完成"]
+                return ftb_job_p1()
+            else
+                return ftb_job_p3()
+            end
         end
         var.job.range = 7
         config.jobs["斧头帮任务"].dest = nil

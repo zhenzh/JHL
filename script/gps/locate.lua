@@ -576,9 +576,19 @@ function get_room_id_by_range(range, origin)
             for i,j in pairs(map[m].links) do
                 if regular_dir(i) == nil then
                     local steps = 0
-                    for _,x in ipairs(string.split(i, ";")) do
-                        if is_dir(x) == true or string.match(x, "^go%d+$") then
-                            steps = steps + 1
+                    if i == "go1530" or 
+                       i == "go1299" or 
+                       i == "go1301" or 
+                       i == "go1302" or 
+                       i == "go1432" or 
+                       i == "go1433" or 
+                       i == "go1434" then
+                        steps = steps + 1
+                    else
+                        for _,x in ipairs(string.split(i, ";")) do
+                            if is_dir(x) == true then
+                                steps = steps + 1
+                            end
                         end
                     end
                     if steps > 0 then

@@ -210,13 +210,19 @@ function flow_prepare_job()
         if goto(2399) ~= 0 then
             return -1
         end
-        local l
-        if pots > 0 then
-            l = wait_line("cun;qu "..tostring(pots), 30, nil, nil, "^你取出了\\d+点潜能。$", "^你当前储存的潜能有\\d+点。$")
-        else
-            l = wait_line("cun", 30, nil, nil, "^你当前储存的潜能有\\d+点。$")
-        end
+        local l = wait_line("cun", 30, nil, nil, "^你存储了(\\d+)点潜能。$")
         if l == false then
+            return -1
+        end
+        state.pot = state.pot - tonumber(l[1])
+        if pots > 0 then
+            l = wait_line("qu "..tostring(pots), 30, nil, nil, "^你取出了(\\d+)点潜能。$")
+            if l == false then
+                return -1
+            end
+            state.pot = state.pot + tonumber(l[1])
+        end
+        if wait_line(nil, 30, nil, nil, "^你当前储存的潜能有\\d+点。$") == false then
             return -1
         end
     end

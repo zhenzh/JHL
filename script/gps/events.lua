@@ -571,15 +571,19 @@ function walk_ice()
         map_adjust("松花江", "渡船")
         if calibration["过河"][1] == "大圣" then
             var.goto.path[var.goto.path[3036].last].next = var.goto.path[3036].next
-            var.goto.path[var.goto.path[3036].next].last = var.goto.path[3036].last
-            var.goto.path[var.goto.path[3036].next].step = "yell 大圣"
+            if var.goto.path[3036].next ~= nil then
+                var.goto.path[var.goto.path[3036].next].last = var.goto.path[3036].last
+                var.goto.path[var.goto.path[3036].next].step = "yell 大圣"
+            end
             return 0
         else
             var.goto.path[var.goto.path[3036].last].next = 1963
             var.goto.path[1963] = var.goto.path[3036]
             var.goto.path[1963].step = "yell boat;enter"
-            var.goto.path[var.goto.path[3036].next].last = 1963
-            var.goto.path[var.goto.path[3036].next].step = "out"
+            if var.goto.path[3036].next ~= nil then
+                var.goto.path[var.goto.path[3036].next].last = 1963
+                var.goto.path[var.goto.path[3036].next].step = "out"
+            end
             return yell_boat()
         end
     end
