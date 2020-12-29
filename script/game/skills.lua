@@ -32,6 +32,9 @@ end
 
 function zuanyan(times)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ zuanyan ］参数：times = "..tostring(times))
+    if config.job_zuanyan == false and var.job ~= nil then
+        return zuanyan_return(0)
+    end
     var.zuanyan = var.zuanyan or { times = math.max(30, times or 100) }
     _,var.zuanyan.income = dazuo_analysis()
     return zuanyan_num_i(1)
@@ -198,6 +201,9 @@ function zuanyan_exec(i)
         automation.idle = false
         if wait_line(nil, 30, {Gag=true}, 30, "^> $") == false then
             return -1
+        end
+        if var.job ~= nil and var.job.statistics ~= nil then
+            var.job.statistics["pot"] = var.job.statistics["pot"] - (var.zuanyan.times)
         end
         var.zuanyan.refresh = true
     else

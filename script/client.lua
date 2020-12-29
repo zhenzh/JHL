@@ -78,9 +78,19 @@ function reset()
         automation.jid = (var or {}).jid
         automation.config = config
         automation.repository = (carryon or {}).repository
+        local timer_record = {
+            "invalid_ask_ping",
+            "invalid_ask_yuluwan",
+            "ftb_job_cd"
+        }
+        automation.timer = {}
+        for _,v in ipairs(timer_record) do
+            automation.timer[v] = timer.get(v)
+        end
     end
     automation.debug = global.debug.level
     automation.ui = ui
+    automation.epoch = time.epoch()
     table.save(get_work_path().."log/automation.tmp", automation)
     table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
     resetProfile()

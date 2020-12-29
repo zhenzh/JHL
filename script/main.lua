@@ -41,9 +41,21 @@ if io.exists(get_work_path().."log/automation.tmp") then
     os.remove(get_work_path().."log/automation.tmp")
 end
 
+automation.timer = automation.timer or {}
 automation.items = automation.items or {}
 automation.killer = automation.killer or {}
 automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
+
+if automation.timer["invalid_ask_ping"] ~= nil then
+    local seconds = math.max(0.001, automation.timer["invalid_ask_ping"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["invalid_ask_ping"], seconds)
+    automation.timer["invalid_ask_ping"] = nil
+end
+if automation.timer["invalid_ask_yuluwan"] ~= nil then
+    local seconds = math.max(0.001, automation.timer["invalid_ask_yuluwan"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["invalid_ask_yuluwan"], seconds)
+    automation.timer["invalid_ask_yuluwan"] = nil
+end
 
 automation.skill = nil
 config = automation.config

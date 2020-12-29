@@ -34,6 +34,12 @@ local phase = {
 
 local low_priority = { 2724, 1977, 290, 2399, 2400, 969, 971, 2042, 2043, 2044, 1017, 86, 25, 286 }
 
+if automation.timer["ftb_job_cd"] ~= nil then
+    local seconds = math.max(0.001, automation.timer["ftb_job_cd"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["ftb_job_cd"], seconds)
+    automation.timer["ftb_job_cd"] = nil
+end
+
 function ftb_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job ］")
     automation.idle = false

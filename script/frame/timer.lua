@@ -2,7 +2,19 @@ timer = timer or {}
 timers = timers or {}
 timers.group = timers.group or {}
 
-function timer.add(name, seconds, send, group, options)
+function timer.add(...)
+    local name,seconds,send,group,options
+    if type(select(1, ...)) == "table" then
+        local tinfo = select(1, ...)
+        name = tinfo.name
+        send = tinfo.send
+        group = tinfo.group
+        options = tinfo.options
+        seconds = select(2, ...) or tinfo.seconds
+    else
+        name,seconds,send,group,options = ...
+    end
+
     if name == nil or name == "" then
         name = "timer_"..unique_id()
     end
@@ -14,7 +26,14 @@ function timer.add(name, seconds, send, group, options)
     end
     options = options or {}
 
-    timers[name] = { send = send, group = group, seconds = seconds, options = options }
+    timers[name] = {
+        name = name,
+        send = send,
+        group = group,
+        seconds = seconds,
+        options = options
+    }
+
     if not options.OneShot then
         timers[name].id = tempTimer(seconds, send, true)
     else
@@ -123,4 +142,13 @@ function timer.delete_group(group)
         rc = rc and timer.delete(k)
     end
     return rc
+end
+
+function timer.get(name)
+    if timer.is_exist(name) == false then
+        return nil
+    end
+    local tinfo = table.deepcopy(timers[name])
+    tinfo.remain = timer.remain(name)
+    return tinfo
 end

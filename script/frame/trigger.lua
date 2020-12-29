@@ -107,6 +107,7 @@ function trigger.add(name, send, group, options, order, pattern)
     end
 
     triggers[name] = {
+        name = name,
         pattern = pattern,
         send = send,
         options = options,

@@ -756,7 +756,7 @@ end
 function family_job_kill_enemy()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_kill_enemy ］")
     if enemy_choose["全杀"] == false then
-        trigger.add("family_job_enemy_change", "family_job_enemy_change()", "family_job_active", {Enable=false, OneShot=true, StopEval=true}, 100, "^"..family_info[profile.family].enemy_name.."只觉得手中\\S+把持不定，脱手飞出！")
+        trigger.add("family_job_enemy_change", "family_job_enemy_change()", "family_job_active", {Enable=true, OneShot=true, StopEval=true}, 100, "^"..family_info[profile.family].enemy_name.."只觉得手中\\S+把持不定，脱手飞出！")
     end
     local rc = fight()
     trigger.delete("family_job_enemy_change")
