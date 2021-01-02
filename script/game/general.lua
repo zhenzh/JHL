@@ -310,20 +310,6 @@ function is_fighting() -- 0: no fight   1: fight
     until false
 end
 
-function dump()
-    local dump = {}
-    dump.global = global
-    dump.automation = automation
-    dump.config = config
-    dump.var = var
-    dump.triggers = triggers
-    dump.timers = timers
-    local dfile = get_work_path().."log/"..time.date("%Y%m%d%H%M%S")..".dump"
-    table.save(dfile, dump)
-    show("保存文件路径："..dfile, "yellow")
-end
-
-
 --function clean_spirit(spirit)
 --    if spirit == nil then
 --        spirit = 0

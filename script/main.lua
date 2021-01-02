@@ -26,7 +26,7 @@ require "common"
 require "gps"
 require "info"
 require "action"
-require "update"
+require "admin"
 
 timer.add("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
 

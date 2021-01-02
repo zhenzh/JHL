@@ -1,3 +1,28 @@
+function dump()
+    local dump = {}
+    dump.global = global
+    dump.automation = automation
+    dump.config = config
+    dump.var = var
+    dump.triggers = triggers
+    dump.timers = timers
+    local dfile = get_work_path().."log/"..time.date("%Y%m%d%H%M%S")..".dump"
+    table.save(dfile, dump)
+    show("保存文件路径："..dfile, "yellow")
+end
+
+function clear_log(threshold)
+    
+end
+
+function clear_statistics(threshold)
+    
+end
+
+function fresh_statistics()
+    
+end
+
 function add_yun_desc(force_name, yun, valid_desc, invalid_desc)
     local valid_name,invalid_name = "valid_"..force_name.."_"..yun,"invalid_"..force_name.."_"..yun
     if trigger.is_exist(valid_name) or 

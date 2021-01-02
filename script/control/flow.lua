@@ -24,7 +24,7 @@ local noisy_rooms = {
 }
 
 function automation_reset(func)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］参数："..tostring(func))
     automation.reconnect = func or "automation.reconnect = nil"
     set.append(automation.statistics.reset, time.date("%Y%m%d%H%M%S"))
     if var.job ~= nil then
@@ -41,7 +41,7 @@ end
 function automation_reset_faint()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_faint ］")
     automation.reconnect = nil
-    local l = wait_line(nil, 180, {StopEval=true}, 9, "^慢慢地一阵眩晕感传来，你终于又有了知觉....$|^鬼门关 - ")
+    local l = wait_line(nil, 180, {StopEval=true}, 9, "^慢慢地一阵眩晕感传来，你终于又有了知觉....$|^鬼门关 - $")
     if l == false then
         return -1
     elseif l[0] == "慢慢地一阵眩晕感传来，你终于又有了知觉...." then
@@ -129,7 +129,7 @@ function start()
     trigger.enable("others_come")
     trigger.enable("others_leave")
     trigger.enable("hide_busy")
-    --timer.add(nil, 180, "automation_idle()", "automation", {Enable=true})
+    timer.add(nil, 180, "automation_idle()", "automation", {Enable=true})
     trigger.add(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
     trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
