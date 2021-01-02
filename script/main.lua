@@ -1,7 +1,6 @@
 global = global or { flood = 0, uid = {}, buffer = {}, regex = {} }
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
-statistics = statistics or {}
 config = config or {}
 var = var or {}
 
@@ -75,14 +74,13 @@ end
 
 global.debug.level = automation.debug or global.debug.level
 
-statistics.date = statistics.date or time.date("%Y%m%d")
-if io.exists(get_work_path().."log/statistics."..statistics.date) then
-    statistics = table.load(get_work_path().."log/statistics."..statistics.date)
-end
-statistics.death = statistics.death or {}
-statistics.idle = statistics.idle or {}
-statistics.reset = statistics.reset or {}
-statistics.connect = statistics.connect or {}
+automation.statistics = automation.statistics or {}
+automation.statistics.date = automation.statistics.date or time.date("%Y%m%d")
+automation.statistics.death = automation.statistics.death or {}
+automation.statistics.idle = automation.statistics.idle or {}
+automation.statistics.reset = automation.statistics.reset or {}
+automation.statistics.connect = automation.statistics.connect or {}
+automation.statistics.processing = automation.statistics.processing or {}
 
 collectgarbage("collect")
 

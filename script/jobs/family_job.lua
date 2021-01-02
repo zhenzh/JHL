@@ -71,14 +71,7 @@ function enable_family_job()
     trigger.add("family_job_settle", "family_job_settle()", "family_job_active", {Enable=false}, 100, "^\\S+说道:“辛苦你了，"..profile.name.."，\\S+。”$")
     trigger.add("family_job_enemy_found", "family_job_enemy_found()", "family_job_active", {Enable=false}, 100, "^你察觉四周好像有些不对劲......$")
     trigger.add("family_job_enemy", "var.job.fight = true", "family_job_active", {Enable=false}, 100, "^“受死吧，"..profile.name.."！”\\S+大声吼道。$")
-    trigger.add("family_job_kill", "var.job.fight = true", "family_job_active", {Enable=false, Multi=true}, 100, "^"..family_info[profile.family].enemy_name.."喝道：「你，我们的帐还没算完，看招！」$|"..
-                                                                                                                 "^"..family_info[profile.family].enemy_name.."一眼瞥见你，「哼」的一声冲了过来！$|"..
-                                                                                                                 "^"..family_info[profile.family].enemy_name.."喝道：「你，看招！」$|"..
-                                                                                                                 "^"..family_info[profile.family].enemy_name.."和你仇人相见份外眼红，立刻打了起来！$|"..
-                                                                                                                 "^"..family_info[profile.family].enemy_name.."一见到你，愣了一愣，大叫：「我宰了你！」$|"..
-                                                                                                                 "^"..family_info[profile.family].enemy_name.."和你一碰面，二话不说就打了起来！$|"..
-                                                                                                                 "^"..family_info[profile.family].enemy_name.."对著你大喝：「可恶，又是你！」$\\n"..
-                                                                                                                 "^看起来"..family_info[profile.family].enemy_name.."想杀死你！$")
+    trigger.add("family_job_kill", "var.job.fight = true", "family_job_active", {Enable=false, Multi=true}, 100, "^"..family_info[profile.family].enemy_name.."(?:喝道：「你，我们的帐还没算完，看招！」|一眼瞥见你，「哼」的一声冲了过来！|喝道：「你，看招！」|和你仇人相见份外眼红，立刻打了起来！|一见到你，愣了一愣，大叫：「我宰了你！」|和你一碰面，二话不说就打了起来！|对著你大喝：「可恶，又是你！」)\\n看起来"..family_info[profile.family].enemy_name.."想杀死你！$")
     trigger.add("family_job_enemy_die", "family_job_enemy_die()", "family_job_active", {Enable=false}, 100, "^"..family_info[profile.family].enemy_name.."倒在地上，挣扎了几下就死了。$")
     trigger.add("family_job_enemy_faint", "family_job_enemy_faint()", "family_job_active", {Enable=false}, 100, "^"..family_info[profile.family].enemy_name.."说道：好，好厉害......没想到......我会命丧于此...... ...$")
     trigger.add("family_job_enemy_alive", "var.job.alive = true", "family_job_active", {Enable=false}, 100, "^"..family_info[profile.family].enemy_name.."\\s+=")
@@ -99,9 +92,9 @@ end
 function family_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job ］")
     automation.idle = false
-    var.job = var.job or {name = "门派任务"}
-    var.job.statistics = var.job.statistics or {name = "门派任务"}
+    var.job = var.job or { name = "门派任务" }
     var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
+    var.job.statistics = var.job.statistics or { name = "门派任务" }
     var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
     var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
     var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
@@ -137,7 +130,7 @@ function family_job_return(rc)
     if var.job == nil then
         return rc
     end
-    var.statistics = var.job.statistics
+    append_statistics("门派任务")
     config.jobs["门派任务"].active = false
     trigger.disable_group("family_job_active")
     var.job = nil
@@ -185,9 +178,6 @@ end
 function family_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p2 ］")
     timer.delete("family_job_inactive")
-    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
-    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
     if config.jobs["门派任务"].phase == phase["任务执行"] then
         jia_min()
         if wield(config.fight["通用"].weapon) < 0 then
@@ -252,10 +242,7 @@ function family_job_p4()
     if run_score() < 0 then
         return -1
     end
-    var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
-    var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
     var.job.statistics["result"] = "成功"
-    var.job.statistics["end"] = time.epoch()
     return 0
 end
 
@@ -263,10 +250,7 @@ function family_job_p5()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p5 ］")
     config.jobs["门派任务"].dest = nil
     if var.job.statistics ~= nil then
-        var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
-        var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
         var.job.statistics["result"] = "失败"
-        var.job.statistics["end"] = time.epoch()
     end
     if config.jobs["门派任务"].phase == phase["任务放弃"] then
         local rc = family_job_goto_master()
@@ -280,7 +264,6 @@ function family_job_p5()
         elseif (rc or -1) < 0 then
             trigger.add("family_job_giveup", "", "family_job", {Enable=false, StopEval=true}, 90, "^\\S+已派你去\\S+附近完成重要任务，赶快去执行吧。$")
             trigger.add(nil, "trigger.delete('family_job_giveup')", "family_job", {Enable=false, OneShot=true, StopEval=true}, 90, "^唉！你耽误的时间太久了，这次任务取消了。$")
-            var.job.statistics["end"] = time.epoch()
             return (rc or 1)
         end
         rc = family_job_open_job()
@@ -419,22 +402,23 @@ function family_job_goto_dest()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_goto_dest ］")
     if #config.jobs["门派任务"].dest > 0 then
         local current = set.pop(config.jobs["门派任务"].dest)
-        run("halt")
-        local rc = goto(current)
-        if rc ~= 0 then
-            return rc
-        else
-            rc = family_job_wait_enemy(3)
-            if rc ~= nil then
+        if env.current.id[1] ~= current then
+            run("halt")
+            local rc = goto(current)
+            if rc ~= 0 then
                 return rc
             end
-            if var.job.fight ~= nil then
-                config.jobs["门派任务"].dest = { current }
-                if wield(config.fight["门派任务"].weapon) ~= 0 then
-                    return -1
-                end
-                return
-            end 
+        end
+        local rc = family_job_wait_enemy(3)
+        if rc ~= nil then
+            return rc
+        end
+        if var.job.fight ~= nil then
+            config.jobs["门派任务"].dest = { current }
+            if wield(config.fight["门派任务"].weapon) ~= 0 then
+                return -1
+            end
+            return
         end
         return family_job_goto_dest()
     end
@@ -538,7 +522,7 @@ function family_job_one_step()
                 if wait_line(nil, 30, nil, nil, "^树上 - $") == false then
                     return -1
                 end
-                env.current.id = {1718}
+                env.current.id = { 1718 }
                 if goto(current) ~= 0 then
                     return -1
                 end
@@ -552,15 +536,14 @@ function family_job_one_step()
             return family_job()
         end
         if config.jobs["门派任务"].dest[1] == 1087 then
-            if goto(1086) ~= 0 then
-                return -1
-            end
+            current = 1086
         elseif config.jobs["门派任务"].dest[1] == 1530 then
-            if goto(1529) ~= 0 then
-                return -1
-            end
+            current = 1529
         end
-        if env.current.id[1] == 1024 then
+        show("dbg fj back", "red")
+        print(env.current)
+        show(current, "green")
+        if env.current.id[1] == current then
             if goto(current) ~= 0 then
                 return -1
             end
@@ -719,7 +702,7 @@ function family_job_confirm_kill()
                                                                                                                                                  "^任务已经完成，赶快回去复命吧。$|"..
                                                                                                                                                  "^唉！你耽误的时间太久了，这次任务取消了。$")
     else
-        config.jobs["门派任务"].phase = math.min(phase["任务结算"], config.jobs["门派任务"].phase)
+        config.jobs["门派任务"].phase = math.max(phase["任务结算"], config.jobs["门派任务"].phase)
         return
     end
     return family_job_confirm_kill()
@@ -771,7 +754,12 @@ function family_job_kill_enemy()
             end
             if var.job.change ~= nil then
                 var.job.change = nil
-                return family_job_select_enemy()
+                rc = family_job_select_enemy()
+                if rc == nil then
+                    return family_job_kill_enemy()
+                else
+                    return rc
+                end
             end
             return family_job_one_step()
         end

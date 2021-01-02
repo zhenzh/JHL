@@ -26,7 +26,15 @@ local noisy_rooms = {
 function automation_reset(func)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］")
     automation.reconnect = func or "automation.reconnect = nil"
-    set.append(statistics.reset, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.reset, time.date("%Y%m%d%H%M%S"))
+    if var.job ~= nil then
+        append_statistics(var.job.name)
+        if var.job.name == "飞马镖局" and config.jobs["飞马镖局"].phase == 2 then
+            config.jobs["飞马镖局"].biaoche = nil
+            config.jobs["飞马镖局"].dest = nil
+            config.jobs["飞马镖局"].phase = 4
+        end
+    end
     reset()
 end
 
@@ -49,13 +57,7 @@ end
 function automation_reset_die()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_die ］")
     automation.reconnect = nil
-    set.append(statistics.death, time.date("%Y%m%d%H%M%S"))
-    if config.jobs[global.jid] == "飞马镖局" then
-        if config.jobs["飞马镖局"].phase == 2 then
-            config.jobs["飞马镖局"].biaoche = nil
-            config.jobs["飞马镖局"].phase = 4
-        end
-    end
+    set.append(automation.statistics.death, time.date("%Y%m%d%H%M%S"))
     local l = wait_line(nil, 60, nil, 10, "^鬼卒将你的「阴司路引」收了起来，伸手指了指关门，好象是叫你进去。$|"..
                                           "^你被吓了一大跳，连滚代爬地跑进关内去了。$|"..
                                           "^但见阴天子把手一招，飘来了牛头马面，架起你就往内殿而去。$|"..
@@ -69,7 +71,7 @@ function automation_reset_die()
         wait_line("north", 60, nil, 10, "^阴司第\\S+殿 - $")
         return automation_reset_die()
     else
-        if run_hp() < 0 then
+        if wait_line("score;hp;skills;enable;prepare", 30, nil, 10, "^以下是你目前组合中的特殊拳术技能。$|^你现在没有组合任何特殊拳术技能。$", "^> $") == false then
             return automation_reset()
         end
     end
@@ -79,7 +81,7 @@ end
 function automation_reset_connect()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_connect ］")
     automation.reconnect = nil
-    set.append(statistics.connect, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.connect, time.date("%Y%m%d%H%M%S"))
     if get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" then
         local last_line = get_lines(-1)[1]
@@ -113,7 +115,7 @@ end
 
 function automation_idle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_idle ］")
-    set.append(statistics.idle, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.idle, time.date("%Y%m%d%H%M%S"))
     if automation.idle == true then
         automation_reset()
     end
@@ -127,7 +129,7 @@ function start()
     trigger.enable("others_come")
     trigger.enable("others_leave")
     trigger.enable("hide_busy")
-    timer.add(nil, 180, "automation_idle()", "automation", {Enable=true})
+    --timer.add(nil, 180, "automation_idle()", "automation", {Enable=true})
     trigger.add(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
     trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
@@ -245,9 +247,6 @@ function flow_do_job()
         if rc < 0 then
             return -1
         end
-    end
-    if rc ~= nil then
-        archive_statistics()
     end
     if rc == 0 then
         global.jid = 1
@@ -700,8 +699,7 @@ function privilege_job(job)
         if k >= set.index_of(config.jobs, job) then
             return false
         end
-        if config.jobs[v].enable == true and 
-           config.jobs[v].active == true then
+        if config.jobs[v].enable == true and config.jobs[v].active == true then
             return true
         end
     end
@@ -751,14 +749,50 @@ function break_event()
     return false
 end
 
+function append_statistics(job)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ append_statistics ］参数：job = "..tostring(job))
+    if var.job.statistics ~= nil then
+        var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
+        var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
+        var.job.statistics["end"] = time.epoch()
+        var.job.statistics["elapsed"] = var.job.statistics["end"] - var.job.statistics["begin"]
+        if automation.statistics.processing[job] == nil then
+            if var.job.statistics["result"] == nil then
+                automation.statistics.processing[job] = var.job.statistics
+            else
+                var.statistics = var.job.statistics
+            end
+        else
+            automation.statistics.processing[job]["exp"] = var.job.statistics["exp"] + automation.statistics.processing[job]["exp"]
+            automation.statistics.processing[job]["pot"] = var.job.statistics["pot"] + automation.statistics.processing[job]["pot"]
+            automation.statistics.processing[job]["end"] = var.job.statistics["end"]
+            automation.statistics.processing[job]["elapsed"] = var.job.statistics["elapsed"] + automation.statistics.processing[job]["elapsed"]
+            automation.statistics.processing[job]["result"] = var.job.statistics["result"]
+            if automation.statistics.processing[job]["result"] ~= nil then
+                var.statistics = automation.statistics.processing[job]
+                automation.statistics.processing[job] = nil
+            end
+        end
+        var.job.statistics = nil
+    end
+    archive_statistics()
+end
+
 function archive_statistics()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statistics ］")
     if var.statistics ~= nil then
-        if time.toepoch(statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statistics["end"] then
-            table.save(get_work_path().."log/statistics."..statistics.date, statistics)
-            statistics = { date = time.date("%Y%m%d") }
+        if time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statistics["end"] then
+            local idle,death,reset,connect,processing = automation.statistics.idle,automation.statistics.death,automation.statistics.reset,automation.statistics.connect,automation.statistics.processing
+            automation.statistics.idle = nil
+            automation.statistics.death = nil
+            automation.statistics.reset = nil
+            automation.statistics.connect = nil
+            automation.statistics.processing = nil
+            table.save(get_work_path().."log/statistics."..automation.statistics.date, automation.statistics)
+            automation.statistics = { date = time.date("%Y%m%d") }
+            automation.statistics.idle,automation.statistics.death,automation.statistics.reset,automation.statistics.connect,automation.statistics.processing = idle,death,reset,connect,processing
         end
-        set.append(statistics, var.statistics)
+        set.append(automation.statistics, var.statistics)
         var.statistics = nil
     end
 end

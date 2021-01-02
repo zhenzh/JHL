@@ -50,6 +50,8 @@ end
 
 function look_dir(dir)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ look_dir ］参数：dir = "..tostring(dir))
+    var.look_dir = var.look_dir or {}
+    var.look_dir.dir = dir
     env.room = env.nextto
     trigger.add("look_dir", "", nil, {Enable=true, Gag=true}, nil, "^.*")
     local l = wait_line("look "..dir, 30, nil, 10, "^你要看什么？$|^\\S+\\s+-\\s+$")
@@ -68,6 +70,10 @@ end
 
 function look_dir_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ look_dir_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
+    if var.look_dir == nil then
+        return rc,msg
+    end
+    var.look_dir = nil
     trigger.delete("look_dir")
     env.room = env.current
     return rc,msg
@@ -1297,8 +1303,8 @@ function search_return(rc, msg1, msg2)
     if var.search == nil then
         return rc,msg1,msg2
     end
-    var.search = nil
     trigger.delete_group("search")
+    var.search = nil
     return rc,msg1,msg2
 end
 
@@ -1350,13 +1356,14 @@ function search_room(obj)
 end
 
 function search_found_obj()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_found_obj ］")
+    if var.look_dir ~= nil then
+        return
+    end
     set.append(var.search.obj, get_matches())
     trigger.enable("search_check_result")
 end
 
 function search_check_result()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_check_result ］")
     trigger.disable("search_check_result")
     if #env.current.id == 1 then
         if env.current.id[1] == var.search.dest then
@@ -1388,7 +1395,6 @@ function search_check_result()
 end
 
 function search_locate()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_locate ］")
     env.current.id = get_room_id_by_name(env.current.name)
     if #env.current.id > 1 then
         env.current.exits = string.split(env.current.exits, "[ 、]+")

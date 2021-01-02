@@ -43,6 +43,10 @@ alias.add("debug", [[^\s*debug\s+(\w+)\s*$]], [[
     verbose(matches[2])
 ]])
 
+alias.add("dump", [[^\s*dump\s*$]], [[
+    dump()
+]])
+
 alias.add("gps", [[^\s*gps\s*$]], [[
     coroutine.wrap(function() locate() end)()
 ]])
@@ -70,10 +74,10 @@ alias.add("query", [[^\s*query (.*)\s*$]], [[
 alias.add("auto", [[^\s*auto(?:\s+(\d+)|\s*)$]], [[
     require "flow"
     if string.match(tostring(matches[2]), "-f") then
-        statistics.death = {}
-        statistics.idle = {}
-        statistics.reset = {}
-        statistics.connect = {}
+        automation.statistics.death = {}
+        automation.statistics.idle = {}
+        automation.statistics.reset = {}
+        automation.statistics.connect = {}
         global.jid = 1
         automation.jid = nil
     end
