@@ -1293,7 +1293,7 @@ function search(obj, rooms)
     trigger.add("search_found_obj", "search_found_obj()", "search", {Enable=true}, nil, obj)
     trigger.add("search_check_result", "search_check_result()", "search", {Enable=false}, 90, "^> $")
     trigger.add("search_locate", "search_locate()", "search", {Enable=true}, 90, "^\\S+\\s+- [、a-z0-9]+$")
-    var.search = var.search or { result = {}, obj = {}, optical = {}, past = {} }
+    var.search = var.search or { result = {}, obj = {}, nobj = {}, optical = {}, past = {} }
     var.search.area = set.copy(rooms)
     return search_return(search_room(obj))
 end
@@ -1357,22 +1357,36 @@ end
 
 function search_found_obj()
     if var.look_dir ~= nil then
-        return
+        var.search.nobj[var.look_dir] = var.search.nobj[var.look_dir] or {}
+        set.append(var.search.nobj[var.look_dir], get_matches())
+    else
+        set.append(var.search.obj, get_matches())
     end
-    set.append(var.search.obj, get_matches())
     trigger.enable("search_check_result")
 end
 
 function search_check_result()
     trigger.disable("search_check_result")
     if #env.current.id == 1 then
-        if env.current.id[1] == var.search.dest then
-            var.search.result[env.current.id[1]] = var.search.obj
-        elseif set.has(var.search.area, env.current.id[1]) then
-            var.search.result[env.current.id[1]] = var.search.obj
-        elseif var.job ~= nil and var.job.search ~= nil then
-            if set.has(var.job.search, env.current.id[1]) then
+        local area = var.search.area
+        if var.job ~= nil and var.job.search ~= nil then
+            area = set.union(area, var.job.search)
+        end
+        if not table.is_empty(var.search.obj) then
+            if env.current.id[1] == var.search.dest then
                 var.search.result[env.current.id[1]] = var.search.obj
+            elseif set.has(area, env.current.id[1]) then
+                var.search.result[env.current.id[1]] = var.search.obj
+            end
+        end
+        if not table.is_empty(var.search.nobj) then
+            for k,v in pairs(var.search.nobj) do
+                local nid = get_room_id_by_roomsfrom(env.current.id, nil, k)
+                if #nid > 0 then
+                    if var.search.result[nid] == nil and set.has(area, nid)then
+                        var.search.result[nid] = v
+                    end
+                end
             end
         end
     else
@@ -1392,6 +1406,7 @@ function search_check_result()
         end
     end
     var.search.obj = {}
+    var.search.nobj = {}
 end
 
 function search_locate()
@@ -1401,6 +1416,9 @@ function search_locate()
         env.current.id = get_room_id_by_exits(env.current.exits, env.current.id)
     end
     if #env.current.id == 1 then
+        if var.search == nil then
+            show("dbg search")
+        end
         set.append(var.search.past, env.current.id[1])
     end
 end

@@ -643,6 +643,7 @@ function family_job_reset_enemy(dir)
             return family_job_exec()
         end
         wait(0.1)
+        automation.idle = false
         return family_job_reset_enemy(dir)
     end
 end

@@ -284,7 +284,7 @@ function ftb_job_exec()
     end
     var.job.npc = nil
     if #env.current.id == 1 and set.has(config.jobs["斧头帮任务"].dest, env.current.id[1]) then
-        if table.is_empty(env.current.obj) == false then
+        if not table.is_empty(env.current.obj) then
             if wait_line("look", 30, nil, nil, "^> $") == false then
                 return -1
             end

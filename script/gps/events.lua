@@ -1855,7 +1855,7 @@ function kitchen()
                 trash[v] = carryon.inventory[v].count
             end
         end
-        if table.is_empty(trash) == false then
+        if not table.is_empty(trash) then
             if drop(trash) ~= 0 then
                 return -1
             end
