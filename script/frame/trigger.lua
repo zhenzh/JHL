@@ -144,6 +144,9 @@ function trigger.delete(name)
     trigger.disable(name)
     if triggers[name].group ~= nil then
         triggers.group[triggers[name].group][name] = nil
+        if table.is_empty(triggers.group[triggers[name].group]) then
+            triggers.group[triggers[name].group] = nil
+        end
     end
     triggers[name] = nil
     return true
@@ -208,6 +211,11 @@ function trigger.is_enable(name)
 end
 
 function trigger.enable_group(group)
+    if triggers.update == false then
+        set.append(triggers.pended, {trigger.enable_group, group})
+        return nil
+    end
+    
     if triggers.group[group] == nil then
         return false
     end
@@ -219,6 +227,11 @@ function trigger.enable_group(group)
 end
 
 function trigger.disable_group(group)
+    if triggers.update == false then
+        set.append(triggers.pended, {trigger.disable_group, group})
+        return nil
+    end
+
     if triggers.group[group] == nil then
         return false
     end
@@ -230,6 +243,11 @@ function trigger.disable_group(group)
 end
 
 function trigger.delete_group(group)
+    if triggers.update == false then
+        set.append(triggers.pended, {trigger.delete_group, group})
+        return nil
+    end
+    
     if triggers.group[group] == nil then
         return false
     end

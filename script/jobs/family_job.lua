@@ -540,10 +540,7 @@ function family_job_one_step()
         elseif config.jobs["门派任务"].dest[1] == 1530 then
             current = 1529
         end
-        show("dbg fj back", "red")
-        print(env.current)
-        show(current, "green")
-        if env.current.id[1] == current then
+        if env.current.id[1] ~= current then
             if goto(current) ~= 0 then
                 return -1
             end

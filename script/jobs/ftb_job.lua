@@ -41,7 +41,6 @@ if automation.timer["ftb_job_cd"] ~= nil then
 end
 
 function ftb_job()
-    run("time")
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job ］")
     automation.idle = false
     var.job = var.job or { name = "斧头帮任务" }

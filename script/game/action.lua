@@ -1290,7 +1290,7 @@ end
 
 function search(obj, rooms)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search ］参数：obj = "..tostring(obj)..", rooms = "..table.tostring(rooms))
-    trigger.add("search_found_obj", "search_found_obj()", "search", {Enable=true}, nil, obj)
+    trigger.add("search_found_obj", "search_found_obj()", "search", {Enable=true}, 99, obj)
     trigger.add("search_check_result", "search_check_result()", "search", {Enable=false}, 90, "^> $")
     trigger.add("search_locate", "search_locate()", "search", {Enable=true}, 90, "^\\S+\\s+- [、a-z0-9]+$")
     var.search = var.search or { result = {}, obj = {}, nobj = {}, optical = {}, past = {} }
@@ -1416,9 +1416,6 @@ function search_locate()
         env.current.id = get_room_id_by_exits(env.current.exits, env.current.id)
     end
     if #env.current.id == 1 then
-        if var.search == nil then
-            show("dbg search")
-        end
         set.append(var.search.past, env.current.id[1])
     end
 end
