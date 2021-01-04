@@ -12,15 +12,15 @@ function dump()
 end
 
 function clear_log(threshold)
-    
+    os.remove(get_work_path().."log/*.txt")
 end
 
-function clear_statistics(threshold)
-    
+function clear_dump()
+    os.remove(get_work_path().."log/*.dump")
 end
 
 function fresh_statistics()
-    
+    os.remove(get_work_path().."log/statistics.*")
 end
 
 function add_yun_desc(force_name, yun, valid_desc, invalid_desc)

@@ -112,16 +112,12 @@ function ftb_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_p3 ］")
     config.jobs["斧头帮任务"].phase = phase["任务失败"]
     config.jobs["斧头帮任务"].active = false
-    show("dbg", "green")
-    print("ftb_job_cd")
     if timer.is_exist("ftb_job_cd") == false then
         timer.add("ftb_job_cd", 300, "config.jobs['斧头帮任务'].active = true", "ftb_job", {Enable=true, OneShot=true})
     end
     if var.job.statistics ~= nil then
         var.job.statistics["result"] = "失败"
     end
-    print("ftb_job_cd")
-    print(config.jobs["斧头帮任务"])
     return 1
 end
 

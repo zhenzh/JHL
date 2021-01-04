@@ -197,7 +197,7 @@ function feima_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_p3 ］")
     local rc = feima_job_goto_maxingkong()
     if rc == nil then
-        rc = feima_job_settle()
+        return feima_job_settle()
     end
     return rc
 end
@@ -436,7 +436,7 @@ function feima_job_get_dir()
             return -1
         elseif string.match(l[0], "别急嘛") then
             wait(1)
-            return feima_job_get_dir(config.jobs["飞马镖局"].path)
+            return feima_job_get_dir()
         end
     elseif string.match(dir, "knock gate") or 
            string.match(dir, "open ") then
@@ -581,7 +581,7 @@ function feima_job_arrive()
         var.job.thread_suspend = false
         coroutine.resume(var.job.thread)
     end
-    return 0
+    return feima_job_p3()
 end
 
 function feima_job_settle()
@@ -607,32 +607,18 @@ function feima_job_settle()
         elseif l[0] == "> " then
             config.jobs["飞马镖局"].phase = phase["任务放弃"]
             return
+        elseif l[0] == "马行空轻轻地拍了拍你的头。" then
+            config.jobs["飞马镖局"].phase = phase["任务获取"]
+            if run_score() < 0 then
+                return -1
+            end
+            var.job.statistics["result"] = "成功"
+            return 0
         else
             config.jobs["飞马镖局"].phase = phase["任务获取"]
-            if l[0] == "马行空轻轻地拍了拍你的头。" then
-                if run_score() < 0 then
-                    return -1
-                end
-                var.job.statistics["result"] = "成功"
-            end
-            if privilege_job("飞马镖局") == true then
-                return 0
-            else
-                append_statistics("飞马镖局")
-                var.job.statistics = nil
-                var.statistics = nil
-            end
-            return feima_job()
+            return 1
         end
     else
-        if var.job.thread ~= nil then
-            while var.job.thread_suspend == false do
-                wait(0.1)
-            end
-            var.job.thread_suspend = false
-            coroutine.resume(var.job.thread)
-        end
-        var.job.statistics["end"] = time.epoch()
         return 1
     end
 end
@@ -756,7 +742,7 @@ function feima_job_dazuo()
             return -1
         end
     end
-    
+
     repeat
         if state.jl <= state.jl_max - 10 then
             if yun_refresh() ~= 0 then
