@@ -74,10 +74,7 @@ alias.add("query", [[^\s*query (.*)\s*$]], [[
 alias.add("auto", [[^\s*auto(?:\s+(\d+)|\s*)$]], [[
     require "flow"
     if string.match(tostring(matches[2]), "-f") then
-        automation.statistics.death = {}
-        automation.statistics.idle = {}
-        automation.statistics.reset = {}
-        automation.statistics.connect = {}
+        fresh_statistics()
         global.jid = 1
         automation.jid = nil
     end
@@ -104,14 +101,21 @@ alias.add("sync", [[^\s*sync\s*$]], [[
     )()
 ]])
 
-alias.add("statistics", [[^\s*stat(?:\s+(\d+)|\s*)$]], [[
-    local shift = matches[2]    
-    if shift == false then
-        shift = nil
-    else
-        shift = tonumber(shift)
+alias.add("statistics", [[^\s*stat(?:\s+([\-ls]+)\s+(\d+)|\s+([\-ls]+)|\s+(\d+)|)\s*$]], [[
+    local mode,shift = matches[2],matches[3]
+    if mode == "" then
+        mode = matches[4]
     end
-    statistics_list(shift)
+    if mode == "" then
+        shift = matches[5]
+    end
+    if mode == "" then
+        mode = nil
+    end
+    if shift == "" then
+        shift = nil
+    end
+    statistics(mode, tonumber(shift or 1))
 ]])
 
 alias.add("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[
