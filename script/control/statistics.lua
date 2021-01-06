@@ -75,7 +75,7 @@ function statistics_summary(list)
     end
     local margin = math.floor((window_wrap()-1)*0.02)
     show(string.format("%"..tostring(margin).."s统计概览（%19s ~ %19s）%"..tostring(window_wrap()-margin-53).."s", "", time.todate(list.begin_time, "%Y-%m-%d %H:%M%S"), time.todate(list.end_time, "%Y-%m-%d %H:%M:%S"), ""), "olivedrab", "ivory")
-    show(string.format("%"..tostring(margin).."s%-"..tostring((window_wrap()-margin*2)/4).."s%-"..tostring((window_wrap()-margin*2)/4).."s%-"..tostring((window_wrap()-margin*2)/4).."s%-"..tostring((window_wrap()-margin*2)/4).."s", "机器重置次数："..tostring(list.reset), "重连次数："..tostring(list.connect), "死亡次数："..tostring(list.death), "发呆次数："..tostring(list.idle)), "yellow", "black")
+    show(string.format("%"..tostring(margin).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s", "", "机器重置次数："..tostring(list.reset), "重连次数："..tostring(list.connect), "死亡次数："..tostring(list.death), "发呆次数："..tostring(list.idle)), "yellow", "black")
     local c1,c2,c3,c4,c5,c6 = math.floor((window_wrap()-1)*0.1),
                               math.floor((window_wrap()-1)*0.15),
                               math.floor((window_wrap()-1)*0.1),
@@ -104,7 +104,7 @@ function statistics_summary(list)
         if v.success+v.fail == 0 then
             success_rate = "-"
         else
-            success_rate = string.format("%.2f%%", math.decimal(v.success/(v.success+v.fail)*100, 2))
+            success_rate = string.format("%.2f", math.decimal(v.success/(v.success+v.fail)*100, 2))
         end
         show(string.format(format, "", v.name, tostring(v.exp), exp_rate, tostring(v.pot), pot_rate, time.tohms(v.elapsed).."（"..ratio.."%）", tostring(v.success).."（"..success_rate.."%）"), font_color, back_color)
     end
