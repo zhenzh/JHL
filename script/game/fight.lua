@@ -167,6 +167,9 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
     elseif rc == 1 then
         return fight_return(2)
     end
+    if prepare_skills() < 0 then
+        return fight_return(-1)
+    end
     if (var.fight.stop  or 0) < 3 then
         if state.nl <= profile.power * 7 and 
            state.power > 0 then
