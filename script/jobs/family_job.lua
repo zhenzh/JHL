@@ -95,9 +95,9 @@ function family_job()
     var.job = var.job or { name = "门派任务" }
     var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
     var.job.statistics = var.job.statistics or { name = "门派任务" }
-    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
-    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
+    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
+    var.job.statistics.exp = var.job.statistics.exp or state.exp
+    var.job.statistics.pot = var.job.statistics.pot or state.pot
     trigger.enable_group("family_job_active")
     if (config.jobs["门派任务"].phase or 0) <= phase["任务获取"] then
         local rc = family_job_p1()
@@ -109,8 +109,8 @@ function family_job()
         return family_job_return(family_job_p2())
     end
     if config.jobs["门派任务"].phase == phase["任务结算"] then
-        var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-        var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
+        var.job.statistics.exp = var.job.statistics.exp or state.exp
+        var.job.statistics.pot = var.job.statistics.pot or state.pot
         config.jobs["门派任务"].dest = nil
         local rc = family_job_p3()
         if rc ~= nil then
@@ -242,7 +242,7 @@ function family_job_p4()
     if run_score() < 0 then
         return -1
     end
-    var.job.statistics["result"] = "成功"
+    var.job.statistics.result = "成功"
     return 0
 end
 
@@ -250,7 +250,7 @@ function family_job_p5()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p5 ］")
     config.jobs["门派任务"].dest = nil
     if var.job.statistics ~= nil then
-        var.job.statistics["result"] = "失败"
+        var.job.statistics.result = "失败"
     end
     if config.jobs["门派任务"].phase == phase["任务放弃"] then
         local rc = family_job_goto_master()
@@ -278,7 +278,7 @@ function family_job_p5()
          return -1
     end
     if var.job.statistics ~= nil then
-        var.job.statistics["end"] = time.epoch()
+        var.job.statistics.end_time = time.epoch()
     end
     return 1
 end
@@ -286,7 +286,7 @@ end
 function family_job_goto_master()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_goto_master ］")
     if env.current.id[1] ~= family_info[profile.family].master_place then
-        var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+        var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
         local rc = goto(family_info[profile.family].master_place)
         if rc == 1 then
             config.jobs["门派任务"].phase = phase["任务失败"]

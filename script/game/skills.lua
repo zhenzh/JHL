@@ -203,7 +203,7 @@ function zuanyan_exec(i)
             return -1
         end
         if var.job ~= nil and var.job.statistics ~= nil then
-            var.job.statistics["pot"] = var.job.statistics["pot"] - (var.zuanyan.times)
+            var.job.statistics.pot = var.job.statistics.pot - (var.zuanyan.times)
         end
         var.zuanyan.refresh = true
     else

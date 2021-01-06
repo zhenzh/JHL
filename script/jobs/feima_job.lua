@@ -75,9 +75,9 @@ function feima_job()
     automation.idle = false
     var.job = var.job or { name = "飞马镖局" }
     var.job.statistics = var.job.statistics or { name = "飞马镖局" }
-    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
-    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
+    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
+    var.job.statistics.exp = var.job.statistics.exp or state.exp
+    var.job.statistics.pot = var.job.statistics.pot or state.pot
     var.job.enemy_name = var.job.enemy_name or ("(?:"..set.concat(job_enemys, "|")..")")
     var.job.enemy = {count = 0}
     var.job.addenemy = {count = 0}
@@ -245,7 +245,7 @@ end
 function feima_job_goto_maxingkong()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_goto_maxingkong ］")
     if env.current.id[1] ~= 2921 then
-        var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+        var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
         local rc = goto(2921)
         if rc ~= 0 then
             return rc
@@ -612,7 +612,7 @@ function feima_job_settle()
             if run_score() < 0 then
                 return -1
             end
-            var.job.statistics["result"] = "成功"
+            var.job.statistics.result = "成功"
             return 0
         else
             config.jobs["飞马镖局"].phase = phase["任务获取"]
@@ -653,7 +653,7 @@ function feima_job_abandon_job()
                 end
             elseif l[0] == "你可以重新开始押镖了。" then
                 config.jobs["飞马镖局"].phase = phase["任务获取"]
-                var.job.statistics["result"] = "失败"
+                var.job.statistics.result = "失败"
                 return 1
             elseif l[0] == "马行空似乎不懂你是什么意思。"  then
                 config.jobs["飞马镖局"].phase = phase["任务获取"]

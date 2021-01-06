@@ -28,9 +28,9 @@ function songshan_job()
     automation.idle = false
     var.job = var.job or {name = "嵩山任务"}
     var.job.statistics = var.job.statistics or {name = "嵩山任务"}
-    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
-    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
+    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
+    var.job.statistics.exp = var.job.statistics.exp or state.exp
+    var.job.statistics.pot = var.job.statistics.pot or state.pot
     if config.jobs["嵩山任务"].phase == phase["任务获取"] then
         local rc = songshan_job_p1()
         if rc ~= nil then
@@ -80,9 +80,9 @@ end
 
 function songshan_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_p2 ］")
-    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
-    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
+    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
+    var.job.statistics.exp = var.job.statistics.exp or state.exp
+    var.job.statistics.pot = var.job.statistics.pot or state.pot
     if config.jobs["嵩山任务"].area == nil then
         config.jobs["嵩山任务"].area = songshan_job_area
     end
@@ -105,10 +105,10 @@ function songshan_job_p5()
         timer.add("songshan_job_cd", 120, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})
     end
     if var.job.statistics ~= nil then
-        var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
-        var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
-        var.job.statistics["result"] = "失败"
-        var.job.statistics["end"] = time.epoch()
+        var.job.statistics.exp = state.exp - var.job.statistics.exp
+        var.job.statistics.pot = state.pot - var.job.statistics.pot
+        var.job.statistics.result = "失败"
+        var.job.statistics.end_time = time.epoch()
     end
     return 1
 end

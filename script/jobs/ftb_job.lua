@@ -45,9 +45,9 @@ function ftb_job()
     automation.idle = false
     var.job = var.job or { name = "斧头帮任务" }
     var.job.statistics = var.job.statistics or { name = "斧头帮任务" }
-    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
-    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
+    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
+    var.job.statistics.exp = var.job.statistics.exp or state.exp
+    var.job.statistics.pot = var.job.statistics.pot or state.pot
     if config.jobs["斧头帮任务"].phase ~= phase["任务执行"] then
         local rc = ftb_job_p1()
         if rc ~= nil then
@@ -116,7 +116,7 @@ function ftb_job_p3()
         timer.add("ftb_job_cd", 300, "config.jobs['斧头帮任务'].active = true", "ftb_job", {Enable=true, OneShot=true})
     end
     if var.job.statistics ~= nil then
-        var.job.statistics["result"] = "失败"
+        var.job.statistics.result = "失败"
     end
     return 1
 end
@@ -178,7 +178,7 @@ function ftb_job_refresh()
             if run_score() < 0 then
                 return -1
             end
-            var.job.statistics["result"] = "成功"
+            var.job.statistics.result = "成功"
             config.jobs["斧头帮任务"].phase = phase["任务完成"]
             return 0
         elseif l[0] == "> " then

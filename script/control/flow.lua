@@ -752,23 +752,23 @@ end
 function append_statistics(job)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ append_statistics ］参数：job = "..tostring(job))
     if var.job.statistics ~= nil then
-        var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
-        var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
-        var.job.statistics["end"] = time.epoch()
-        var.job.statistics["elapsed"] = var.job.statistics["end"] - var.job.statistics["begin"]
+        var.job.statistics.exp = state.exp - var.job.statistics.exp
+        var.job.statistics.pot = state.pot - var.job.statistics.pot
+        var.job.statistics.end_time = time.epoch()
+        var.job.statistics.elapsed = var.job.statistics.end_time - var.job.statistics.begin_time
         if automation.statistics.processing[job] == nil then
-            if var.job.statistics["result"] == nil then
+            if var.job.statistics.result == nil then
                 automation.statistics.processing[job] = var.job.statistics
             else
                 var.statistics = var.job.statistics
             end
         else
-            automation.statistics.processing[job]["exp"] = var.job.statistics["exp"] + automation.statistics.processing[job]["exp"]
-            automation.statistics.processing[job]["pot"] = var.job.statistics["pot"] + automation.statistics.processing[job]["pot"]
-            automation.statistics.processing[job]["end"] = var.job.statistics["end"]
-            automation.statistics.processing[job]["elapsed"] = var.job.statistics["elapsed"] + automation.statistics.processing[job]["elapsed"]
-            automation.statistics.processing[job]["result"] = var.job.statistics["result"]
-            if automation.statistics.processing[job]["result"] ~= nil then
+            automation.statistics.processing[job].exp = var.job.statistics.exp + automation.statistics.processing[job].exp
+            automation.statistics.processing[job].pot = var.job.statistics.pot + automation.statistics.processing[job].pot
+            automation.statistics.processing[job].end_time = var.job.statistics.end_time
+            automation.statistics.processing[job].elapsed = var.job.statistics.elapsed + automation.statistics.processing[job].elapsed
+            automation.statistics.processing[job].result = var.job.statistics.result
+            if automation.statistics.processing[job].result ~= nil then
                 var.statistics = automation.statistics.processing[job]
                 automation.statistics.processing[job] = nil
             end
@@ -781,7 +781,7 @@ end
 function archive_statistics()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statistics ］")
     if var.statistics ~= nil then
-        if time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statistics["end"] then
+        if time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statistics.end_time then
             local idle,death,reset,connect,processing = automation.statistics.idle,automation.statistics.death,automation.statistics.reset,automation.statistics.connect,automation.statistics.processing
             automation.statistics.idle = nil
             automation.statistics.death = nil
