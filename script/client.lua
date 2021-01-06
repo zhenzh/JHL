@@ -9,7 +9,8 @@ require "timer"
 
 local color_map = {
     ["dimgray"] = "DimGray",
-    ["dimgrey"] = "DimGrey"
+    ["dimgrey"] = "DimGrey",
+    ["olivedrab"] = "OliveDrab"
 }
 
 mudlet = mudlet or {}

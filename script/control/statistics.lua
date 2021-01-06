@@ -1,6 +1,6 @@
 function statistics(...)
     local mode,shift = ...
-    local duration
+    local list = { end_time = time.epoch() }
     if select("#", ...) == 1 then
         if type(select(1, ...)) ~= "number" then
             show("统计时间不正确", "red")
@@ -13,53 +13,27 @@ function statistics(...)
         shift = 1
     end
     if type(shift) == "number" then
-        duration = 3600000 * shift
-        shift = time.epoch() - duration
+        list.begin_time = list.end_time - 3600000 * shift
     else
         show("统计时间不正确", "red")
         return false
     end
-
-    local func,format
+    local func = statistics_summary
     if mode == "-l" then
-        local c1,c2,c3,c4,c5,c6,c7,c8 = math.floor((window_wrap()-1)*0.02),
-                                        math.floor((window_wrap()-1)*0.23),
-                                        math.floor((window_wrap()-1)*0.15),
-                                        math.floor((window_wrap()-1)*0.1),
-                                        math.floor((window_wrap()-1)*0.15),
-                                        math.floor((window_wrap()-1)*0.15),
-                                        math.floor((window_wrap()-1)*0.1)
-        c8 = window_wrap()-1-c1-c2-c3-c4-c5-c6-c7
-        format = "%"..tostring(c1).."s%-"..tostring(c2).."s%-"..tostring(c3).."s%-"..tostring(c4).."s%"..tostring(c5).."s%"..tostring(c6).."s%"..tostring(c7).."s%-"..tostring(c8).."s"
-        show(string.format(format, "", "完成时间", "任务名", "结果", "获得经验", "获得潜能", "", "用时"), "white", "dimgray")
         func = statistics_list
-    else
-        local c1,c2,c3,c4,c5,c6,c7,c8 = math.floor((window_wrap()-1)*0.02),
-                                        math.floor((window_wrap()-1)*0.3),
-                                        math.floor((window_wrap()-1)*0.15),
-                                        math.floor((window_wrap()-1)*0.1),
-                                        math.floor((window_wrap()-1)*0.15),
-                                        math.floor((window_wrap()-1)*0.1),
-                                        math.floor((window_wrap()-1)*0.1)
-        c8 = window_wrap()-1-c1-c2-c3-c4-c5-c6-c7
-        format = "%"..tostring(c1).."s%-"..tostring(c2).."s%"..tostring(c3).."s%3s%-"..tostring(c4).."s%"..tostring(c5).."s%3s%-"..tostring(c6).."s%-"..tostring(c7).."s%-"..tostring(c8).."s"
-        show(string.format(format, "", "任务名（时占比）", "获得经验", " / ", "时效率", "获得潜能", " / ", "时效率", "总用时", "成功率"), "white", "dimgray")
-        func = statistics_summary
     end
-
-    local list = { duration = duration }
     for i=#automation.statistics,1,-1 do
-        if automation.statistics[i]["end"] >= shift then
+        if automation.statistics[i]["end"] >= list.begin_time then
             set.insert(list, 1, automation.statistics[i])
         else
-            return func(list, format)
+            return func(list)
         end
     end
-    for i=time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$")-86400000,shift-86399999,-86400000 do
+    for i=time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$")-86400000,list.begin_time-86399999,-86400000 do
         if io.exists(get_work_path().."log/statistics."..time.todate(i, "%Y%m%d")) then
             local history = table.load(get_work_path().."log/statistics."..time.todate(i, "%Y%m%d"))
             for j=#history,1,-1 do
-                if history[j]["end"] >= shift then
+                if history[j]["end"] >= list.begin_time then
                     set.insert(list, 1, history[j])
                 else
                     break
@@ -67,10 +41,10 @@ function statistics(...)
             end
         end
     end
-    return func(list, format)
+    return func(list)
 end
 
-function statistics_summary(list, format)
+function statistics_summary(list)
     local summary = {}
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
@@ -90,6 +64,17 @@ function statistics_summary(list, format)
             end
         end
     end
+    local margin = math.floor((window_wrap()-1)*0.02)
+    show(string.format("%"..tostring(margin).."s统计概览（%19s ~ %19s）%"..tostring(window_wrap()-margin-53).."s", "", time.todate(list.begin_time, "%Y-%m-%d %H:%M%S"), time.todate(list.end_time, "%Y-%m-%d %H:%M%S"), ""), "olivedrab", "ivory")
+    local c1,c2,c3,c4,c5,c6 = math.floor((window_wrap()-1)*0.25),
+                              math.floor((window_wrap()-1)*0.15),
+                              math.floor((window_wrap()-1)*0.1),
+                              math.floor((window_wrap()-1)*0.15),
+                              math.floor((window_wrap()-1)*0.15),
+                              math.floor((window_wrap()-1)*0.1)
+    local c7 = window_wrap()-margin-c1-c2-c3-c4-c5-c6
+    local format = "%"..tostring(margin).."s%-"..tostring(c1).."s%"..tostring(c2).."s / %-"..tostring(c3).."s%"..tostring(c4).."s / %-"..tostring(c5).."s%-"..tostring(c6).."s%-"..tostring(c7).."s"
+    show(string.format(format, "", "任务名（时占比）", "获得经验", "获取效率（每秒）", "获得潜能", "获取效率（每秒）", "总用时", "成功率"), "white", "dimgray")
     local font_color,back_color = "yellow","dimgray"
     for _,v in ipairs(summary) do
         if back_color == "black" then
@@ -97,32 +82,47 @@ function statistics_summary(list, format)
         else
             back_color = "black"
         end
-        local ratio = string.format("%.2f", math.decimal(v.elapsed/list.duration*100, 2))
+        local ratio = string.format("%.2f", math.decimal(v.elapsed/(list.end_time-list.begin_time)*100, 2))
         local exp_rate,pot_rate,success_rate
         if v.elapsed == 0 then
             exp_rate = "-"
             pot_rate = "-"
         else
-            exp_rate = string.format("%.2f", math.decimal(v.exp*3600000/v.elapsed*100, 2))
-            pot_rate = string.format("%.2f", math.decimal(v.pot*3600000/v.elapsed*100, 2))
+            exp_rate = string.format("%.3f", math.decimal(v.exp*1000/v.elapsed, 3))
+            pot_rate = string.format("%.3f", math.decimal(v.pot*1000/v.elapsed, 3))
         end
         if v.success+v.fail == 0 then
             success_rate = "-"
         else
-            success_rate = string.format("%.2f", math.decimal(v.success/(v.success+v.fail)*100, 2))
+            success_rate = string.format("%.2f%%", math.decimal(v.success/(v.success+v.fail)*100, 2))
         end
-        show(string.format(format, "", v.name.."（"..ratio.."%）", tostring(v.exp), " / ", exp_rate, tostring(v.pot), " / ", pot_rate, time.todate(v.elapsed, "%H:%M:%S"), success_rate), font_color, back_color)
+        show(string.format(format, "", v.name.."（"..ratio.."%）", tostring(v.exp), exp_rate, tostring(v.pot), pot_rate, time.tohms(v.elapsed), success_rate), font_color, back_color)
     end
 end
 
-function statistics_list(list, format)
+function statistics_list(list)
+    local margin = math.floor((window_wrap()-1)*0.02)
+    local c1,c2,c3,c4,c5,c6 = math.floor((window_wrap()-1)*0.23),
+                              math.floor((window_wrap()-1)*0.15),
+                              math.floor((window_wrap()-1)*0.1),
+                              math.floor((window_wrap()-1)*0.15),
+                              math.floor((window_wrap()-1)*0.15),
+                              math.floor((window_wrap()-1)*0.1)
+    local c7 = window_wrap()-margin-c1-c2-c3-c4-c5-c6
+    local format = "%"..tostring(margin).."s%-"..tostring(c1).."s%-"..tostring(c2).."s%-"..tostring(c3).."s%"..tostring(c4).."s%"..tostring(c5).."s%"..tostring(c6).."s%-"..tostring(c7).."s"
+    show(string.format(format, "", "完成时间", "任务名", "任务结果", "获得经验", "获得潜能", "", "用时"), "white", "dimgray")
     local font_color,back_color = "yellow","dimgray"
+    local sum = { exp = 0, pot = 0, elapsed = 0 }
     for _,v in ipairs(list) do
         if back_color == "black" then
             back_color = "dimgray"
         else
             back_color = "black"
         end
-        show(string.format(format, "", time.todate(v["end"], "%Y/%m/%d %H:%M:%S"), v["name"], (v["result"] or "-"), tostring(v["exp"]), tostring(v["pot"]), "", time.todate(v["elapsed"], "%M:%S")), font_color, back_color)
+        show(string.format(format, "", time.todate(v["end"], "%Y/%m/%d %H:%M:%S"), v["name"], (v["result"] or "-"), tostring(v["exp"]), tostring(v["pot"]), "", time.tohms(v["elapsed"])), font_color, back_color)
+        sum.exp = sum.exp + v["exp"]
+        sum.pot = sum.pot + v["pot"]
+        sum.elapsed = sum.elapsed + v["elapsed"]
     end
+    show(string.format(format, "", "", "总计", "-", tostring(sum.exp), tostring(sum.pot), "", time.tohms(sum.elapsed)), "olivedrab", "ivory")
 end

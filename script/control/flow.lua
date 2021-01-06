@@ -26,7 +26,7 @@ local noisy_rooms = {
 function automation_reset(func)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］参数："..tostring(func))
     automation.reconnect = func or "automation.reconnect = nil"
-    set.append(automation.statistics.reset, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.reset, time.epoch())
     if var.job ~= nil then
         append_statistics(var.job.name)
         if var.job.name == "飞马镖局" and config.jobs["飞马镖局"].phase == 2 then
@@ -57,7 +57,7 @@ end
 function automation_reset_die()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_die ］")
     automation.reconnect = nil
-    set.append(automation.statistics.death, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.death, time.epoch())
     local l = wait_line(nil, 60, nil, 10, "^鬼卒将你的「阴司路引」收了起来，伸手指了指关门，好象是叫你进去。$|"..
                                           "^你被吓了一大跳，连滚代爬地跑进关内去了。$|"..
                                           "^但见阴天子把手一招，飘来了牛头马面，架起你就往内殿而去。$|"..
@@ -81,7 +81,7 @@ end
 function automation_reset_connect()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_connect ］")
     automation.reconnect = nil
-    set.append(automation.statistics.connect, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.connect, time.epoch())
     if get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" then
         local last_line = get_lines(-1)[1]
@@ -115,7 +115,7 @@ end
 
 function automation_idle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_idle ］")
-    set.append(automation.statistics.idle, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.idle, time.epoch())
     if automation.idle == true then
         automation_reset()
     end
