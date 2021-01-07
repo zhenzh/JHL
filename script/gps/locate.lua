@@ -375,6 +375,10 @@ function locate_nextto()
         return -1
     elseif #env.nextto.id == 1 then
         env.nextto.zone = {map[env.nextto.id[1]].zone}
+        if env.nextto.id[1] == 3068 then -- 处理BUG
+            env.nextto.id = { 3066, 3070, 3071, 3074 }
+            return 1
+        end
         return 0
     else
         env.nextto.zone = {}
