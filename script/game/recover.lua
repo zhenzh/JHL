@@ -1261,7 +1261,9 @@ function dazuo_exec(target)
                                                                               "^练内功要有间隙，太劳累会走火入魔的。$")
     if l == false then
         return -1
-    elseif l[0] == "你运功完毕，深深吸了口气，站了起来。" then
+    end
+    automation.idle = false
+    if l[0] == "你运功完毕，深深吸了口气，站了起来。" then
         if run_hp() < 0 then
             return -1
         end

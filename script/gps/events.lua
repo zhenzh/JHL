@@ -1000,8 +1000,8 @@ function navigation_drive_ship(dst)
 end
 
 local kill_npc_list = {
-    ["虚通"] = "kill xutong",
-    ["虚明"] = "kill xuming"
+    ["虚通"] = "kill xu tong",
+    ["虚明"] = "kill xu ming"
 }
 
 function kill_npc()

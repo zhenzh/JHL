@@ -134,6 +134,9 @@ function start()
     trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
     trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
+    if config.jobs["斧头帮任务"].phase == 2 then
+        config.jobs["斧头帮任务"].phase = 1
+    end
     run("halt")
     if flow() < 0 then
         automation_reset()

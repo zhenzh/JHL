@@ -31,7 +31,7 @@ local map_events = {
     ["kill nv lang;northdown"] = kill_npc,  ["kill jiading;westup"] = kill_npc,     ["kill yideng shiwei;north"] = kill_npc,
     ["kill shuo bude;up"] = kill_npc,       ["kill jiaozhong;north"] = kill_npc,    ["kill wugen daoren;northup"] = kill_npc,
     ["kill jian zhanglao;east"] = kill_npc, ["kill xiao lan;east"] = kill_npc,      ["kill zhang zhiguang;westup"] = kill_npc,
-    ["kill wang furen;up"] = kill_npc,      ["kill lao denuo;south"] = kill_npc,    ["kill xuming;kill xutong;eastup"] = kill_npc,
+    ["kill wang furen;up"] = kill_npc,      ["kill lao denuo;south"] = kill_npc,    ["kill xu ming;kill xu tong;eastup"] = kill_npc,
     ["kill yue lingshan;west"] = kill_npc,  ["kill xihua zi;south"] = kill_npc,     ["kill ning zhongze;west"] = kill_npc,
     ["kill zhang songxi;west"] = kill_npc,  ["kill du dajin;enter"] = kill_npc,     ["kill huangshan nuzi;west"] = kill_npc,
     ["kill lu dayou;south"] = kill_npc,     ["kill lao denuo;west"] = kill_npc,     ["kill gao genming;northup"] = kill_npc,

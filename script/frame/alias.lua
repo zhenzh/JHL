@@ -87,9 +87,6 @@ alias.add("auto", [[^\s*auto(?:\s+(\d+)|\s*)$]], [[
             if (config.jobs["门派任务"].phase or 0) < 2 then
                 config.jobs["门派任务"].phase = nil
             end
-            if config.jobs["斧头帮任务"].phase == 2 then
-                config.jobs["斧头帮任务"].phase = 1
-            end
             start()
         end
     )()

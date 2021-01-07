@@ -172,6 +172,7 @@ function ftb_job_refresh()
             return ftb_job_refresh()
         elseif l[0] == "程金斧对着你竖起了右手大拇指，好样的。" then
             timer.delete("ftb_job_cd")
+            config.jobs["斧头帮任务"].progress = nil
             if recover(config.job_nl) < 0 then
                 return -1
             end
