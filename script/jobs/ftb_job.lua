@@ -257,34 +257,39 @@ function ftb_job_exec()
         end
     end
     for k,v in pairs(var.job.npc) do
-        local rc = ftb_job_ask_npc(k, v)
-        if rc == nil then
-            rc = ftb_job_kill_npc(k, v)
-        end
-        if rc == -1 then
-            return -1
+        if not table.is_empty(v) then
+            if set.has(config.jobs["斧头帮任务"].exclude, set.last(v)[1]) then
+                set.pop(v)
+            else
+                local rc = 0
+                if env.current.id[1] ~= k then
+                    rc = goto(k)
+                end
+                if rc == 0 then
+                    rc = ftb_job_ask_npc(k, v)
+                    if rc ~= nil then
+                        return rc
+                    end
+                end
+            end
         end
         if config.jobs["斧头帮任务"].enemy == 0 then
-            jia_min()
-            if wield(config.fight["通用"].weapon) < 0 then
-                return -1
-            end
-            if config.jobs["斧头帮任务"].progress ~= nil then
-                config.jobs["斧头帮任务"].phase = phase["任务完成"]
-                return ftb_job_p1()
-            else
-                return ftb_job_p3()
-            end
+            break
+        end
+    end
+    if config.jobs["斧头帮任务"].enemy == 0 then
+        jia_min()
+        if wield(config.fight["通用"].weapon) < 0 then
+            return -1
+        end
+        if config.jobs["斧头帮任务"].progress ~= nil then
+            config.jobs["斧头帮任务"].phase = phase["任务完成"]
+            return ftb_job_p1()
+        else
+            return ftb_job_p3()
         end
     end
     var.job.npc = nil
-    if #env.current.id == 1 and set.has(config.jobs["斧头帮任务"].dest, env.current.id[1]) then
-        if not table.is_empty(env.current.objs) then
-            if wait_line("look", 30, nil, nil, "^> $") == false then
-                return -1
-            end
-        end
-    end
     return ftb_job_exec()
 end
 
@@ -318,22 +323,35 @@ function ftb_job_search()
 end
 
 function ftb_job_ask_npc(room, npc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_ask_npc ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_ask_npc ］参数：room = "..table.tostring(room)..", npc = "..table.tostring(npc))
     if table.is_empty(npc) then
-        return 1
+        if var.job.refresh == true then
+            var.job.refresh = nil
+            local current_id = env.current.id
+            if wait_line("look", 30, nil, nil, "^> $") == false then
+                return -1
+            end
+            env.current.id = current_id
+        end
+        return
     end
     if set.has(config.jobs["斧头帮任务"].exclude, set.last(npc)[1]) then
         set.pop(npc)
         return ftb_job_ask_npc(room, npc)
     end
-    if env.current.id[1] ~= room then
-        if goto(room) ~= 0 then
-            var.job.npc[room] = nil
-            return 1
+    if set.has(config.jobs["斧头帮任务"].confirm, set.last(npc)[1]) then
+        local rc = ftb_job_kill_npc(room, set.pop(npc))
+        if rc == nil then
+            var.job.refresh = true
+            return ftb_job_ask_npc(room, npc)
+        else
+            return rc
         end
     end
-    if set.has(config.jobs["斧头帮任务"].confirm, set.last(npc)[1]) then
-        return
+    if env.current.id[1] ~= room then
+        if goto(room) ~= 0 then
+            return
+        end
     end
     local l = wait_line("ask "..string.lower(set.last(npc)[2]).." about 刺客", 30, nil, nil, "^你向"..set.last(npc)[1].."打听有关「刺客」的消息。$|"..
                                                                                             "^"..set.last(npc)[1].."忙着呢，你等会儿在问话吧。$|"..
@@ -363,77 +381,85 @@ function ftb_job_ask_npc(room, npc)
             return -1
         elseif string.match(l[0], "像杀手") then
             set.append(config.jobs["斧头帮任务"].confirm, set.last(npc)[1])
-            return
+            local rc = ftb_job_kill_npc(room, set.pop(npc))
+            if rc == nil then
+                var.job.refresh = true
+                return ftb_job_ask_npc(room, npc)
+            else
+                return rc
+            end
         else
-            set.append(config.jobs["斧头帮任务"].exclude, set.last(npc)[1])
-            set.pop(npc)
+            set.append(config.jobs["斧头帮任务"].exclude, set.pop(npc)[1])
         end
     else
-        set.append(config.jobs["斧头帮任务"].exclude, set.last(npc)[1])
-        set.pop(npc)
+        set.append(config.jobs["斧头帮任务"].exclude, set.pop(npc)[1])
     end
     return ftb_job_ask_npc(room, npc)
 end
 
 function ftb_job_kill_npc(room, npc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］参数：room = "..table.tostring(room)..", npc = "..table.tostring(npc))
+    if env.current.id[1] ~= room then
+        if goto(room) ~= 0 then
+            return
+        end
+    end
     if prepare_skills() < 0 then
         return -1
     end
     if wield(config.fight["斧头帮任务"].weapon) ~= 0 then
         return -1
     end
-    local l = wait_line("kill "..string.lower(set.last(npc)[2]), 30, nil, nil, "^你对著"..set.last(npc)[1].."喝道：「\\S+」$|"..
-                                                                               "^这里没有这个人。$|"..
-                                                                               "^你现在正忙着呢。$|"..
-                                                                               "^这里不准战斗。$")
+    local l = wait_line("kill "..string.lower(npc[2]), 30, nil, nil, "^你对著"..npc[1].."喝道：「\\S+」$|"..
+                                                                     "^这里没有这个人。$|"..
+                                                                     "^你现在正忙着呢。$|"..
+                                                                     "^这里不准战斗。$")
     if l == false then
         return -1
     elseif l[0] == "你现在正忙着呢。" then
         wait(0.1)
     elseif l[0] == "这里没有这个人。" then
-        local around = get_room_id_around()
+        local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
         return
     elseif l[0] == "这里不准战斗。" then
-        local rc = ftb_job_drive_npc(room, npc)
+        local rc = ftb_job_drive_npc(npc)
         timer.delete("ftb_job_timeout")
         return rc
     else
-        var.job.enemy_name = set.last(npc)[1]
+        var.job.enemy_name = npc[1]
         trigger.add("ftb_job_enemy_die", "ftb_job_enemy_die()", "ftb_job", {Enable=true}, 99, "^"..var.job.enemy_name.."倒在地上，挣扎了几下就死了。$")
         local rc = fight()
         if rc == 0 then
             config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy - 1
             config.jobs["斧头帮任务"].progress = (config.jobs["斧头帮任务"].progress or 0) + 1
-            set.pop(npc)
             rc = ftb_job_post_kill()
             if rc ~= nil then
                 return rc
             end
             return
         elseif rc == 2 then
-            return ftb_job_one_step()
-        elseif rc == 1 then
-            if var.job.npc[1718] == nil then
-                config.jobs["斧头帮任务"].dest = set.union({1718}, config.jobs["斧头帮任务"].dest)
+            rc = ftb_job_one_step()
+            if rc ~= nil then
+                return rc
             end
-            if env.current.name ~= "树上" then
-                set.pop(npc)
+        elseif rc == 1 then
+            if env.current.name == "树上" then
+                return ftb_job_kill_npc(room, npc)
             end
             return
         end
     end
-    return ftb_job_kill_npc(npc)
+    return ftb_job_kill_npc(room, npc)
 end
 
-function ftb_job_drive_npc(room, npc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］room = "..tostring(room)..", npc = "..table.tostring(npc))
-    local l = wait_line("ask "..string.lower(set.last(npc)[2]).." about 程金斧", 30, nil, nil, "^你忙着呢，你等会儿在问话吧。$|"..
-                                                                                              "^这里没有 .+ 这个人。$|"..
-                                                                                              "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
-                                                                                              "^"..set.last(npc)[1].."\\S*往(\\S+)走了出去。$|"..
-                                                                                              "^"..set.last(npc)[1].."忙着呢，你等会儿在问话吧。$")
+function ftb_job_drive_npc(npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］npc = "..table.tostring(npc))
+    local l = wait_line("ask "..string.lower(npc[2]).." about 程金斧", 30, nil, nil, "^你忙着呢，你等会儿在问话吧。$|"..
+                                                                                    "^这里没有 .+ 这个人。$|"..
+                                                                                    "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
+                                                                                    "^"..npc[1].."\\S*往(\\S+)走了出去。$|"..
+                                                                                    "^"..npc[1].."忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
@@ -442,17 +468,16 @@ function ftb_job_drive_npc(room, npc)
         end
         return ftb_job_drive_npc(npc)
     elseif string.match(l[0], "这里没有") then
-        local around = get_room_id_around()
+        local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
     elseif l[1] ~= false then
-        room = get_room_id_by_roomsfrom(env.current.id, get_room_id_around(), get_desc_dir(l[1]))[1]
-        var.job.npc[room] = var.job.npc[room] or {}
-        set.append(var.job.npc[room], set.pop(npc))
+        local around =  get_room_id_by_tag("nojob", get_room_id_by_roomsfrom(env.current.id, get_room_id_around(), get_desc_dir(l[1])), "execlude")
+        config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
     else
         if config.jobs["斧头帮任务"].enemy > 1 then
-            config.jobs["斧头帮任务"].dest = set.union(get_room_id_around(), config.jobs["斧头帮任务"].dest)
-            set.insert(config.jobs["斧头帮任务"].dest, env.current.id[1], 1)
-            return
+            local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
+            set.insert(around, env.current.id[1], 1)
+            config.jobs["斧头帮任务"].dest = set.union(around, config.jobs["斧头帮任务"].dest)
         else
             if var.job.timeout == true then
                 config.jobs["斧头帮任务"].enemy = 0
@@ -463,7 +488,7 @@ function ftb_job_drive_npc(room, npc)
             end
             local nl = state.nl
             local rc = dazuo()
-            if rc < 0 then
+            if dazuo() < 0 then
                 return -1
             elseif rc ~= 0 or state.nl == nl then
                 wait(1)
