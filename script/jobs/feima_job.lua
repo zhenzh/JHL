@@ -713,7 +713,7 @@ function feima_job_start_sub_thread()
         return feima_job_pause_sub_thread()
     end
     rc = feima_job_full_skill()
-    if rc < 0 then
+    if (rc or 0) < 0 then
         return -1
     end
     return feima_job_pause_sub_thread()
