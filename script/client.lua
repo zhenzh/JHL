@@ -73,7 +73,7 @@ function get_matches(num)
 end
 
 function gag()
-    return deleteLine()
+    return --deleteLine()
 end
 
 function reset()
@@ -110,7 +110,7 @@ function window_wrap()
 end
 
 function minimal_resources()
-    setConsoleBufferSize(20000, 1000)
+    setConsoleBufferSize(200000, 1000)
 end
 
 function get_last_cmd()

@@ -782,7 +782,8 @@ end
 
 function feima_job_full_skill()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_full_skill ］")
-    if var.job.enemy.count <= 0 and var.job.addenemy.count <= 0 then
+    if var.job.enemy.count <= 0 and var.job.addenemy.count <= 0 and 
+       var.job.skill ~= false then
         automation.skill = true
         local rc = zuanyan()
         if rc ~= 0 then
@@ -796,6 +797,7 @@ function feima_job_full_skill()
             else
                 if automation.skill == true then
                     automation.skill = nil
+                    var.job.skill = false
                     return 0
                 end
             end

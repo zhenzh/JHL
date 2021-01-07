@@ -54,7 +54,7 @@ function statistics(...)
 end
 
 function statistics_summary(list)
-    local summary = {}
+    local summary = { total = {exp = 0, pot = 0, elapsed = 0} }
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
             set.append(summary, { name = v, exp = 0, pot = 0, elapsed = 0, success = 0, fail = 0 })
@@ -64,8 +64,11 @@ function statistics_summary(list)
     for _,i in ipairs(list) do
         if summary[i.name] ~= nil then
             summary[i.name].exp = summary[i.name].exp + i.exp
+            summary.total.exp = summary.total.exp + i.exp
             summary[i.name].pot = summary[i.name].pot + i.pot
+            summary.total.pot = summary.total.pot + i.pot
             summary[i.name].elapsed = summary[i.name].elapsed + i.elapsed
+            summary.total.elapsed = summary.total.elapsed + i.elapsed
             if i.result == "成功" then
                 summary[i.name].success = summary[i.name].success + 1
             else
@@ -74,7 +77,7 @@ function statistics_summary(list)
         end
     end
     local margin = math.floor((window_wrap()-1)*0.02)
-    show(string.format("%"..tostring(margin).."s统计概览（%19s ~ %19s）%"..tostring(window_wrap()-margin-53).."s", "", time.todate(list.begin_time, "%Y-%m-%d %H:%M%S"), time.todate(list.end_time, "%Y-%m-%d %H:%M:%S"), ""), "olivedrab", "ivory")
+    show(string.format("%"..tostring(margin).."s统计概览（%19s ~ %19s）%"..tostring(window_wrap()-margin-53).."s", "", time.todate(list.begin_time, "%Y-%m-%d %H:%M:%S"), time.todate(list.end_time, "%Y-%m-%d %H:%M:%S"), ""), "olivedrab", "ivory")
     show(string.format("%"..tostring(margin).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s", "", "机器重置次数："..tostring(list.reset), "重连次数："..tostring(list.connect), "死亡次数："..tostring(list.death), "发呆次数："..tostring(list.idle)), "yellow", "black")
     local c1,c2,c3,c4,c5,c6 = math.floor((window_wrap()-1)*0.1),
                               math.floor((window_wrap()-1)*0.15),
@@ -83,7 +86,7 @@ function statistics_summary(list)
                               math.floor((window_wrap()-1)*0.15),
                               math.floor((window_wrap()-1)*0.2)
     local c7 = window_wrap()-margin-c1-c2-c3-c4-c5-c6
-    local format = "%"..tostring(margin).."s%-"..tostring(c1).."s%"..tostring(c2).."s / %-"..tostring(c3).."s%"..tostring(c4).."s / %-"..tostring(c5).."s%-"..tostring(c6).."s%-"..tostring(c7).."s"
+    local format = "%"..tostring(margin).."s%-"..tostring(c1).."s%"..tostring(c2).."s%-"..tostring(c3).."s%"..tostring(c4).."s%-"..tostring(c5).."s%-"..tostring(c6).."s%-"..tostring(c7).."s"
     show(string.format(format, "", "任务名", "获得经验", "获取效率（每秒）", "获得潜能", "获取效率（每秒）", "总用时（占比）", "完成数（成功率）"), "white", "dimgray")
     local font_color,back_color = "yellow","dimgray"
     for _,v in ipairs(summary) do
@@ -106,8 +109,10 @@ function statistics_summary(list)
         else
             success_rate = string.format("%.2f", math.decimal(v.success/(v.success+v.fail)*100, 2))
         end
-        show(string.format(format, "", v.name, tostring(v.exp), exp_rate, tostring(v.pot), pot_rate, time.tohms(v.elapsed).."（"..ratio.."%）", tostring(v.success).."（"..success_rate.."%）"), font_color, back_color)
+        show(string.format(format, "", v.name, tostring(v.exp), " / "..exp_rate, tostring(v.pot), " / "..pot_rate, time.tohms(v.elapsed).."（"..ratio.."%）", tostring(v.success).."（"..success_rate.."%）"), font_color, back_color)
     end
+    local total_ratio = string.format("%.2f", math.decimal(summary.total.elapsed/(list.end_time-list.begin_time)*100, 2))
+    show(string.format(format, "", "总计", tostring(summary.total.exp), "", tostring(summary.total.pot), "", time.tohms(summary.total.elapsed).."（"..total_ratio.."%）", ""), "olivedrab", "ivory")
 end
 
 function statistics_list(list)

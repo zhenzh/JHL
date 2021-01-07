@@ -72,6 +72,9 @@ alias.add("query", [[^\s*query (.*)\s*$]], [[
 ]])
 
 alias.add("auto", [[^\s*auto(?:\s+(\d+)|\s*)$]], [[
+    if automation.thread ~= nil then
+        return
+    end    
     require "flow"
     if string.match(tostring(matches[2]), "-f") then
         fresh_statistics()
