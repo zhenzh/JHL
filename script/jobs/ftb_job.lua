@@ -355,13 +355,12 @@ function ftb_job_ask_npc(room, npc)
         end
     end
     local l = wait_line("ask "..string.lower(set.last(npc)[2]).." about 刺客", 30, nil, nil, "^你向"..set.last(npc)[1].."打听有关「刺客」的消息。$|"..
-                                                                                            "^"..set.last(npc)[1].."忙着呢，你等会儿在问话吧。$|"..
-                                                                                            "^你忙着呢，你等会儿在问话吧。$|"..
+                                                                                            "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                                             "^这里没有 .+ 这个人。$|"..
                                                                                             "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
-    elseif string.match(l[0], "你忙着呢，你等会儿在问话吧。") then
+    elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
         wait(0.1)
     elseif string.match(l[0], "这里没有") then
         local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
@@ -408,7 +407,7 @@ function ftb_job_kill_npc(room, npc)
     if prepare_skills() < 0 then
         return -1
     end
-    if wield(config.fight["斧头帮任务"].weapon) ~= 0 then
+    if wield(config.fight["斧头帮任务"].weapon or config.fight["通用"].weapon) ~= 0 then
         return -1
     end
     local l = wait_line("kill "..string.lower(npc[2]), 30, nil, nil, "^你对著"..npc[1].."喝道：「\\S+」$|"..
@@ -459,7 +458,7 @@ function ftb_job_drive_npc(npc)
     local l = wait_line("ask "..string.lower(npc[2]).." about 程金斧", 30, nil, nil, "^你忙着呢，你等会儿在问话吧。$|"..
                                                                                     "^这里没有 .+ 这个人。$|"..
                                                                                     "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
-                                                                                    "^"..npc[1].."\\S*往(\\S+)走了出去。$|"..
+                                                                                    "^"..npc[1].."\\S*往(\\S+)(?:离开|走了出去)。$|"..
                                                                                     "^"..npc[1].."忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1

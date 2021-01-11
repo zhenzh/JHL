@@ -310,6 +310,7 @@ function is_fighting() -- 0: no fight   1: fight
     until false
 end
 
+
 --function clean_spirit(spirit)
 --    if spirit == nil then
 --        spirit = 0

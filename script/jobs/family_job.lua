@@ -141,8 +141,6 @@ function family_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p1 ］")
     local rc = family_job_goto_master()
     if rc ~= nil then
-        trigger.disable_group("family_job_active")
-        var.job = nil
         return rc
     end
     if config.jobs["门派任务"].enable == false then
@@ -277,9 +275,6 @@ function family_job_p5()
     if recover(config.job_nl) < 0 then
          return -1
     end
-    if var.job.statistics ~= nil then
-        var.job.statistics.end_time = time.epoch()
-    end
     return 1
 end
 
@@ -304,7 +299,7 @@ function family_job_close_job()
                                                                                                        "^\\S+对你说道：你太令\\S+失望了，目前我\\S+正值用人之际，我看你还是以\\S+兴衰为重吧。$|"..
                                                                                                        "^\\S+对你说道：既然你有要事在身，我也不便强求，唉！靠你振兴我\\S+看来是没指望了。$|"..
                                                                                                        "^这里没有 \\S+ 这个人$|"..
-                                                                                                       "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
+                                                                                                       "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                                                        "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
@@ -330,7 +325,7 @@ function family_job_open_job()
     local l = wait_line("ask "..family_info[profile.family].master_id.." about 门派任务", 30, nil, nil, "^\\S+对你点了点头，说道：好，望你能为振兴我\\S+多做贡献，我有任务时自然会派人去通知你。$|"..
                                                                                                        "^\\S+拍了拍你的肩膀，说道：好，我有任务时自然会派人去通知你。$|"..
                                                                                                        "^这里没有 \\S+ 这个人$|"..
-                                                                                                       "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
+                                                                                                       "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                                                        "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
@@ -415,7 +410,7 @@ function family_job_goto_dest()
         end
         if var.job.fight ~= nil then
             config.jobs["门派任务"].dest = { current }
-            if wield(config.fight["门派任务"].weapon) ~= 0 then
+            if wield(config.fight["门派任务"].weapon or config.fight["通用"].weapon) ~= 0 then
                 return -1
             end
             return
@@ -493,10 +488,10 @@ function family_job_confirm_enemy()
             return -1
         elseif string.match(l[0], "想杀死你") then
             if state.power == 0 then
-                run("jiali "..config.fight[config.jobs[global.jid]].power)
+                run("jiali "..(config.fight[config.jobs[global.jid]].power or config.fight["通用"].power))
             end
             if state.energy == 1 then
-                run("jiajin "..config.fight[config.jobs[global.jid]].energy)
+                run("jiajin "..(config.fight[config.jobs[global.jid]].energy or config.fight["通用"].energy))
             end
             return
         else
@@ -639,7 +634,11 @@ function family_job_reset_enemy(dir)
         if enemy_leave == true then
             return family_job_exec()
         end
-        wait(0.1)
+        if global.flood > config.flood_control then
+            wait(1)
+        else
+            wait(0.1)
+        end
         automation.idle = false
         return family_job_reset_enemy(dir)
     end
@@ -679,12 +678,12 @@ function family_job_confirm_kill()
         if state.qx / (state.qx_max * 100 / state.qx_pct) < 0.5 or state.jl / state.jl_max < 0.3 then
             return family_job_one_step()
         end
-        if state.nl > profile.power * 7 and config.fight["门派任务"].power ~= "none" then
+        if state.nl > profile.power * 7 and (config.fight["门派任务"].power or config.fight["通用"].power) ~= "none" then
             run("jiali "..config.fight["门派任务"].power)
         elseif state.nl <= profile.power * 7 and state.power > 0 then
             run("jiali none")
         end
-        if state.jl > profile.energy * 7 and config.fight["门派任务"].energy ~= 1 then
+        if state.jl > profile.energy * 7 and (config.fight["门派任务"].energy or config.fight["通用"].energy) ~= 1 then
             run("jiajin "..config.fight["门派任务"].energy)
         elseif state.nl <= profile.energy * 7 and state.energy > 1 then
             run("jiajin 1")
@@ -696,9 +695,9 @@ function family_job_confirm_kill()
         if rc == 1 then
             return family_job_one_step()
         end
-        wait_line(set.concat(config.fight["门派任务"].yuns, ";")..";"..set.concat(config.fight["门派任务"].performs, ";"), 1, nil, nil, "^"..family_info[profile.family].enemy_name.."倒在地上，挣扎了几下就死了。$|"..
-                                                                                                                                                 "^任务已经完成，赶快回去复命吧。$|"..
-                                                                                                                                                 "^唉！你耽误的时间太久了，这次任务取消了。$")
+        wait_line(set.concat((config.fight["门派任务"].yuns or config.fight["通用"].yuns), ";")..";"..set.concat((config.fight["门派任务"].performs or config.fight["通用"].performs), ";"), 1, nil, nil, "^"..family_info[profile.family].enemy_name.."倒在地上，挣扎了几下就死了。$|"..
+                                                                                                                                                                                                      "^任务已经完成，赶快回去复命吧。$|"..
+                                                                                                                                                                                                      "^唉！你耽误的时间太久了，这次任务取消了。$")
     else
         config.jobs["门派任务"].phase = math.max(phase["任务结算"], config.jobs["门派任务"].phase)
         return
@@ -913,8 +912,7 @@ function family_job_query_contribution()
     end
     local l = wait_line("ask "..family_info[profile.family].master_id.." about 贡献度", 30, nil, nil, "^\\S+对你说道：你为\\S+所做的贡献为(\\S+)点。|"..
                                                                                                      "^这里没有 \\S+ 这个人$|"..
-                                                                                                     "^你忙着呢，你等会儿在问话吧。$|"..
-                                                                                                     "^"..family_info[profile.family].master_name.."忙着呢，你等会儿在问话吧。$|"..
+                                                                                                     "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                                                      "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1

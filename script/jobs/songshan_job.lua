@@ -8,7 +8,8 @@ local songshan_job_area = {
 
 function enable_songshan_job()
     trigger.delete_group("songshan_job")
-    trigger.add("ftb_job_wait_info", "ftb_job_wait_info()", "ftb_job", {Enable=false, Multi=true}, 99, "^程金斧说道：听说有(\\S+)个家伙想对本帮不利.\\n程金斧说道：据说他们已经到了(\\S+)(?:\\(该处靠近([\\S, ]+)\\)|)方圆(\\S+)里之内.$")
+    trigger.add("songshan_job_npc_come", "songshan_job_npc_come()", "songshan_job", {Enable=false}, 100, "^(?:秦娟|郑鄂|仪文|仪和|仪琳|仪质|仪清)\\S*走了过来。$")
+    trigger.add("songshan_job_npc_leave", "songshan_job_npc_leave()", "songshan_job", {Enable=false}, 100, "^(?:秦娟|郑鄂|仪文|仪和|仪琳|仪质|仪清)\\S*往\\S+离开。$")
 end
 
 function disable_songshan_job()
@@ -31,23 +32,20 @@ function songshan_job()
     var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
     var.job.statistics.exp = var.job.statistics.exp or state.exp
     var.job.statistics.pot = var.job.statistics.pot or state.pot
-    if config.jobs["嵩山任务"].phase == phase["任务获取"] then
+    if (config.jobs["嵩山任务"].phase or 0) <= phase["任务获取"] then
         local rc = songshan_job_p1()
         if rc ~= nil then
             return songshan_job_return(rc)
         end
     end
     if config.jobs["嵩山任务"].phase == phase["任务执行"] then
-        return songshan_job_return(songshan_job_p2())
-    end
-    if config.jobs["嵩山任务"].phase == phase["任务结算"] then
-        local rc = songshan_job_p3()
+        local rc = songshan_job_p2()
         if rc ~= nil then
             return songshan_job_return(rc)
         end
     end
-    if config.jobs["嵩山任务"].phase == phase["任务完成"] then
-        return songshan_job_return(songshan_job_p4())
+    if config.jobs["嵩山任务"].phase == phase["任务结算"] then
+        return songshan_job_return(songshan_job_p3())
     end
     if config.jobs["嵩山任务"].phase == phase["任务失败"] then
         return songshan_job_return(songshan_job_p5())
@@ -59,8 +57,11 @@ function songshan_job_return(rc)
     if var.job == nil then
         return rc
     end
-    config.jobs["嵩山任务"].npc = nil
-    var.statistics = var.job.statistics
+    append_statistics("嵩山任务")
+    config.jobs["嵩山任务"].confirm = nil
+    config.jobs["嵩山任务"].area = nil
+    config.jobs["嵩山任务"].discuss = nil
+    config.jobs["嵩山任务"].arrest = nil
     trigger.disable_group("songshan_job")
     var.job = nil
     return rc
@@ -68,11 +69,17 @@ end
 
 function songshan_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_p1 ］")
+    if profile.mole > 0 and profile.family ~= "嵩山派" then
+        local rc = zero_mole()
+        if rc ~= 0 then
+            return rc
+        end
+    end
     local rc = songshan_job_goto_zuolengchan()
     if rc ~= nil then
         return rc
     end
-    rc = songshan_job_aquire()
+    rc = songshan_job_refresh()
     if rc ~= nil then
         return rc
     end
@@ -80,43 +87,55 @@ end
 
 function songshan_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_p2 ］")
-    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
-    var.job.statistics.exp = var.job.statistics.exp or state.exp
-    var.job.statistics.pot = var.job.statistics.pot or state.pot
     if config.jobs["嵩山任务"].area == nil then
         config.jobs["嵩山任务"].area = songshan_job_area
     end
+    return songshan_job_exec()
 end
 
 function songshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_p3 ］")
-    
+    automation.idle = false
+    local rc = songshan_job_goto_zuolengchan("walk")
+    if rc ~= nil then
+        return rc
+    end
+    return songshan_job_refresh()
 end
 
 function songshan_job_p4()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_p4 ］")
+    if recover(config.job_nl) < 0 then
+        return -1
+    end
+    if run_score() < 0 then
+        return -1
+    end
+    config.jobs["嵩山任务"].phase = phase["任务获取"]
+    var.job.statistics.result = "成功"
     return 0
 end
 
 function songshan_job_p5()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_p5 ］")
-    config.jobs["嵩山任务"].active = false
-    if timer.is_exist("songshan_job_cd") == false then
-        timer.add("songshan_job_cd", 120, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})
+    local rc = songshan_job_goto_zuolengchan()
+    if rc ~= nil then
+        return rc
     end
+    if wait_line("giveup", 30, nil, nil, "^左冷禅对你说道：“连几个柔弱的尼姑都搞不定，快快给我滚了下去！”$|^什么\\?$") == false then
+        return -1
+    end
+    config.jobs["嵩山任务"].phase = phase["任务获取"]
     if var.job.statistics ~= nil then
-        var.job.statistics.exp = state.exp - var.job.statistics.exp
-        var.job.statistics.pot = state.pot - var.job.statistics.pot
         var.job.statistics.result = "失败"
-        var.job.statistics.end_time = time.epoch()
     end
     return 1
 end
 
-function songshan_job_goto_zuolengchan()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_goto_zuolengchan ］")
+function songshan_job_goto_zuolengchan(mode)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_goto_zuolengchan ］参数：mode = "..tostring(mode))
     if env.current.id[1] ~= 2478 then
-        local rc = goto(2478)
+        local rc = goto(2478, mode)
         if rc ~= 0 then
             return rc
         end
@@ -124,11 +143,11 @@ function songshan_job_goto_zuolengchan()
     return
 end
 
-function songshan_job_aquire()
+function songshan_job_refresh()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_refresh ］")
     local l = wait_line("ask zuo lengchan about job", 30, nil, nil, "^你向左冷禅打听有关「job」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
+                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                     "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
@@ -137,30 +156,37 @@ function songshan_job_aquire()
         if l[1] == "你" then
             run("halt")
         end
-        return songshan_job_aquire()
+        return songshan_job_refresh()
     elseif l[0] == "你向左冷禅打听有关「job」的消息。" then
-        l = wait_line(nil, 30, nil, nil, "^左冷禅给你一个面罩。$|"..
+        l = wait_line(nil, 30, nil, nil, "^左冷禅说道：倘若她们冥顽不灵便一并抓回，其他事宜再另行决议。$|"..
                                          "^左冷禅说道：叫你去福建你怎么还在这里闲逛？$|"..
-                                         "^左冷禅说道：去了这么久才回来，那些恒山派的女尼早已脱身了！$")
+                                         "^左冷禅说道：去了这么久才回来，那些恒山派的女尼早已脱身了！$|"..
+                                         "^左冷禅对着你竖起了右手大拇指，好样的。$|"..
+                                         "^左冷禅说道：我辈学武之人，最讲究的是正邪是非之辨，老匹夫居然和妖魔勾搭成奸，实已犯了武林的大忌。$")
         if l == false then
             return -1
-        end
-        config.jobs["嵩山任务"].phase = phase["任务执行"]
-        if l[0] == "左冷禅说道：叫你去福建你怎么还在这里闲逛？" then
-            if run_i() < 0 then
-                return -1
-            end
-            if is_own("面罩:mian zhao") ~= true then
-                config.jobs["嵩山任务"].phase = phase["任务失败"]
-                return songshan_job_p5()
-            end
+        elseif l[0] == "左冷禅对着你竖起了右手大拇指，好样的。" then
+            return songshan_job_p4()
         elseif l[0] == "左冷禅说道：去了这么久才回来，那些恒山派的女尼早已脱身了！" then
             config.jobs["嵩山任务"].phase = phase["任务获取"]
             if privilege_job("嵩山任务") == true then
                 var.job.statistics = nil
                 return 1
             end
-            return songshan_job_aquire()
+            return songshan_job_refresh()
+        elseif l[0] == "左冷禅说道：我辈学武之人，最讲究的是正邪是非之辨，老匹夫居然和妖魔勾搭成奸，实已犯了武林的大忌。" then
+            if run_score() < 0 then
+                return -1
+            end
+            return songshan_job_p1()
+        end
+        config.jobs["嵩山任务"].phase = phase["任务执行"]
+        if run_i() < 0 then
+            return -1
+        end
+        if is_own("面罩:mian zhao") ~= true then
+            config.jobs["嵩山任务"].phase = phase["任务失败"]
+            return songshan_job_p5()
         end
         return
     end
@@ -175,28 +201,52 @@ function songshan_job_exec()
     if config.jobs["嵩山任务"].phase > phase["任务执行"] then
         return
     end
-    if config.jobs["嵩山任务"].npc == nil then
-        local rc = songshan_job_search()
+    local rc
+    if var.job.npc == nil then
+        rc = songshan_job_search()
         if rc ~= nil then
             return rc
         end
     end
-    for k,v in pairs(config.jobs["嵩山任务"].npc) do
-        local rc = songshan_job_ask_npc(k, v)
-        if rc == nil then
-            rc = songshan_job_hit_npc(k, v)
+    for k,v in pairs(var.job.npc) do
+        if env.current.id[1] ~= k then
+            rc = goto(k)
+            if rc < 0 then
+                return -1
+            end
         end
-        if rc == -1 then
-            return -1
+        if (rc or 0) == 0 then
+            var.job.num = {}
+            for _,i in ipairs(v) do
+                var.job.num[i[1]] = 0
+            end
+            for _,i in ipairs(env.current.objs) do
+                local name = string.match(i, "%S*恒山派第十四代弟子 (%S+)%(.*%)") or string.match(i, "^(%S+)正在运功疗伤$")
+                if var.job.num[name] ~= nil then
+                    var.job.num[name] = var.job.num[name] + obj_analysis(string.gsub(i, "恒山派第十四代弟子 ", "").."(a b)")
+                end
+            end
+            trigger.enable("songshan_job_npc_come")
+            trigger.enable("songshan_job_npc_leave")
+            rc = songshan_job_ask_npc(k, v)
+            trigger.disable("songshan_job_npc_come")
+            trigger.disable("songshan_job_npc_leave")
+            if rc ~= nil then
+                return rc
+            end
+        end
+        if config.jobs["嵩山任务"].phase > phase["任务执行"] then
+            return songshan_job()
         end
     end
+    var.job.npc = nil
     return songshan_job_exec()
 end
 
 function songshan_job_search()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_search ］")
     local rc
-    rc,config.jobs["嵩山任务"].npc,config.jobs["嵩山任务"].area = search("^\\s+(?:\\S+位|)恒山派第十四代弟子 (\\S+)\\((\\w+ \\w+)\\)$", config.jobs["嵩山任务"].area)
+    rc,var.job.npc,config.jobs["嵩山任务"].area = search("^\\s+(?:\\S+位|)恒山派第十四代弟子 (\\S+)\\((\\w+ \\w+)\\)$", config.jobs["嵩山任务"].area)
     if rc == -1 then
         return -1
     elseif rc > 0 then
@@ -209,134 +259,178 @@ end
 function songshan_job_ask_npc(room, npc)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_ask_npc ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
     if table.is_empty(npc) then
-        return 1
+        return
     end
-    if env.current.id[1] ~= room then
-        if goto(room) ~= 0 then
-            config.jobs["嵩山任务"].npc[room] = nil
-            return 1
+    if config.jobs["嵩山任务"].confirm ~= nil then
+        if set.last(npc)[1] ~= config.jobs["嵩山任务"].confirm then
+            set.pop(npc)
+            return songshan_job_ask_npc(room, npc)
         end
     end
-    local l = wait_line("ask "..string.lower(set.last(npc)[2]).." about 援助", 30, nil, nil, "^你向"..set.last(npc)[1].."打听有关「援助」的消息。$|"..
-                                                                                            "^你忙着呢，你等会儿在问话吧。$|"..
-                                                                                            "^这里没有 .+ 这个人。$|"..
-                                                                                            "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
-                                                                                            "^"..set.last(npc)[1].."忙着呢，你等会儿在问话吧。$")
+    if config.jobs["嵩山任务"].arrest == true then
+        return songshan_job_order_npc(room, set.last(npc))
+    end
+    if config.jobs["嵩山任务"].discuss == true then
+        return songshan_job_arrest(room, set.last(npc))
+    end
+    if var.job.num[set.last(npc)[1]] == 0 then
+        var.job.num[set.last(npc)[1]] = nil
+        set.pop(npc)
+        return songshan_job_ask_npc(room, npc)
+    end
+    local l = wait_line("ask "..string.lower(set.last(npc)[2]).." "..tostring(var.job.num[set.last(npc)[1]]).." about 援助", 30, nil, nil, "^你向"..set.last(npc)[1].."打听有关「援助」的消息。$|"..
+                                                                                                                                          "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
+                                                                                                                                          "^这里没有 .+ 这个人。$|"..
+                                                                                                                                          "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
     elseif string.match(l[0], "打听有关") then
-        l = wait_line(nil, 30, nil, nil, "^"..set.last(npc)[1].."说道：“原来是嵩山派的朋友，派师姐被魔教之人伏击，多谢这位师兄解围。”$|"..)
-        set.append(config.jobs["斧头帮任务"].confirm, set.last(npc)[1])
-        return
-    elseif string.match(l[0], "你忙着呢，你等会儿在问话吧。") then
-        wait(0.1)
-    else
-        set.pop(npc)
-    end
-    return ftb_job_ask_npc(room, npc)
-end
-
-function ftb_job_kill_npc(room, npc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
-    if prepare_skills() < 0 then
-        return -1
-    end
-    if wield(config.fight["斧头帮任务"].weapon) ~= 0 then
-        return -1
-    end
-    local l = wait_line("kill "..string.lower(set.last(npc)[2]), 30, nil, nil, "^你对著"..set.last(npc)[1].."喝道：「\\S+」$|"..
-                                                                               "^这里没有这个人。$|"..
-                                                                               "^你现在正忙着呢。$|"..
-                                                                               "^这里不准战斗。$")
-    if l == false then
-        return -1
-    elseif l[0] == "你现在正忙着呢。" then
-        wait(0.1)
-    elseif l[0] == "这里没有这个人。" then
-        local around = get_room_id_around()
-        config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
-        return
-    elseif l[0] == "这里不准战斗。" then
-        local rc = ftb_job_drive_npc(room, npc)
-        timer.delete("ftb_job_timeout")
-        return rc
-    else
-        var.job.enemy_name = set.last(npc)[1]
-        trigger.add("ftb_job_enemy_die", "ftb_job_enemy_die()", "ftb_job", {Enable=true}, 99, "^"..var.job.enemy_name.."倒在地上，挣扎了几下就死了。$")
-        local rc = fight()
-        if rc == 0 then
-            config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy - 1
-            config.jobs["斧头帮任务"].progress = (config.jobs["斧头帮任务"].progress or 0) + 1
-            set.pop(npc)
-            rc = ftb_job_post_kill()
-            if rc ~= nil then
-                return rc
-            end
-            return
-        elseif rc == 2 then
-            return ftb_job_one_step()
-        elseif rc == 1 then
-            if var.job.npc[1718] == nil then
-                config.jobs["斧头帮任务"].dest = set.union({1718}, config.jobs["斧头帮任务"].dest)
-            end
-            if env.current.name ~= "树上" then
-                set.pop(npc)
-            end
-            return
+        l = wait_line(nil, 30, nil, nil, "^"..set.last(npc)[1].."说道：“原来是嵩山派的朋友，派师姐被魔教之人伏击，多谢这位师兄解围。”$|"..
+                                         "^"..set.last(npc)[1].."对你说道：“多谢你的好意，现今我无需援助！”$")
+        if l == false then
+            return -1
+        elseif string.match(l[0], "无需援助！”") then
+            var.job.num[set.last(npc)[1]] = var.job.num[set.last(npc)[1]] - 1
+            return songshan_job_ask_npc(room, npc)
         end
-    end
-    return ftb_job_kill_npc(npc)
-end
-
-function ftb_job_drive_npc(room, npc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_kill_npc ］room = "..tostring(room)..", npc = "..table.tostring(npc))
-    local l = wait_line("ask "..string.lower(set.last(npc)[2]).." about 程金斧", 30, nil, nil, "^你忙着呢，你等会儿在问话吧。$|"..
-                                                                                              "^这里没有 .+ 这个人。$|"..
-                                                                                              "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
-                                                                                              "^"..set.last(npc)[1].."\\S*往(\\S+)走了出去。$|"..
-                                                                                              "^"..set.last(npc)[1].."忙着呢，你等会儿在问话吧。$")
-    if l == false then
-        return -1
+        local num = var.job.num[set.last(npc)[1]]
+        var.job.num = {}
+        var.job.num[set.last(npc)[1]] = num
+        config.jobs["嵩山任务"].confirm = set.last(npc)[1]
+        return songshan_job_discuss(room, set.last(npc))
     elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
         if wait_no_busy("halt") < 0 then
             return -1
         end
-        return ftb_job_drive_npc(npc)
-    elseif string.match(l[0], "这里没有") then
-        local around = get_room_id_around()
-        config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
-    elseif l[1] ~= false then
-        room = get_room_id_by_roomsfrom(env.current.id, get_room_id_around(), get_desc_dir(l[1]))[1]
-        var.job.npc[room] = var.job.npc[room] or {}
-        set.append(var.job.npc[room], set.pop(npc))
-    else
-        if config.jobs["斧头帮任务"].enemy > 1 then
-            config.jobs["斧头帮任务"].dest = set.union(get_room_id_around(), config.jobs["斧头帮任务"].dest)
-            set.insert(config.jobs["斧头帮任务"].dest, env.current.id[1], 1)
-            return
-        else
-            if var.job.timeout == true then
-                config.jobs["斧头帮任务"].enemy = 0
-                return
-            end
-            if var.job.timeout == nil then
-                timer.add("ftb_job_timeout", 60, "var.job.timeout = true")
-            end
-            local nl = state.nl
-            local rc = dazuo()
-            if rc < 0 then
-                return -1
-            elseif rc ~= 0 or state.nl == nl then
-                wait(1)
-            end
-            return ftb_job_drive_npc(npc)
-        end
+        return songshan_job_ask_npc(room, npc)
     end
-    return
+    var.job.num[set.last(npc)[1]] = var.job.num[set.last(npc)[1]] - 1
+    return songshan_job_ask_npc(room, npc)
 end
 
-function ftb_job_one_step()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_one_step ］")
+function songshan_job_discuss(room, npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_discuss ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
+    if var.job.num[npc[1]] == 0 then
+        if wait_line("look", 30, nil, nil, "^> $") == false then
+            return -1
+        end
+        config.jobs["嵩山任务"].area = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
+        set.append(config.jobs["嵩山任务"].area, room)
+        return
+    end
+    local l = wait_line("discuss "..string.lower(npc[2]).." "..tostring(var.job.num[npc[1]]), 60, nil, nil, "^\\S+连连摇手，喝道：“你再说下去，没的污了我耳朵。”$|"..
+                                                                                                            "^你要和谁商讨有关并派之事？$|"..
+                                                                                                            "^什么\\?$")
+    if l == false then
+        return -1
+    elseif l[0] == "你要和谁商讨有关并派之事？" then
+        var.job.num[npc[1]] = var.job.num[npc[1]] - 1
+    elseif l[0] == "什么?" then
+        config.jobs["嵩山任务"].discuss = true
+        return songshan_job_arrest(room, npc)
+    else
+        config.jobs["嵩山任务"].discuss = true
+        l = wait_line(nil, 30, nil, nil, "^"..npc[1].."\\S*往(\\S+)(?:离开|走了出去)。$")
+        if l == false then
+            return -1
+        else
+            room = get_room_id_by_roomsfrom({room}, get_room_id_around(), get_desc_dir(l[1]))[1]
+            if wait_no_busy("halt") < 0 then
+                return -1
+            end
+            l = wait_line(get_desc_dir(l[1]), 30, nil, nil, "^\\S+ - |"..
+                                                            "^什么\\?$|"..
+                                                            "^没有这个方向。$")
+            if l == false then
+                return -1
+            elseif l[0] == "什么?" or l[0] == "没有这个方向。" then
+                if wait_line("look", 30, nil, nil, "^> $") == false then
+                    return -1
+                end
+                config.jobs["嵩山任务"].area = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
+                set.append(config.jobs["嵩山任务"].area, room)
+                return songshan_job_exec()
+            end
+            var.job.num[npc[1]] = 1
+            if room == nil then
+                if locate() < 0 then
+                    return -1
+                end
+                room = env.current.id[1]
+            end
+            return songshan_job_arrest(room, npc)
+        end
+    end
+    return songshan_job_discuss(room, npc)
+end
+
+function songshan_job_arrest(room, npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_arrest ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
+    if var.job.num[npc[1]] == 0 then
+        if wait_line("look", 30, nil, nil, "^> $") == false then
+            return -1
+        end
+        config.jobs["嵩山任务"].area = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
+        set.append(config.jobs["嵩山任务"].area, room)
+        return
+    end
+    if prepare_skills() < 0 then
+        return -1
+    end
+    local l = wait_line("wear mian zhao", 30, nil, nil, "^你戴上一个面罩。$|"..
+                                                        "^你已经装备着了。$|"..
+                                                        "^你已经穿戴了同类型的护具了。$|"..
+                                                        "^你身上没有这样东西。$")
+    if l == false then
+        return -1
+    elseif l[0] == "你已经穿戴了同类型的护具了。" then
+        if wait_line("remove all;wear mian zhao", 30, nil, nil, "^你戴上一个面罩。$") == false then
+            return -1
+        end
+    elseif l[0] == "你身上没有这样东西。" then
+        config.jobs["嵩山任务"].phase = phase["任务失败"]
+        return songshan_job_p5()
+    end
+    if wield(config.fight["嵩山任务"].weapon or config.fight["通用"].weapon) ~= 0 then
+        return -1
+    end
+    l = wait_line("arrest "..string.lower(npc[2]).." "..tostring(var.job.num[npc[1]]), 30, nil, nil, "^看起来"..npc[1].."想杀死你！$|"..
+                                                                                                     "^这里不准战斗。$|"..
+                                                                                                     "^这里并无此人！$|"..
+                                                                                                     "^左盟主派你来抓的不是此人。$")
+    if l == false then
+        return -1
+    elseif l[0] == "这里并无此人！" or l[0] == "左盟主派你来抓的不是此人。" then
+        var.job.num[npc[1]] = var.job.num[npc[1]] - 1
+    elseif l[0] == "这里不准战斗。" then
+        config.jobs["嵩山任务"].phase = phase["任务失败"]
+        return songshan_job_p5()
+    else
+        var.job.enemy_name = npc[1]
+        trigger.add("songshan_job_win", "songshan_job_win()", "songshan_job", {Enable=true, OneShot=true}, 99, "^你说道：“左掌门好好劝你归降投诚，你偏偏固执不听，自今而后，武林中可再没恒山一派了。$")
+        local rc = fight()
+        if rc == 0 then
+            config.jobs["嵩山任务"].arrest = true
+            if wait_no_busy() < 0 then
+                return -1
+            end
+            return songshan_job_order_npc(room, npc)
+        elseif rc == 2 then
+            rc = songshan_job_one_step()
+            if rc ~= nil then
+                return rc
+            end
+            if goto(room) ~= 0 then
+                config.jobs["嵩山任务"].phase = phase["任务失败"]
+                return songshan_job_p5()
+            end
+        end
+    end
+    return songshan_job_arrest(room, npc)
+end
+
+function songshan_job_one_step()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_one_step ］")
     local rc = one_step()
     if rc ~= 0 then
         return -1
@@ -348,62 +442,64 @@ function ftb_job_one_step()
     end
 end
 
-function ftb_job_post_kill()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_post_kill ］")
-    if wait_no_busy() < 0 then
-        return -1
-    end
-    local rc = yun_bidu()
-    if rc < 0 then
-        return -1
-    elseif rc == 1 then
-        rc = ask_ping()
-        if rc < 0 then
+function songshan_job_order_npc(room, npc)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_order_npc ］参数：room = "..tostring(room)..", npc = "..table.tostring(npc))
+    if var.job.num[npc[1]] == 0 then
+        if wait_line("look", 30, nil, nil, "^> $") == false then
             return -1
         end
+        config.jobs["嵩山任务"].area = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
+        set.append(config.jobs["嵩山任务"].area, room)
+        return
     end
-    rc = yun_forceheal()
-    if rc < 0 then
+    local l = wait_line("ask "..string.lower(npc[2]).." "..tostring(var.job.num[npc[1]]).." about 动身", 30, nil, nil, "^你向"..npc[1].."打听有关「动身」的消息。$|"..
+                                                                                                                        "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
+                                                                                                                        "^这里没有 .+ 这个人。$|"..
+                                                                                                                        "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+    if l == false then
         return -1
-    elseif rc == 1 then
-        rc = ask_ping()
-        if rc < 0 then
+    elseif string.match(l[0], "打听有关") then
+        l = wait_line(nil, 30, nil, nil, "^"..npc[1].."被迫开始跟随你一起行动。$|"..
+                                         "^"..npc[1].."说道：我与你素未谋面，你想带我到哪去？$")
+        if l == false then
+            return -1
+        elseif string.match(l[0], "跟随你") then
+            config.jobs["嵩山任务"].phase = phase["任务结算"]
+            return
+        else
+            var.job.num[npc[1]] = var.job.num[npc[1]] - 1
+        end
+    elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
+        if wait_no_busy("halt") < 0 then
             return -1
         end
+    else
+        var.job.num[npc[1]] = var.job.num[npc[1]] - 1
     end
-    return
+    return songshan_job_order_npc(room, npc)
 end
 
-function ftb_job_wait_info()
-    config.jobs["斧头帮任务"].enemy = chs2num(get_matches(1))
-    if get_matches(2) == config.jobs["斧头帮任务"].info then
-        config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy - (config.jobs["斧头帮任务"].progress or 0)
-        if config.jobs["斧头帮任务"].enemy == 0 then
-            config.jobs["斧头帮任务"].enemy = 1
-        end
+function songshan_job_npc_come(name)
+    if var.job.num[name] == nil then
+        return
     end
-    config.jobs["斧头帮任务"].info = get_matches(2)
-    config.jobs["斧头帮任务"].around = get_matches(3)
-    config.jobs["斧头帮任务"].range = chs2num(get_matches(4))
-    if config.jobs["斧头帮任务"].info == "少林寺0" then
-        config.jobs["斧头帮任务"].info = "塘沽口"  -- BUG 临时处理
-    end
-    var.job.range = config.jobs["斧头帮任务"].range
-    config.jobs["斧头帮任务"].phase = phase["任务执行"]
+    var.job.num[name] = var.job.num[name] + 1
 end
 
-function ftb_job_enemy_die()
+function songshan_job_npc_leave(name)
+    if var.job.num[name] == nil then
+        return
+    end
+    var.job.num[name] = var.job.num[name] - 1
+end
+
+function songshan_job_win()
     if var.fight ~= nil then
         var.fight.stop = 0
     end
 end
 
-function ftb_job_active()
-    config.jobs["斧头帮任务"].active = true
-    config.jobs["斧头帮任务"].phase = phase["任务更新"]
-end
-
-config.jobs["斧头帮任务"].func = ftb_job
-config.jobs["斧头帮任务"].efunc = enable_ftb_job
-config.jobs["斧头帮任务"].dfunc = disable_ftb_job
+config.jobs["嵩山任务"].func = songshan_job
+config.jobs["嵩山任务"].efunc = enable_songshan_job
+config.jobs["嵩山任务"].dfunc = disable_songshan_job
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

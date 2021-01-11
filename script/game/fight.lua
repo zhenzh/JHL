@@ -161,7 +161,7 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
     if (var.fight.stop or 3) < 3 then
         return fight_return(var.fight.stop)
     end
-    local rc = wield((config.fight[config.jobs[global.jid]] or config.fight["通用"]).weapon)
+    local rc = wield((config.fight[config.jobs[global.jid]] or config.fight["通用"]).weapon or config.fight["通用"].weapon)
     if rc < 0 then
         return fight_return(-1)
     elseif rc == 1 then
@@ -171,26 +171,23 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
         return fight_return(-1)
     end
     if (var.fight.stop  or 0) < 3 then
-        if state.nl <= profile.power * 7 and 
-           state.power > 0 then
+        if state.nl <= profile.power * 7 and state.power > 0 then
             run("jiali none")
         elseif state.nl > profile.power * 7 and 
-               config.fight[config.jobs[global.jid]].power ~= "none" then
+               (config.fight[config.jobs[global.jid]].power or config.fight["通用"].power) ~= "none" then
             if state.power == 0 then
-                run("jiali "..config.fight[config.jobs[global.jid]].power)
+                run("jiali "..(config.fight[config.jobs[global.jid]].power or config.fight["通用"].power))
             end
         end
-        if state.nl <= profile.energy * 7 and 
-           state.energy > 1 then
+        if state.nl <= profile.energy * 7 and state.energy > 1 then
             run("jiajin 1")
-        elseif state.jl > profile.energy * 7 and 
-               config.fight[config.jobs[global.jid]].energy ~= 1 then
+        elseif state.jl > profile.energy * 7 and (config.fight[config.jobs[global.jid]].energy or config.fight["通用"].energy) ~= 1 then
             if state.energy == 1 then
-                run("jiajin "..config.fight[config.jobs[global.jid]].energy)
+                run("jiajin "..(config.fight[config.jobs[global.jid]].energy or config.fight["通用"].energy))
             end
         end
         trigger.enable("fight_idle")
-        run(set.concat(config.fight[config.jobs[global.jid]].yuns, ";")..";"..set.concat(config.fight[config.jobs[global.jid]].performs, ";"))
+        run(set.concat((config.fight[config.jobs[global.jid]].yuns or config.fight["通用"].yuns), ";")..";"..set.concat((config.fight[config.jobs[global.jid]].performs or config.fight["通用"].performs), ";"))
     end
     wait_line(nil, 2, nil, 100, "^"..(var.job.enemy_name or "\\S+").."倒在地上，挣扎了几下就死了。$|"..
                                 "^你目前还没有任何为 中断事件 的变量设定。$")

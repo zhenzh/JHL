@@ -1288,6 +1288,47 @@ function aquire_other(method, list)
     return aquire_other(method, list)
 end
 
+function zero_mole(target)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ zero_mole ］参数：target = "..tostring(target))
+    if target == nil then
+        target = 0
+    end
+    if math.abs(profile.mole) <= target then
+        if wait_no_busy() < 0 then
+            return -1
+        end
+        return 0
+    end
+    if env.current.id[1] ~= 1790 then
+        local rc = goto(1790)
+        if rc ~= 0 then
+            return rc
+        end
+    end
+    if math.abs(profile.mole) < 40 then
+        if math.abs(math.abs(profile.mole)) - 10 > target then
+            for i = 1,10 do
+                run("mianbi")
+            end
+        else
+            run("mianbi")
+        end
+    elseif math.abs(math.abs(profile.mole)) * math.pow(0.95, 10) >= target then
+        for i = 1,10 do
+            run("mianbi")
+        end
+    else
+        run("mianbi")
+    end
+    if run_score() < 0 then
+        return -1
+    end
+    if global.flood > config.flood_control then
+        wait(1)
+    end
+    return zero_mole(target)
+end
+
 function search(obj, rooms)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search ］参数：obj = "..tostring(obj)..", rooms = "..table.tostring(rooms))
     trigger.add("search_found_obj", "search_found_obj()", "search", {Enable=true}, 99, obj)

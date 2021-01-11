@@ -4,9 +4,10 @@ config = {
     flood_control = 30,
     jobs = {
         "门派任务",     ["门派任务"]     = { active = false,  enable = true,  contribution = 150 },
-        "斧头帮任务",   ["斧头帮任务"]   = { active = true,  enable = true, enemy = 0, confirm = {}, exclude = {} },
-        "飞马镖局",     ["飞马镖局"]     = { active = true,  enable = true },
         "寻访任务",     ["寻访任务"]     = { active = false,  enable = false },
+        "斧头帮任务",   ["斧头帮任务"]   = { active = true,  enable = false, enemy = 0, confirm = {}, exclude = {} },
+        "嵩山任务",     ["嵩山任务"]     = { active = true,  enable = true, limit = 4000 },
+        "飞马镖局",     ["飞马镖局"]     = { active = true,  enable = false },
     },
     skill_prior = false,  -- 任务间隙是否自动练功
     save_pots = true,    -- 是否自动储存潜能
@@ -55,7 +56,10 @@ config = {
     fight = {
         armor = "党卫军衣:nasos uniforms",  -- 战斗时所穿护甲
         ["通用"] = {  -- 任务默认战斗配置
-            weapon = { "", "" }
+            weapon = { "", "" },
+            yuns      = { "yun yixing" },
+            performs  = { "perform zhangfeng", "perform jinglei" },
+            power = "max", energy = "max",
         },
         ["门派任务"] = {  -- 门派任务战斗时的配置
             weapon    = { "", "" },  -- 战斗时使用的武器
@@ -63,17 +67,23 @@ config = {
             performs  = { "perform zhangfeng", "perform jinglei" },  -- 战斗时使用的外功
             power = "max", energy = "max",  -- -- 战斗时所需加力/加精
         },
-        ["飞马镖局"] =    {
-            weapon    = { "", "" },
-            yuns      = { "yun yixing" },
-            performs  = { "perform zhangfeng", "perform jinglei" },
-            power = "max", energy = 1,
-        },
         ["斧头帮任务"] = {  -- 门派任务战斗时的配置
             weapon    = { "", "" },  -- 战斗时使用的武器
             yuns      = { "yun yixing" },  -- 战斗时使用的内功
             performs  = { "perform zhangfeng", "perform jinglei" },  -- 战斗时使用的外功
             power = "max", energy = "max",  -- -- 战斗时所需加力/加精
+        },
+        ["嵩山任务"] =    {
+            weapon    = { "", "" },
+            yuns      = { "yun yixing" },
+            performs  = { "perform zhangfeng", "perform jinglei" },
+            power = "max", energy = 1,
+        },
+        ["飞马镖局"] =    {
+            weapon    = { "", "" },
+            yuns      = { "yun yixing" },
+            performs  = { "perform zhangfeng", "perform jinglei" },
+            power = "max", energy = 1,
         },
 --        ["寻访任务"] =    {
 --                                weapon         = {first = "", second = ""},

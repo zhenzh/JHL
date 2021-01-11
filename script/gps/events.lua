@@ -120,6 +120,20 @@ function tired()
     end
 end
 
+function hinder()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ hinder ］")
+    trigger.disable_group("goto")
+    var.goto.pause = function()
+        var.goto.pause = nil
+        env.current.name = ""
+        trigger.enable_group("goto")
+        if wait_no_busy("halt") < 0 then
+            return -1
+        end
+        return 0
+    end
+end
+
 function yell_boat()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ yell_boat ］")
     var.goto.yell_boat = var.goto.yell_boat or {}
@@ -1672,7 +1686,7 @@ function quanzhou_gate()
     elseif var.goto.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "什么?" or l[0] == "这个方向没有出路。" then
-        map_adjust("泉州城门", "关闭")
+        map_adjust("泉州新门", "关闭")
         return 1,"移动调整"
     else
         if wait_line(nil, 30, nil, 20, "^> $") == false then

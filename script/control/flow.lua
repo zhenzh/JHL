@@ -23,6 +23,15 @@ local noisy_rooms = {
     ["星宿海"] = 1356,
 }
 
+trigger.add("reduce_exp", "reduce_exp(tonumber(get_matches(1)))", "automation", {Enable=true}, 100, "^你的经验下降了(\\d+)点。$")
+
+function reduce_exp(exp)
+    state.exp = state.exp - exp
+    if var.job.statistics ~= nil then
+        var.job.statistics.exp = var.job.statistics.exp - exp
+    end
+end
+
 function automation_reset(func)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］参数："..tostring(func))
     automation.reconnect = func or "automation.reconnect = nil"
@@ -245,7 +254,7 @@ function flow_do_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ flow_do_job ］")
     automation.phase = global.phase["任务"]
     local rc
-    if config.jobs[config.jobs[global.jid]].active ~= false then
+    if config.jobs[config.jobs[global.jid]].enable == true and config.jobs[config.jobs[global.jid]].active == true then
         rc = config.jobs[config.jobs[global.jid]].func()
         if rc < 0 then
             return -1

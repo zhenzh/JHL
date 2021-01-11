@@ -258,7 +258,7 @@ function feima_job_aquire()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_aquire ］")
     local l = wait_line("ask ma xingkong about 押镖", 30, nil, nil, "^你向马行空打听有关「押镖」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^\\S+忙着呢，你等会儿在问话吧。$|"..
+                                                                    "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                     "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
@@ -559,7 +559,7 @@ end
 function feima_job_arrive()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_arrive ］")
     jia_min()
-    if wield(config.fight["通用"].weapon) < 0 then
+    if wield(config.fight["通用"].weapon or config.fight["通用"].weapon) < 0 then
         return -1
     end
     timer.add("feima_job_wait_timeout", 10, "config.jobs['飞马镖局'].phase = "..tostring(phase["任务放弃"]), "feima_job", {Enable=true, OneShot=true})
@@ -588,7 +588,7 @@ function feima_job_settle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_settle ］")
     local l = wait_line("ask ma xingkong about 完成", 30, nil, nil, "^你向马行空打听有关「完成」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
+                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                     "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
@@ -627,7 +627,7 @@ function feima_job_abandon_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_abandon_job ］")
     local l = wait_line("ask ma xingkong about 放弃", 30, nil, nil, "^你向马行空打听有关「放弃」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
+                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                     "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
@@ -642,7 +642,7 @@ function feima_job_abandon_job()
             l = wait_line("ask ma xingkong about 赔偿", 30, nil, nil, "^你可以重新开始押镖了。$|"..
                                                                       "^马行空似乎不懂你是什么意思。$|"..
                                                                       "^这里没有 \\S+ 这个人$|"..
-                                                                      "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
+                                                                      "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
                                                                       "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
             if l == false then
                 return -1
