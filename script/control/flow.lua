@@ -49,6 +49,7 @@ end
 function automation_reset_faint()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_faint ］")
     automation.reconnect = nil
+    automation.idle = false
     local l = wait_line(nil, 180, {StopEval=true}, 9, "^慢慢地一阵眩晕感传来，你终于又有了知觉....$|^鬼门关 - $")
     if l == false then
         return -1
@@ -65,6 +66,7 @@ end
 function automation_reset_die()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_die ］")
     automation.reconnect = nil
+    automation.idle = false
     set.append(automation.statistics.death, time.epoch())
     local l = wait_line(nil, 60, nil, 10, "^鬼卒将你的「阴司路引」收了起来，伸手指了指关门，好象是叫你进去。$|"..
                                           "^你被吓了一大跳，连滚代爬地跑进关内去了。$|"..
@@ -165,8 +167,7 @@ function flow()
 
     repeat
         collectgarbage("collect")
-        collectgarbage("collect")
-        collectgarbage("collect")
+        automation.idle = false
         local rc = flow_prepare_job()
         if rc ~= nil then
             return rc
