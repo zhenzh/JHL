@@ -199,14 +199,18 @@ function feima_job_p3()
     if rc == nil then
         return feima_job_settle()
     end
+    if rc >= 0 then
+        if recover(config.job_nl) ~= 0 then
+            return -1
+        end
+    end
     return rc
 end
 
 function feima_job_p4()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_p4 ］")
     if var.job ~= nil then
-        if var.job.thread_suspend == false and 
-           automation.skill ~= nil then
+        if var.job.thread_suspend == false and automation.skill ~= nil then
             run("set 中断事件")
         end
         if var.job.thread ~= nil then
@@ -220,6 +224,11 @@ function feima_job_p4()
     local rc = feima_job_goto_maxingkong()
     if rc == nil then
         rc = feima_job_abandon_job()
+    end
+    if rc >= 0 then
+        if recover(config.job_nl) ~= 0 then
+            return -1
+        end
     end
     return rc
 end

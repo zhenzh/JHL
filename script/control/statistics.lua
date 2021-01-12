@@ -1,27 +1,21 @@
-function statistics(...)
-    local mode,shift = ...
+function statistics(mode, shift, classify)
     local list = { end_time = time.epoch(), death = 0, idle = 0, connect = 0, reset = 0 }
-    if select("#", ...) == 1 then
-        if type(select(1, ...)) ~= "number" then
-            show("统计时间不正确", "red")
-            return false
-        end
-        mode = "-s"
-        shift = select(1, ...)
-    elseif select("#", ...) == 0 then
-        mode = "-s"
-        shift = 1
-    end
-    if type(shift) == "number" then
-        list.begin_time = list.end_time - 3600000 * shift
-    else
+    if type(shift) ~= "number" then
         show("统计时间不正确", "red")
         return false
     end
-    local func = statistics_summary
-    if mode == "-l" then
-        func = statistics_list
+    list.begin_time = list.end_time - 3600000 * shift
+    list = statistics_get_range(list)
+    if mode == "summary" then
+        return statistics_summary(list)
+    elseif mode == "list" then
+        return statistics_list(list)
+    elseif mode == "classify" then
+        return statistics_classify(list, classify)
     end
+end
+
+function statistics_get_range(list)
     for _,v in ipairs({"death", "idle", "connect", "reset"}) do
         for i=#automation.statistics[v],1,-1 do
             if automation.statistics[v][i] >= list.begin_time then
@@ -35,7 +29,7 @@ function statistics(...)
         if automation.statistics[i].end_time >= list.begin_time then
             set.insert(list, 1, automation.statistics[i])
         else
-            return func(list)
+            return list
         end
     end
     for i=time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$")-86400000,list.begin_time-86399999,-86400000 do
@@ -50,7 +44,7 @@ function statistics(...)
             end
         end
     end
-    return func(list)
+    return list
 end
 
 function statistics_summary(list)
@@ -141,3 +135,17 @@ function statistics_list(list)
     end
     show(string.format(format, "", "", "总计", "-", tostring(sum.exp), tostring(sum.pot), "", time.tohms(sum.elapsed)), "olivedrab", "ivory")
 end
+
+function statistics_classify(list, classify)
+    local sum = { exp = 0, pot = 0, elapsed = 0 }
+    for _,v in ipairs(list) do
+        if v.name == classify then
+            sum.exp = sum.exp + v.exp
+            sum.pot = sum.pot + v.pot
+            sum.elapsed = sum.elapsed + v.elapsed
+        end
+    end
+    return sum.exp,sum.pot,sum.elapsed
+end
+
+show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

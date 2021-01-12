@@ -102,20 +102,24 @@ alias.add("sync", [[^\s*sync\s*$]], [[
 ]])
 
 alias.add("statistics", [[^\s*stat(?:\s+([\-ls]+)\s+(\d+)|\s+([\-ls]+)|\s+(\d+)|)\s*$]], [[
-    local mode,shift = matches[2],matches[3]
+    local mode,shift = (matches[2] or ''),(matches[3] or '')
+    local mode_map = {
+        ["-s"] = "summary",
+        ["-l"] = "list"
+    }
     if mode == "" then
-        mode = matches[4]
+        mode = matches[4] or ""
     end
     if mode == "" then
-        shift = matches[5]
+        shift = matches[5] or ""
     end
     if mode == "" then
-        mode = nil
+        mode = "-s"
     end
     if shift == "" then
-        shift = nil
+        shift = 1
     end
-    statistics(mode, tonumber(shift or 1))
+    statistics(mode_map[mode], shift)
 ]])
 
 alias.add("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[

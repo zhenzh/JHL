@@ -5,9 +5,9 @@ config = {
     jobs = {
         "门派任务",     ["门派任务"]     = { active = false,  enable = true,  contribution = 150 },
         "寻访任务",     ["寻访任务"]     = { active = false,  enable = false },
-        "斧头帮任务",   ["斧头帮任务"]   = { active = true,  enable = false, enemy = 0, confirm = {}, exclude = {} },
-        "嵩山任务",     ["嵩山任务"]     = { active = true,  enable = true, limit = 4000 },
-        "飞马镖局",     ["飞马镖局"]     = { active = true,  enable = false },
+        "斧头帮任务",   ["斧头帮任务"]   = { active = true,  enable = true, enemy = 0, confirm = {}, exclude = {} },
+        "嵩山任务",     ["嵩山任务"]     = { active = true,  enable = true, limit = 5000 },
+        "飞马镖局",     ["飞马镖局"]     = { active = true,  enable = true },
     },
     skill_prior = false,  -- 任务间隙是否自动练功
     save_pots = true,    -- 是否自动储存潜能

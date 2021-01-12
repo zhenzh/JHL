@@ -1,5 +1,4 @@
 require "skills"
-require "statistics"
 
 global.phase = {
     ["挂起"] = 0,
@@ -124,8 +123,8 @@ end
 
 function automation_idle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_idle ］")
-    set.append(automation.statistics.idle, time.epoch())
     if automation.idle == true then
+        set.append(automation.statistics.idle, time.epoch())
         automation_reset()
     end
     automation.idle = true
@@ -255,8 +254,12 @@ function flow_do_job()
     automation.phase = global.phase["任务"]
     local rc
     if config.jobs[config.jobs[global.jid]].enable == true and config.jobs[config.jobs[global.jid]].active == true then
-        rc = config.jobs[config.jobs[global.jid]].func()
-        if rc < 0 then
+        if config.jobs[config.jobs[global.jid]].limit == nil then
+            rc = config.jobs[config.jobs[global.jid]].func()
+        elseif statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+            rc = config.jobs[config.jobs[global.jid]].func()
+        end
+        if (rc or 0) < 0 then
             return -1
         end
     end
@@ -270,6 +273,11 @@ function flow_do_job()
         end
         return 0
     else
+        if config.jobs[global.jid] == "嵩山任务" then
+            if statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+                global.jid = global.jid - 1
+            end
+        end
         if global.jid == #config.jobs then
             global.jid = 0
         end
@@ -712,7 +720,11 @@ function privilege_job(job)
             return false
         end
         if config.jobs[v].enable == true and config.jobs[v].active == true then
-            return true
+            if config.jobs[config.jobs[global.jid]].limit == nil then
+                return true
+            elseif statistics("-c", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+                return true
+            end
         end
     end
 end

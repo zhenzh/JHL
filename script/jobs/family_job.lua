@@ -213,6 +213,9 @@ function family_job_p3()
         config.jobs["门派任务"].phase = phase["任务获取"]
         return family_job()
     else
+        if recover(config.job_nl) ~= 0 then
+            return -1
+        end
         return
     end
 end
