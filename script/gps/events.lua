@@ -1475,7 +1475,7 @@ function xueshan()
     if #env.current.id == 0 then
         return 1,"重新定位"
     end
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         var.goto.pause = true
         local l = wait_line(nil, 1, {StopEval=true}, 20, "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                                                          "^你的眼前一黑，接著什么也不知道了....$|"..

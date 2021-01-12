@@ -637,7 +637,7 @@ function family_job_reset_enemy(dir)
         if enemy_leave == true then
             return family_job_exec()
         end
-        if global.flood > config.flood_control then
+        if global.flood > config.flood then
             wait(1)
         else
             wait(0.1)
@@ -910,7 +910,7 @@ end
 
 function family_job_query_contribution()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_query_contribution ］")
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         wait(1)
     end
     local l = wait_line("ask "..family_info[profile.family].master_id.." about 贡献度", 30, nil, nil, "^\\S+对你说道：你为\\S+所做的贡献为(\\S+)点。|"..

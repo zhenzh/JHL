@@ -591,7 +591,7 @@ end
 
 function drop_stack(carry)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ drop_stack ］参数：carry = "..table.tostring(carry))
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         wait(1)
         global.flood = 0
     end
@@ -908,7 +908,7 @@ function feed_drink()
     elseif rc == 1 then
         return
     end
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         wait(1)
         global.flood = 0
     end
@@ -1000,7 +1000,7 @@ function feed_eat()
     if rc ~= nil then
         return rc
     end
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         wait(1)
         global.flood = 0
     end
@@ -1323,7 +1323,7 @@ function zero_mole(target)
     if run_score() < 0 then
         return -1
     end
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         wait(1)
     end
     return zero_mole(target)

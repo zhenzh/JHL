@@ -126,7 +126,7 @@ function zuanyan_num_i(i)
         if rc ~= nil then
             return zuanyan_refresh_hp(rc)
         end
-        if global.flood > config.flood_control then
+        if global.flood > config.flood then
             wait(1)
         end
         if break_event() == true then
@@ -335,7 +335,7 @@ function lian_num_ij(i, j)
         if rc ~= nil then
             return lian_refresh_hp(rc)
         end
-        if global.flood > config.flood_control then
+        if global.flood > config.flood then
             wait(1)
         end
         if break_event() == true then

@@ -490,7 +490,7 @@ function goto_exec(current_id)
             pause_msg = "地图事件"
             break
         end
-        if flood > config.flood_control then
+        if flood > config.flood then
             if #path_overflow == 0 and (var.goto.path[next_id].last == 3039 or
                set.has(maze, next_id) == true and set.has(maze, var.goto.path[next_id].last) == true) then
                 set.append(path, var.goto.path[next_id].step)
@@ -499,7 +499,7 @@ function goto_exec(current_id)
             else
                 set.append(path_overflow, var.goto.path[next_id].step)
                 overflow_id = next_id
-                if flood > config.flood_control + 10 then
+                if flood > config.flood + 10 then
                     path_overflow = {}
                     pause_msg = "稍事休息"
                     break
