@@ -28,6 +28,7 @@ require "info"
 require "action"
 require "admin"
 require "statistics"
+require "snap"
 
 timer.add("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
 
