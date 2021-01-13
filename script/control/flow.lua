@@ -166,7 +166,6 @@ function flow()
     automation.phase = global.phase['空闲']
 
     repeat
-        collectgarbage("collect")
         automation.idle = false
         local rc = flow_prepare_job()
         if rc ~= nil then

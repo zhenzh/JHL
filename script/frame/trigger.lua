@@ -214,7 +214,7 @@ function trigger.enable_group(group)
         set.append(triggers.pended, {trigger.enable_group, group})
         return nil
     end
-    
+
     if triggers.group[group] == nil then
         return false
     end
@@ -246,7 +246,7 @@ function trigger.delete_group(group)
         set.append(triggers.pended, {trigger.delete_group, group})
         return nil
     end
-    
+
     if triggers.group[group] == nil then
         return false
     end
