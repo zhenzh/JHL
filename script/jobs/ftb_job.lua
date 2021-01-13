@@ -204,7 +204,6 @@ function ftb_job_refresh()
             return
         else
             timer.add("ftb_job_cd", 900, "ftb_job_active()", "ftb_job", {Enable=true, OneShot=true})
-            print("ftb_job_cd")
             return
         end
     end
@@ -540,7 +539,7 @@ end
 
 function ftb_job_wait_info()
     config.jobs["斧头帮任务"].enemy = chs2num(get_matches(1))
-    if get_matches(2) == config.jobs["斧头帮任务"].info then
+    if config.jobs["斧头帮任务"].info == get_matches(2) then
         config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy - (config.jobs["斧头帮任务"].progress or 0)
         if config.jobs["斧头帮任务"].enemy == 0 then
             config.jobs["斧头帮任务"].enemy = 1

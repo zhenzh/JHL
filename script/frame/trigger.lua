@@ -84,7 +84,6 @@ function trigger.add(name, send, group, options, order, pattern)
        name == "fire" or 
        name == "pended" or 
        name == "update" then
-        print("invalid name: "..name)
         return nil
     end
     if name == nil or name == "" then

@@ -454,6 +454,7 @@ function songshan_job_order_npc(room, npc)
     end
     local l = wait_line("ask "..string.lower(npc[2]).." "..tostring(var.job.num[npc[1]]).." about 动身", 30, nil, nil, "^你向"..npc[1].."打听有关「动身」的消息。$|"..
                                                                                                                         "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
+                                                                                                                        "^\\S+说道：我现在正忙着呢，有事儿等会再说吧。$|"..
                                                                                                                         "^这里没有 .+ 这个人。$|"..
                                                                                                                         "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
@@ -473,6 +474,8 @@ function songshan_job_order_npc(room, npc)
         if wait_no_busy("halt") < 0 then
             return -1
         end
+    elseif string.match(l[0], "有事儿等会") then
+        wait(1)
     else
         var.job.num[npc[1]] = var.job.num[npc[1]] - 1
     end

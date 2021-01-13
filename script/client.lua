@@ -133,7 +133,7 @@ function show(msg, fcolor, bcolor, breaker)
     cecho("<:"..bcolor.."><"..fcolor..">"..msg..(breaker or "\n"))
 end
 
-function print(parameter)
+function mprint(parameter)
     if type(parameter) == "nil" then
         show(" 空字符："..tostring(parameter), "gray")
     elseif type(parameter) == "string" then
