@@ -57,10 +57,10 @@ function hengshan_job_return(rc)
     if var.job == nil then
         return rc
     end
-    append_statistics("恒山任务")
+    trigger.disable_group("hengshan_job")
     config.jobs["恒山任务"].confirm = nil
     config.jobs["恒山任务"].area = nil
-    trigger.disable_group("hengshan_job")
+    append_statistics("恒山任务")
     var.job = nil
     return rc
 end
@@ -142,7 +142,7 @@ function hengshan_job_goto_dingxian(mode)
 end
 
 function hengshan_job_refresh()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_refresh ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ hengshan_job_refresh ］")
     local l = wait_line("ask zuo lengchan about job", 30, nil, nil, "^你向左冷禅打听有关「job」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
                                                                     "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..

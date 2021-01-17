@@ -1,16 +1,14 @@
 global = global or { flood = 0, uid = {}, buffer = {}, regex = {} }
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
-config = config or {}
 var = var or {}
 
-local HOME = string.gsub(debug.getinfo(1).source:gsub("^@", ""), "script/main.lua", "")
 function get_work_path()
-    return HOME.."profiles/JHL/"
+    return HOME
 end
 
 function get_script_path()
-    return HOME.."script/"
+    return SCRIPT
 end
 
 package.path = package.path..";"..
@@ -21,6 +19,7 @@ get_script_path().."gps/?.lua;"..
 get_script_path().."control/?.lua;"..
 get_script_path().."jobs/?.lua"
 
+require "config"
 require "client"
 require "common"
 require "gps"
@@ -58,11 +57,6 @@ if automation.timer["invalid_ask_yuluwan"] ~= nil then
 end
 
 automation.skill = nil
-config = automation.config
-automation.config = nil
-if config == nil or table.is_empty(config) then
-    require "config"
-end
 
 for k,v in pairs(automation.items) do
     items[k] = v
@@ -120,12 +114,19 @@ function login()
 end
 
 function load_jobs()
-    require "family_job"
-    require "feima_job"
-    require "ftb_job"
-    require "songshan_job"
+    if automation.config == nil then
+        if io.exists(get_work_path().."char.cfg") then
+            loadfile(get_work_path().."char.cfg")()
+        else
+            return -1
+        end
+    else
+        config = automation.config
+        automation.config = nil
+    end
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
+            loadstring("require '"..config.jobs[v].name.."'")()
             config.jobs[v].efunc()
         else
             if config.jobs[v].dfunc ~= nil then

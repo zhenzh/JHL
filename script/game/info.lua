@@ -155,7 +155,7 @@ trigger.add("get_profile_l12", "get_profile_l12(get_matches(1), get_matches(2))"
 trigger.add("get_profile_l13", "get_profile_l13(get_matches(1))", "信息采集", {Enable=true}, 5, "^│授业师父：(\\S+)\\s+前生仇敌：(?:|\\S+\\(\\w+ \\w+\\))\\s*│$")
 trigger.add("get_carryon_empty", "get_carryon_empty()", "信息采集", {Enable=true}, 5, "^目前你身上没有任何东西。$")
 trigger.add("get_carryon_summary", "get_carryon_summary(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^你身上带着(\\S+)件物品\\(负重\\s*(\\d+)%\\)：$")
-trigger.add("get_carryon_item", "get_carryon_item(get_matches(1))", "信息采集", {Enable=false}, 5, "^(?:\\s+|□)(\\S+\\([ \\w]+\\))")
+trigger.add("get_carryon_item", "get_carryon_item(get_matches(1))", "信息采集", {Enable=false}, 5, "^(?:\\s+|□|\\s+\\S+ )(\\S+\\([ \\w]+\\))")
 trigger.add("get_carryon_wield", "get_carryon_wield(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^□(\\S+)\\(([ \\w]+)\\)$")
 trigger.add("get_carryon_detail", "get_carryon_detail()", "信息采集", {Enable=false}, 5, "^你\\(你\\)身上携带物品的别称如下\\(右方\\)：$")
 trigger.add("get_carryon_list", "get_carryon_list(get_matches(1), get_matches(2))", "信息采集", {Enable=false}, 5, "^(\\S+)\\s+=\\s+([, \\w]+)$")
@@ -557,6 +557,52 @@ function get_profile_l13(master)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l13 ］参数：master = "..tostring(master))
     profile.master = master
     map_adjust("师父", profile.master)
+end
+
+function get_longxiang_level(level)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_level ］参数：level = "..tostring(level))
+    profile.longxiang.level = chs2num(level)
+    if profile.longxiang.level > 10 then
+        profile.longxiang.cd = 10800
+    else
+        profile.longxiang.cd = 3600
+    end
+end
+
+function get_longxiang_status(progress, need)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_status ］参数：progress = "..tostring(progress)..", need = "..tostring(need))
+    profile.longxiang.progress = tonumber(progress)
+    profile.longxiang.target = profile.longxiang.progress + tonumber(need)
+    if profile.longxiang.progress == profile.longxiang.target then
+        trigger.delete("get_longxiang_progress")
+        trigger.delete("get_longxiang_pozhang")
+        if trigger.is_exist("longxiang_pozhang_cd") == false then
+            config.jobs["龙象破障"].active = true
+        end
+    else
+        config.jobs["龙象破障"].active = false
+    end
+end
+
+function get_longxiang_progress()
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_progress ］")
+    profile.longxiang.progress = profile.longxiang.progress + 1
+    if profile.longxiang.progress == profile.longxiang.target then
+        trigger.delete("get_longxiang_progress")
+        trigger.delete("get_longxiang_pozhang")
+        if trigger.is_exist("longxiang_pozhang_cd") == false then
+            config.jobs["龙象破障"].active = true
+        end
+    end
+end
+
+function get_longxiang_pozhang()
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_pozhang ］")
+    profile.longxiang.progress = (profile.longxiang.target or 0)
+    trigger.delete("get_longxiang_progress")
+    if trigger.is_exist("longxiang_pozhang_cd") == false then
+        config.jobs["龙象破障"].active = true
+    end
 end
 
 -- 物品信息

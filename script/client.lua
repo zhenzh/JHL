@@ -77,6 +77,7 @@ function gag()
 end
 
 function reset()
+    automation.config = nil
     if automation.thread ~= nil then
         automation.thread = nil
         automation.jid = (var or {}).jid
@@ -110,7 +111,7 @@ function window_wrap()
 end
 
 function minimal_resources()
-    setConsoleBufferSize(200000, 1000)
+    setConsoleBufferSize(100000, 1000)
 end
 
 function get_last_cmd()

@@ -62,7 +62,7 @@ function ftb_job_return(rc)
     if var.job == nil then
         return rc
     end
-    append_statistics("斧头帮任务")
+    trigger.disable_group("ftb_job")
     config.jobs["斧头帮任务"].info = nil
     config.jobs["斧头帮任务"].dest = nil
     config.jobs["斧头帮任务"].around = nil
@@ -71,7 +71,7 @@ function ftb_job_return(rc)
     config.jobs["斧头帮任务"].enemy = 0
     config.jobs["斧头帮任务"].confirm = {}
     config.jobs["斧头帮任务"].exclude = {}
-    trigger.disable_group("ftb_job")
+    append_statistics("斧头帮任务")
     var.job = nil
     return rc
 end

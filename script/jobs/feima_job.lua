@@ -108,14 +108,14 @@ function feima_job_return(rc)
     if var.job == nil then
         return rc
     end
-    append_statistics("飞马镖局")
+    trigger.disable_group("feima_job")
+    trigger.disable_group("feima_job_active")
     config.jobs["飞马镖局"].biaoche = nil
     config.jobs["飞马镖局"].npc = nil
     config.jobs["飞马镖局"].dest = nil
     config.jobs["飞马镖局"].recover = nil
     config.jobs["飞马镖局"].path = nil
-    trigger.disable_group("feima_job")
-    trigger.disable_group("feima_job_active")
+    append_statistics("飞马镖局")
     var.job = nil
     return rc
 end

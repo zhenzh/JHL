@@ -130,9 +130,9 @@ function family_job_return(rc)
     if var.job == nil then
         return rc
     end
-    append_statistics("门派任务")
-    config.jobs["门派任务"].active = false
     trigger.disable_group("family_job_active")
+    config.jobs["门派任务"].active = false
+    append_statistics("门派任务")
     var.job = nil
     return rc
 end
@@ -161,6 +161,9 @@ function family_job_p1()
         end
         config.jobs["门派任务"].phase = config.jobs["门派任务"].phase or 0
         timer.add("family_job_inactive", 3, "family_job_inactive()", "family_job", {Enable=true, OneShot=true})
+    end
+    if trigger.is_exist("get_longxiang_status") == true then
+        run("ask jiumozhi about 熟练度")
     end
     if config.jobs["门派任务"].phase <= phase["任务获取"] then
         rc = family_job_wait_info()

@@ -574,6 +574,7 @@ function drop_nonstack(carry, seq)
     end
     local l = wait_line("drop "..carry.id..seq, 30, {StopEval=true}, 10, "^你现在正忙着呢。$|"..
                                                                          "^你丢下\\S+。$|"..
+                                                                         "^你将\\S+从背上放了下来，躺在地上。$|"..
                                                                          "^你身上没有这样东西。$")
     if l == false then
         return -1

@@ -71,7 +71,7 @@ alias.add("query", [[^\s*query (.*)\s*$]], [[
     show(set.tostring(parse(matches[2])), "pink")
 ]])
 
-alias.add("auto", [[^\s*auto(?:\s+(\d+)|\s*)$]], [[
+alias.add("auto", [[^\s*auto(?:\s+(-\w+)|\s*)$]], [[
     if automation.thread ~= nil then
         return
     end    
@@ -80,6 +80,7 @@ alias.add("auto", [[^\s*auto(?:\s+(\d+)|\s*)$]], [[
         fresh_statistics()
         global.jid = 1
         automation.jid = nil
+        automation.config = nil
     end
     coroutine.wrap(
         function ()
