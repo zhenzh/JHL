@@ -8,11 +8,11 @@ config = {
     mole_limit  = 0,            -- 控制神上限
     job_nl      = "double",     -- 任务所需内力, 可直接写具体数字
     jobs = {
-        "门派任务",     ["门派任务"]     = { active = false,  enable = true,  contribution = 150 },
-        "寻访任务",     ["寻访任务"]     = { active = false,  enable = false },
-        "斧头帮任务",   ["斧头帮任务"]    = { active = true,  enable = true, enemy = 0, confirm = {}, exclude = {} },
-        "嵩山任务",     ["嵩山任务"]     = { active = true,  enable = true, limit = 5000 },
-        "飞马镖局",     ["飞马镖局"]     = { active = true,  enable = true },
+        "门派任务",     ["门派任务"]     = { name = "family_job", active = false, enable = true, echoose = {}, contribution = 150 },
+        "寻访任务",     ["寻访任务"]     = { name = "visit_job", active = false, enable = false },
+        "斧头帮任务",   ["斧头帮任务"]    = { name = "ftb_job", active = true, enable = true, enemy = 0, confirm = {}, exclude = {} },
+        "嵩山任务",     ["嵩山任务"]     = { name = "songshan_job", active = true, enable = true, limit = 5000 },
+        "飞马镖局",     ["飞马镖局"]     = { name = "feima_job", active = true, enable = true },
     },
     zuanyan = {     -- 钻研技能
         "parry",    ["parry"]   = { enable = "", place = 1653 },

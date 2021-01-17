@@ -64,6 +64,7 @@ map_attr.cost = map_attr.cost or {
     ["drop eluan shi;swim up"] = 3,        ["drop eluan shi;swim light"] = 3,     ["north;north;north;north;north;north"] = 6,
     ["wield jian;strike wall;out"] = 3,    ["say 青衫磊落险峰行;northeast"] = 2,    ["south;south;south;south;south;south"] = 6,
     ["go1826"] = 6,                        ["go1327"] = 6,                        ["yell boat"] = 15,
+    ["go1984"] = 17,
     ["push left;push left;push left;push right;push right;push right;push front;enter"] = 8,
     ["southwest;southeast;north;south;west;east;west;east;east;south;west;north;northwest;north"] = 14,
 }
@@ -929,11 +930,11 @@ calibration = {
     ["天龙殿壁画"] = {
         ["启用"] = function()
             map[434].links["enter picture"] = 1854
-            calibration["灵鹫索桥"][1] = "禁用"
+            calibration["天龙殿壁画"][1] = "禁用"
         end,
         ["禁用"] = function()
              map[434].links["enter picture"] = nil
-             calibration["灵鹫索桥"][1] = "禁用"
+             calibration["天龙殿壁画"][1] = "禁用"
         end,
     },
 

@@ -127,7 +127,9 @@ function load_jobs()
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
             loadstring("require '"..config.jobs[v].name.."'")()
-            config.jobs[v].efunc()
+            if config.jobs[v].efunc ~= nil then
+                config.jobs[v].efunc() 
+            end
         else
             if config.jobs[v].dfunc ~= nil then
                 config.jobs[v].dfunc()
