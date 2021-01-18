@@ -50,6 +50,10 @@ local enemy_choose = { -- 敌人选择
     ["关外胡家"] =   { ["空手"] = false, ["长剑"] = false, ["钢刀"] = false },
 }
 
+for k,v in pairs(config.jobs["门派任务"].echoose) do
+    enemy_choose[k] = v
+end
+
 local phase = {
     ["任务获取"] = 1,
     ["任务执行"] = 2,

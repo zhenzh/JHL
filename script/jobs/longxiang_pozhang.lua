@@ -1,10 +1,4 @@
-local longxiang_pozhang_nenghai_area = {
-    1144,1295,1279,1280,1294,1286,1294,1280,1281,1282,1283,1284,1285,1286,1287,1288,1289,1290,1291,1292,
-    1293,1296,22,23,24,23,22,17,18,19,21,19,18,1,18,17,16,15,14,13,12,10,26,10,11,10,9,8,7,3,120,3,4,6,
-    4,5,4,3,2,1,87,89,90,91,90,89,87,88,87,1,28,85,84,82,83,82,81,46,28,29,30,29,31,32,33,34,35,42,35,41,
-    35,39,40,36,39,36,38,36,37,36,35,34,33,32,31,43,44,45,44,46,47,48,49,74,75,76,77,78,77,76,75,79,80,
-    79,75,74,49,50,51,52,51,59,51,50,60,61,60,50,49,70,71,70,69,72,73,72,69,62,63,64,68,64,65,64,67,66
-}
+local longxiang_pozhang_nenghai_area = { 647,409,410,411,412,413,416,415,414,1853,1854 }
 
 local phase = {
     ["任务获取"] = 1,
@@ -16,8 +10,6 @@ function longxiang_pozhang()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang ］")
     automation.idle = false
     var.job = var.job or {name = "龙象破障"}
-    var.job.statistics = var.job.statistics or { name = "龙象破障" }
-    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
     jia_min()
     if wield(config.fight["通用"].weapon) < 0 then
         return -1
@@ -29,13 +21,7 @@ function longxiang_pozhang()
         end
     end
     if config.jobs["龙象破障"].phase == phase["任务执行"] then
-        local rc = longxiang_pozhang_p2()
-        if rc ~= nil then
-            return longxiang_pozhang_return(rc)
-        end
-    end
-    if config.jobs["龙象破障"].phase == phase["任务完成"] then
-        return longxiang_pozhang_return(longxiang_pozhang_p3())
+        return longxiang_pozhang_return(longxiang_pozhang_p2())
     end
 end
 
@@ -45,8 +31,6 @@ function longxiang_pozhang_return(rc)
         return rc
     end
     trigger.delete_group("longxiang_pozhang")
-    profile.longxiang.elapsed = profile.longxiang.elapsed + var.statistics.elapsed
-    append_statistics("龙象破障")
     var.job = nil
     return rc
 end
@@ -136,9 +120,13 @@ function longxiang_pozhang_refresh()
             end
             config.jobs["龙象破障"].phase = phase["任务完成"]
             return longxiang_pozhang_p3()
+        elseif l[0] == "金轮法王挥了挥手：你去吧，为师当年却是意志未坚，未能得到上师垂青，中原之行，才一败涂地！" then
+            if wait_no_busy() < 0 then
+                return -1
+            end
         end
-        if timer.exits("longxiang_pozhang_cd") == false then
-            timer.add("longxiang_pozhang_cd", profile.longxiang.cd, "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
+        if timer.is_exist("longxiang_pozhang_cd") == false then
+            timer.add("longxiang_pozhang_cd", (profile.longxiang.cd or 3600), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
         end
         config.jobs["龙象破障"].phase = phase["任务执行"]
         return
@@ -188,7 +176,7 @@ function longxiang_pozhang_kneel_nenghai()
             return -1
         end
     elseif l[0] == "能海对你继续说道：谁料到，唉……我密宗近年来日益势微，恐法统断绝，你为我密宗弟子，当继我密宗衣钵。随我来。" then
-        if wait_line(nil, 30, nil, nil, "^一路且歌且行，盛雪布衣徐徐消失在无数漫天飞雪中。$") == false then
+        if wait_line("follow none", 30, nil, nil, "^一路且歌且行，盛雪布衣徐徐消失在无数漫天飞雪中。$") == false then
             return -1
         end
         return
@@ -231,22 +219,34 @@ function longxiang_pozhang_poguan()
     elseif l[0] == "你跑哪里去了" then
     else
         trigger.add("longxiang_pozhang_idle", "automation.idle = false", "longxiang_pozhang", {Enable=true}, nil, "^你控制体内的龙象般若内功，缓缓游走")
-        l = wait_line(nil, 1800, nil, nil, "^你赶紧散去凝聚的内劲，方才躲过走火入魔的厄运。$|"..
+        l = wait_line(nil, 1800, nil, nil, "^你心魔骤起，无法自制。$|"..
                                            "^你已经成功的领悟了龙象般若功\\S+$")
         if l == false then
             return -1
         end
         profile.longxiang.pozhang = profile.longxiang.pozhang + 1
         run("set pozhang "..tostring(profile.longxiang.pozhang))
-        if l[0] ~= "你赶紧散去凝聚的内劲，方才躲过走火入魔的厄运。" then
+        config.jobs["龙象破障"].active = false
+        if l[0] == "你心魔骤起，无法自制。" then
+            l = wait_line(nil, 30, nil, nil, "^事已至此，你已知不可为，心中默念：于尔所世，无我相，无人相，无众生相，无寿者相,当舍此身证菩提。$|"..
+                                             "^你赶紧散去凝聚的内劲，方才躲过走火入魔的厄运。$")
+            if l == false then
+                return -1
+            elseif l[0] == "事已至此，你已知不可为，心中默念：于尔所世，无我相，无人相，无众生相，无寿者相,当舍此身证菩提。" then
+                if wait_line(nil, 30, nil, nil, "^你倒在地上，挣扎了几下就死了。$") == false then
+                    return -1
+                end
+                config.jobs["龙象破障"].phase = phase["任务完成"]
+                return 0
+            end
+        else
             timer.delete("longxiang_pozhang_cd")
             profile.longxiang.progress = 0
             profile.longxiang.level = profile.longxiang.level + 1
-            config.jobs["龙象破障"].active = false
         end
     end
     config.jobs["龙象破障"].phase = phase["任务完成"]
-    return
+    return longxiang_pozhang_p3()
 end
 
 function longxiang_pozhang_active()
@@ -254,6 +254,6 @@ function longxiang_pozhang_active()
     config.jobs["龙象破障"].phase = phase["任务更新"]
 end
 
-config.jobs["龙象破障"] = config.jobs["龙象破障"] or { enable = true, active = true }
+config.jobs["龙象破障"] = config.jobs["龙象破障"] or { name = "longxiang_pozhang", active = true, enable = true }
 config.jobs["龙象破障"].func = longxiang_pozhang
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

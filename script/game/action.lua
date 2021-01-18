@@ -559,8 +559,7 @@ end
 
 function drop_nonstack(carry, seq)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ drop_nonstack ］参数：carry = "..table.tostring(carry)..", seq = "..tostring(seq))
-    if var.drop.count == 0 or 
-       carry.count == 0 then
+    if var.drop.count == 0 or carry.count == 0 then
         if run_i() < 0 then
             return -1
         end
@@ -575,6 +574,7 @@ function drop_nonstack(carry, seq)
     local l = wait_line("drop "..carry.id..seq, 30, {StopEval=true}, 10, "^你现在正忙着呢。$|"..
                                                                          "^你丢下\\S+。$|"..
                                                                          "^你将\\S+从背上放了下来，躺在地上。$|"..
+                                                                         "^这样东西不能随意丢弃。$|"..
                                                                          "^你身上没有这样东西。$")
     if l == false then
         return -1
@@ -583,6 +583,8 @@ function drop_nonstack(carry, seq)
         return drop_nonstack(carry, seq)
     elseif l[0] == "你身上没有这样东西。" then
         carry.count = 0
+    elseif l[0] == "这样东西不能随意丢弃。" then
+        return
     else
         var.drop.count = var.drop.count - 1
         carry.count = carry.count - 1
@@ -1295,6 +1297,7 @@ function zero_mole(target)
         target = 0
     end
     if math.abs(profile.mole) <= target then
+        wait(5)
         if wait_no_busy() < 0 then
             return -1
         end

@@ -50,7 +50,7 @@ end
 function statistics_summary(list)
     local summary = { total = {exp = 0, pot = 0, elapsed = 0} }
     for _,v in ipairs(config.jobs) do
-        if config.jobs[v].enable == true then
+        if config.jobs[v].enable == true and v ~= "龙象破障" then
             set.append(summary, { name = v, exp = 0, pot = 0, elapsed = 0, success = 0, fail = 0 })
             summary[v] = set.last(summary)
         end
@@ -123,15 +123,17 @@ function statistics_list(list)
     local font_color,back_color = "yellow","dimgray"
     local sum = { exp = 0, pot = 0, elapsed = 0 }
     for _,v in ipairs(list) do
-        if back_color == "black" then
-            back_color = "dimgray"
-        else
-            back_color = "black"
+        if v.name ~= "龙象破障" then
+            if back_color == "black" then
+                back_color = "dimgray"
+            else
+                back_color = "black"
+            end
+            show(string.format(format, "", time.todate(v.end_time, "%Y/%m/%d %H:%M:%S"), v["name"], (v.result or "-"), tostring(v.exp), tostring(v.pot), "", time.tohms(v.elapsed)), font_color, back_color)
+            sum.exp = sum.exp + v.exp
+            sum.pot = sum.pot + v.pot
+            sum.elapsed = sum.elapsed + v.elapsed
         end
-        show(string.format(format, "", time.todate(v.end_time, "%Y/%m/%d %H:%M:%S"), v["name"], (v.result or "-"), tostring(v.exp), tostring(v.pot), "", time.tohms(v.elapsed)), font_color, back_color)
-        sum.exp = sum.exp + v.exp
-        sum.pot = sum.pot + v.pot
-        sum.elapsed = sum.elapsed + v.elapsed
     end
     show(string.format(format, "", "", "总计", "-", tostring(sum.exp), tostring(sum.pot), "", time.tohms(sum.elapsed)), "olivedrab", "ivory")
 end

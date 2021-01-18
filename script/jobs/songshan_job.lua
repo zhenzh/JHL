@@ -63,6 +63,10 @@ function songshan_job_return(rc)
     config.jobs["嵩山任务"].discuss = nil
     config.jobs["嵩山任务"].arrest = nil
     append_statistics("嵩山任务")
+    if ((var.statistics or {}).exp or 10) < 10 then
+        config.jobs["嵩山任务"].active = false
+        timer.add("songshan_job_cd", 3600, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})
+    end
     var.job = nil
     return rc
 end
@@ -171,7 +175,7 @@ function songshan_job_refresh()
                                          "^左冷禅说道：叫你去福建你怎么还在这里闲逛？$|"..
                                          "^左冷禅说道：去了这么久才回来，那些恒山派的女尼早已脱身了！$|"..
                                          "^左冷禅对着你竖起了右手大拇指，好样的。$|"..
-                                         "^左冷禅说道：我辈学武之人，最讲究的是正邪是非之辨，老匹夫居然和妖魔勾搭成奸，实已犯了武林的大忌。$")
+                                         "^左冷禅说道：我辈学武之人，最讲究的是正邪是非之辨，\\S+居然和妖魔勾搭成奸，实已犯了武林的大忌。$")
         if l == false then
             return -1
         elseif l[0] == "左冷禅对着你竖起了右手大拇指，好样的。" then

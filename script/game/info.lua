@@ -563,6 +563,9 @@ function get_longxiang_level(level)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_level ］参数：level = "..tostring(level))
     profile.longxiang.level = chs2num(level)
     if profile.longxiang.level > 10 then
+        if timer.is_exist("longxiang_pozhang_cd") == true then
+            timer.add("longxiang_pozhang_cd", (10800 - timer.remain("longxiang_pozhang_cd")), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
+        end
         profile.longxiang.cd = 10800
     else
         profile.longxiang.cd = 3600
@@ -572,7 +575,23 @@ end
 function get_longxiang_status(progress, need)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_status ］参数：progress = "..tostring(progress)..", need = "..tostring(need))
     profile.longxiang.progress = tonumber(progress)
-    profile.longxiang.target = profile.longxiang.progress + tonumber(need)
+    profile.longxiang.target = profile.longxiang.progress + math.max(0, tonumber(need))
+    if profile.longxiang.level == nil then
+        if profile.longxiang.target > 62209 then
+            profile.longxiang.level = 12
+        elseif profile.longxiang.target == 62209 then
+            profile.longxiang.level = 11
+        else
+            profile.longxiang.level = 10
+        end
+        if profile.longxiang.level > 10 then
+            if timer.is_exist("longxiang_pozhang_cd") == true then
+                timer.add("longxiang_pozhang_cd", (10800 - timer.remain("longxiang_pozhang_cd")), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
+            end
+            profile.longxiang.cd = 10800
+            trigger.delete("get_longxiang_level")
+        end
+    end
     if profile.longxiang.progress == profile.longxiang.target then
         trigger.delete("get_longxiang_progress")
         trigger.delete("get_longxiang_pozhang")

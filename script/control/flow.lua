@@ -121,6 +121,12 @@ end
 function automation_reset_killer()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_killer ］")
     automation.reconnect = nil
+    automation.idle = false
+    local rc = one_step()
+    if rc ~= 0 then
+        return automation_reset()
+    end
+    return 0
 end
 
 function automation_idle()
@@ -143,7 +149,9 @@ function start()
     trigger.add(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
     trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
-    trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
+    trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|"..
+                                                                                                       "^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$|"..
+                                                                                                       "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
     if config.jobs["斧头帮任务"].phase == 2 then
         config.jobs["斧头帮任务"].phase = 1
     end
@@ -175,15 +183,23 @@ function flow()
         if profile.longxiang == nil then
             profile.longxiang = { progress = 0, pozhang = 0 }
         end
-        local l = wait_line(nil, 30, nil, nil, "^您目前 pozhang 的变量设定为：\\s+(\\d+)$")
+        local l = wait_line("set pozhang", 30, nil, nil, "^你目前还没有任何为 pozhang 的变量设定。$|^您目前 pozhang 的变量设定为：\\s+(\\d+)$")
         if l == false then
             return -1
+        elseif l[0] == "你目前还没有任何为 pozhang 的变量设定。" then
+            run("set pozhang 0")
         end
-        profile.longxiang.pozhang = tonumber(l[1])
+        profile.longxiang.pozhang = tonumber(l[1] or 0)
         trigger.add("get_longxiang_level", "get_longxiang_level(get_matches(1))", nil, {Enable=true, OneShot=true}, 5, "^你手结\\S+印，运起的龙象般若功(\\S+)层功法「\\S+」$")
-        trigger.add("get_longxiang_status", "get_longxiang_status(get_matches(1), get_matches(2))", nil, {Enable=true, OneShot=true}, 5, "^鸠摩智说道：你现在的熟练度是(\\d+)点，还需要精研龙象神功(\\d+)次方可精进。$")
+        trigger.add("get_longxiang_status", "get_longxiang_status(get_matches(1), get_matches(2))", nil, {Enable=true, Multi=true, OneShot=true}, 5, "^你向鸠摩智打听有关「熟练度」的消息。\\n鸠摩智说道：你现在的熟练度是(\\d+)点，还需要精研龙象神功((?:-|)\\d+)次方可精进。$")
         trigger.add("get_longxiang_progress", "get_longxiang_progress()", nil, {Enable=true}, 5, "^你的龙象之力运行完毕，将内力收回丹田。$")
-        trigger.add("get_longxiang_pozhang", "get_longxiang_pozhang()", nil, {Enable=true, OneShot=true}, 5, "longtmp")
+        trigger.add("get_longxiang_pozhang", "get_longxiang_pozhang()", nil, {Enable=true, OneShot=true}, 5, "^汝须破除我他迷障，才能精进无碍！$")
+        if trigger.is_exist("longxiang_pozhang_cd") == true then
+            config.jobs["龙象破障"].active = false
+        else
+            config.jobs["龙象破障"].active = true
+            config.jobs["龙象破障"].phase = nil
+        end
     elseif config.jobs["龙象破障"] ~= nil then
         config.jobs["龙象破障"] = nil
         table.delete(config.jobs, "龙象破障")
@@ -534,7 +550,7 @@ function plan_fight_weapon()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ plan_fight_weapon ］")
     local list = {}
     for k,v in pairs(config.fight) do
-        if  v.weapon ~= nil and (config.jobs[k] or {}).enable == true then
+        if  v.weapon ~= nil and (k == "通用" or (config.jobs[k] or {}).enable == true) then
             local fight_weapon = {}
             if v.weapon[1] == "" then
                 fight_weapon["圣阿武契的战书:santa glove"] = 1
@@ -616,10 +632,10 @@ function plan_fight_weapon()
                     end
                 end
             end
-            for k,v in pairs(fight_weapon) do
-                list[k] = math.max(v, (list[k] or 0))
-                if config.lian.weapon[items[k].type] == nil then
-                    config.lian.weapon[items[k].type] = k
+            for i,j in pairs(fight_weapon) do
+                list[i] = math.max(j, (list[j] or 0))
+                if config.lian.weapon[items[i].type] == nil then
+                    config.lian.weapon[items[i].type] = i
                 end
             end
         end

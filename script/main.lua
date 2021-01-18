@@ -114,15 +114,12 @@ function login()
 end
 
 function load_jobs()
-    if automation.config == nil then
-        if io.exists(get_work_path().."char.cfg") then
-            loadfile(get_work_path().."char.cfg")()
-        else
-            return -1
-        end
-    else
-        config = automation.config
-        automation.config = nil
+    if io.exists(get_work_path().."char.cfg") then
+        loadfile(get_work_path().."char.cfg")()
+    end
+    if automation.config_jobs ~= nil then
+        config.jobs = automation.config_jobs
+        automation.config_jobs = nil
     end
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then

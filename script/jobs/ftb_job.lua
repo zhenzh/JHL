@@ -197,7 +197,7 @@ function ftb_job_refresh()
                 timer.delete("ftb_job_cd")
                 return ftb_job_p3()
             end
-            if wait_line(nil, 30, nil, nil, "^程金斧说道：麻烦老爷子去查一查, 若真是刺客便替本帮主除却了吧.$") == false then
+            if wait_line(nil, 30, nil, nil, "^程金斧说道：麻烦\\S+去查一查, 若真是刺客便替本帮主除却了吧.$") == false then
                 return -1
             end
             config.jobs["斧头帮任务"].phase = phase["任务执行"]
@@ -324,15 +324,15 @@ end
 
 function ftb_job_ask_npc(room, npc)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_ask_npc ］参数：room = "..table.tostring(room)..", npc = "..table.tostring(npc))
-    if table.is_empty(npc) then
-        if var.job.refresh == true then
-            var.job.refresh = nil
-            local current_id = env.current.id
-            if wait_line("look", 30, nil, nil, "^> $") == false then
-                return -1
-            end
-            env.current.id = current_id
+    if var.job.refresh == true then
+        var.job.refresh = nil
+        local current_id = env.current.id
+        if wait_line("look", 30, nil, nil, "^> $") == false then
+            return -1
         end
+        env.current.id = current_id
+    end
+    if table.is_empty(npc) then
         return
     end
     if set.has(config.jobs["斧头帮任务"].exclude, set.last(npc)[1]) then
@@ -362,6 +362,7 @@ function ftb_job_ask_npc(room, npc)
     elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
         wait(0.1)
     elseif string.match(l[0], "这里没有") then
+        var.job.refresh = true
         local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
         set.pop(npc)

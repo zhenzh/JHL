@@ -81,12 +81,15 @@ function reset()
     if automation.thread ~= nil then
         automation.thread = nil
         automation.jid = (var or {}).jid
-        automation.config = config
+        automation.config_jobs = config.jobs
         automation.repository = (carryon or {}).repository
         local timer_record = {
             "invalid_ask_ping",
             "invalid_ask_yuluwan",
-            "ftb_job_cd"
+            "ftb_job_cd",
+            "songshan_job_cd",
+            "hengshan_job_cd",
+            "longxiang_pozhang_cd"
         }
         automation.timer = {}
         for _,v in ipairs(timer_record) do
