@@ -114,7 +114,7 @@ function window_wrap()
 end
 
 function minimal_resources()
-    setConsoleBufferSize(100000, 1000)
+    setConsoleBufferSize(10000, 1000)
 end
 
 function get_last_cmd()

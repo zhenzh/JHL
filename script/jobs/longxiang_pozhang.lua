@@ -10,6 +10,10 @@ function longxiang_pozhang()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang ］")
     automation.idle = false
     var.job = var.job or {name = "龙象破障"}
+    var.job.statistics = var.job.statistics or { name = "龙象破障" }
+    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
+    var.job.statistics.exp = var.job.statistics.exp or state.exp
+    var.job.statistics.pot = var.job.statistics.pot or state.pot
     jia_min()
     if wield(config.fight["通用"].weapon) < 0 then
         return -1
@@ -31,6 +35,7 @@ function longxiang_pozhang_return(rc)
         return rc
     end
     trigger.delete_group("longxiang_pozhang")
+    append_statistics("龙象破障")
     var.job = nil
     return rc
 end

@@ -120,7 +120,7 @@ alias.add("statistics", [[^\s*stat(?:\s+([\-ls]+)\s+(\d+)|\s+([\-ls]+)|\s+(\d+)|
     if shift == "" then
         shift = 1
     end
-    statistics(mode_map[mode], shift)
+    statistics(mode_map[mode], tonumber(shift))
 ]])
 
 alias.add("add_yun_desc", [[^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$]], [[

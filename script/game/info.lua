@@ -575,15 +575,24 @@ end
 function get_longxiang_status(progress, need)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_status ］参数：progress = "..tostring(progress)..", need = "..tostring(need))
     profile.longxiang.progress = tonumber(progress)
-    profile.longxiang.target = profile.longxiang.progress + math.max(0, tonumber(need))
+    profile.longxiang.target = profile.longxiang.progress + tonumber(need)
     if profile.longxiang.level == nil then
-        if profile.longxiang.target > 62209 then
-            profile.longxiang.level = 12
-        elseif profile.longxiang.target == 62209 then
-            profile.longxiang.level = 11
-        else
-            profile.longxiang.level = 10
-        end
+        local level_progress = {
+            ["32"]    = 1,
+            ["162"]   = 2,
+            ["512"]   = 3,
+            ["1250"]  = 4,
+            ["2592"]  = 5,
+            ["4802"]  = 6,
+            ["8192"]  = 7,
+            ["13122"] = 8,
+            ["20000"] = 9,
+            ["43923"] = 10,
+            ["62208"] = 11,
+            ["85683"] = 12,
+            ["115248"] = 13
+        }
+        profile.longxiang.level = level_progress[tostring(profile.longxiang.target)]
         if profile.longxiang.level > 10 then
             if timer.is_exist("longxiang_pozhang_cd") == true then
                 timer.add("longxiang_pozhang_cd", (10800 - timer.remain("longxiang_pozhang_cd")), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
