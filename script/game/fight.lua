@@ -2,6 +2,7 @@ trigger.add("fight_snake", "fight_stop(1)", "fight", {Enable=false}, nil, "^忽�
 trigger.add("fight_danger", "fight_stop()", "fight", {Enable=false}, nil, "^\\( 你(?:已经一副头重脚轻的模样，正在勉力支撑著不倒下去|已经陷入半昏迷状态，随时都可能摔倒晕去|受伤过重，已经有如风中残烛，随时都可能断气)。 \\)$")
 trigger.add("fight_faint", "fight_stop(2)", "fight", {Enable=false}, nil, "^你的眼前一黑，接著什么也不知道了....$")
 trigger.add("fight_idle", "fight_idle()", "fight", {Enable=false}, nil, "^\\S+只能对战斗中的对手使用。$|^\\S+只有在战斗中才能使用。$")
+trigger.add("fight_lost_weapon", "fight_lost_weapon()", "fight", {Enable=false}, nil, "^你只觉得手中\\S+把持不定，脱手飞出！$")
 
 function unwield()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ unwield ］")
@@ -59,6 +60,14 @@ function wield_position(pos)
         return
     end
     if is_own(var.wield.weapon[pos]) ~= true then
+        if var.job ~= nil then
+            if items[var.wield.weapon[pos]] ~= nil and items[var.wield.weapon[pos]].spare ~= nil then
+                var.job.weapon = var.job.weapon or table.copy(var.wield.weapon)
+                var.job.weapon_ori = var.wield.weapon
+                var.wield.weapon[pos] = items[var.wield.weapon[pos]].spare
+                return wield(var.wield.weapon)
+            end
+        end
         return 1
     end
     local wid
@@ -202,6 +211,24 @@ function fight_return(rc)
     var.fight = nil
     trigger.disable_group("fight")
     return rc
+end
+
+function fight_lost_weapon()
+    if carryon.inventory[carryon.wield[1]] == nil then
+        fight_stop(2)
+        return
+    end
+    carryon.inventory[carryon.wield[1]].count = carryon.inventory[carryon.wield[1]].count - 1
+    if carryon.wield[1] == "金轮:jin lun" or 
+       carryon.wield[1] == "法轮:fa lun" or 
+       carryon.wield[1] == "铜轮:fa lun" then
+        carryon.inventory[carryon.wield[1]].count = 0
+    end
+    if carryon.inventory[carryon.wield[1]].count == 0 then
+        carryon.inventory[carryon.wield[1]] = nil
+    end
+    set.remove(carryon.wield, 1)
+    set.append(carryon.wield, "")
 end
 
 function fight_stop(rc)

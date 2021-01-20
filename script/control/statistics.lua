@@ -81,51 +81,51 @@ function statistics_summary(list)
                               math.floor((window_wrap()-1)*0.2)
     local c7 = window_wrap()-margin-c1-c2-c3-c4-c5-c6
     local format = "%"..tostring(margin).."s%-"..tostring(c1).."s%"..tostring(c2).."s%-"..tostring(c3).."s%"..tostring(c4).."s%-"..tostring(c5).."s%-"..tostring(c6).."s%-"..tostring(c7).."s"
-    show(string.format(format, "", "任务名", "获得经验", "效率", "获得潜能", "效率", "总用时（占比）", "完成数（成功率）"), "white", "dimgray")
+    show(string.format(format, "", "任务名", "获得经验", " / 效率", "获得潜能", " / 效率", "总用时（占比）", "完成数（成功率）"), "white", "dimgray")
     local font_color,back_color = "yellow","dimgray"
+    local lxmsg
     for _,v in ipairs(summary) do
-        local lxmsg
         local ratio = string.format("%.2f", math.decimal(v.elapsed/(list.end_time-list.begin_time)*100, 2))
         local exp_rate,pot_rate,success_rate
         if v.elapsed == 0 then
             exp_rate,pot_rate = "-","-"
         else
-            exp_rate = string.format("%.3f", math.decimal(v.exp*1000/v.elapsed, 3))
-            pot_rate = string.format("%.3f", math.decimal(v.pot*1000/v.elapsed, 3))
+            exp_rate = string.format("%.3f", math.decimal(v.exp*1000/v.elapsed, 3)).." 每秒"
+            pot_rate = string.format("%.3f", math.decimal(v.pot*1000/v.elapsed, 3)).." 每秒"
         end
-        if v.success+v.fail == 0 then
+        if v.success + v.fail == 0 then
             success_rate = "-"
         else
             success_rate = string.format("%.2f", math.decimal(v.success/(v.success+v.fail)*100, 2))
         end
         if v.name == "龙象破障" then
-            lxmsg = string.format(format, "", v.name, "-", " / -", "-", " / -", time.tohms(v.elapsed).."（"..ratio.."%）", "-")
+            lxmsg = string.format(format, "", v.name, "-", " / -", "-", " / -", time.tohms(v.elapsed).."（"..ratio.."%）", tostring(v.fail).."（ - ）")
         else
             if back_color == "black" then
                 back_color = "dimgray"
             else
                 back_color = "black"
             end
-            show(string.format(format, "", v.name, tostring(v.exp), " / "..exp_rate.." 每秒", tostring(v.pot), " / "..pot_rate.." 每秒", time.tohms(v.elapsed).."（"..ratio.."%）", tostring(v.success).."（"..success_rate.."%）"), font_color, back_color)
+            show(string.format(format, "", v.name, tostring(v.exp), " / "..exp_rate, tostring(v.pot), " / "..pot_rate, time.tohms(v.elapsed).."（"..ratio.."%）", tostring(v.success).."（"..success_rate.."%）"), font_color, back_color)
         end
-        if lxmsg ~= nil then
-            if back_color == "black" then
-                back_color = "dimgray"
-            else
-                back_color = "black"
-            end
-            show(lxmsg, font_color, back_color)
+    end
+    if lxmsg ~= nil then
+        if back_color == "black" then
+            back_color = "dimgray"
+        else
+            back_color = "black"
         end
+        show(lxmsg, font_color, back_color)
     end
     local total_ratio = string.format("%.2f", math.decimal(summary.total.elapsed/(list.end_time-list.begin_time)*100, 2))
     local total_exp_rate,total_pot_rate
     if summary.total.elapsed == 0 then
         total_exp_rate,total_pot_rate = "-","-"
     else
-        total_exp_rate = string.format("%.2f", math.decimal(summary.total.exp*3600000/summary.total.elapsed, 2))
-        total_pot_rate = string.format("%.2f", math.decimal(summary.total.pot*3600000/summary.total.elapsed, 2))
+        total_exp_rate = string.format("%.2f", math.decimal(summary.total.exp*3600000/summary.total.elapsed, 2)).." 每小时"
+        total_pot_rate = string.format("%.2f", math.decimal(summary.total.pot*3600000/summary.total.elapsed, 2)).." 每小时"
     end
-    show(string.format(format, "", "总计", tostring(summary.total.exp), " / "..total_exp_rate.." 每小时", tostring(summary.total.pot), " / "..total_pot_rate.."每小时", time.tohms(summary.total.elapsed).."（"..total_ratio.."%）", ""), "olivedrab", "ivory")
+    show(string.format(format, "", "总计", tostring(summary.total.exp), " / "..total_exp_rate, tostring(summary.total.pot), " / "..total_pot_rate, time.tohms(summary.total.elapsed).."（"..total_ratio.."%）", ""), "olivedrab", "ivory")
 end
 
 function statistics_list(list)

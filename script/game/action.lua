@@ -1297,7 +1297,7 @@ function zero_mole(target)
         target = 0
     end
     if math.abs(profile.mole) <= target then
-        wait(5)
+        wait(3)
         if wait_no_busy() < 0 then
             return -1
         end

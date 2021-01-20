@@ -63,9 +63,15 @@ function songshan_job_return(rc)
     config.jobs["嵩山任务"].discuss = nil
     config.jobs["嵩山任务"].arrest = nil
     append_statistics("嵩山任务")
-    if ((var.statistics or {}).exp or 10) < 10 then
-        config.jobs["嵩山任务"].active = false
-        timer.add("songshan_job_cd", 3600, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})
+    if var.statistics ~= nil and var.statistics.result == "成功" then
+        if var.job.statistics.exp < 10 then
+            config.jobs["嵩山任务"].active = false
+            timer.add("songshan_job_cd", 3600, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})
+        end
+    end
+    if var.job.weapon_ori ~= nil then
+        var.job.weapon_ori[1] = var.job.weapon[1]
+        var.job.weapon_ori[2] = var.job.weapon[2]
     end
     var.job = nil
     return rc

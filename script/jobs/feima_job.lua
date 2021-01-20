@@ -116,6 +116,10 @@ function feima_job_return(rc)
     config.jobs["飞马镖局"].recover = nil
     config.jobs["飞马镖局"].path = nil
     append_statistics("飞马镖局")
+    if var.job.weapon_ori ~= nil then
+        var.job.weapon_ori[1] = var.job.weapon[1]
+        var.job.weapon_ori[2] = var.job.weapon[2]
+    end
     var.job = nil
     return rc
 end

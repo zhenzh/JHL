@@ -30,6 +30,10 @@ require "statistics"
 
 timer.add("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
 
+if io.exists(get_work_path().."char.cfg") then
+    loadfile(get_work_path().."char.cfg")()
+end
+
 if io.exists(get_work_path().."log/global.tmp") then
     global.buffer = table.load(get_work_path().."log/global.tmp")
     os.remove(get_work_path().."log/global.tmp")
@@ -114,9 +118,6 @@ function login()
 end
 
 function load_jobs()
-    if io.exists(get_work_path().."char.cfg") then
-        loadfile(get_work_path().."char.cfg")()
-    end
     if automation.config_jobs ~= nil then
         config.jobs = automation.config_jobs
         automation.config_jobs = nil
