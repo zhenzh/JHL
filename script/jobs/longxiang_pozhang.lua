@@ -35,6 +35,7 @@ function longxiang_pozhang_return(rc)
         return rc
     end
     trigger.delete_group("longxiang_pozhang")
+    var.job.statistics.result = "完成"
     append_statistics("龙象破障")
     var.job = nil
     return rc
