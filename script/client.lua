@@ -137,7 +137,7 @@ function show(msg, fcolor, bcolor, breaker)
     cecho("<:"..bcolor.."><"..fcolor..">"..msg..(breaker or "\n"))
 end
 
-function mprint(parameter)
+function printf(parameter)
     if type(parameter) == "nil" then
         show(" 空字符："..tostring(parameter), "gray")
     elseif type(parameter) == "string" then
@@ -171,7 +171,7 @@ function mprint(parameter)
         show(" 协程："..tostring(parameter).." ( "..tostring(coroutine.status(parameter).." )"), "gray")
     else
         show(" 表：", "gray")
-        for _,v in ipairs(table.tojson(parameter)) do
+        for _,v in ipairs(table.fmtstring(parameter)) do
             show(" "..v, "gray")
         end
     end

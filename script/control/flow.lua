@@ -204,7 +204,9 @@ function flow()
         config.jobs["龙象破障"] = nil
         table.delete(config.jobs, "龙象破障")
     end
-
+    local s1 = table.snap(_G)
+    s1.s2 = nil
+    s1.global.buffer = nil
     repeat
         automation.idle = false
         local rc = flow_prepare_job()
@@ -225,6 +227,10 @@ function flow()
                 flow_suspend()
             end
         end
+        local s2 = table.snap(_G)
+        s2.s1 = nil
+        s2.global.buffer = nil
+        printf(table.diff(s1, s2))
     until false
 end
 
