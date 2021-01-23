@@ -2,7 +2,7 @@ family_info = {
     ["御林军"]   =   {master_name = "多隆",     master_id = "duo long",       master_place = 2286, enemy_name = "江湖反贼", enemy_id = "jianghu fanzei"},
     ["丐帮"]     =   {master_name = "洪七公",   master_id = "hong qigong",    master_place = 1121, enemy_name = "强盗",     enemy_id = "qiang dao"},
     ["华山派"]   =   {master_name = "岳不群",   master_id = "yue buqun",      master_place = 874,  enemy_name = "强盗",     enemy_id = "qiang dao"},
-    ["日月神教"] =   {master_name = "杨莲亭",   master_id = "yang lianting",  master_place = 2784},
+    ["日月神教"] =   {master_name = "杨莲亭",   master_id = "yang lianting",  master_place = 2784,  enemy_name = "强盗",     enemy_id = "qiang dao"},
     ["神龙教"]   =   {master_name = "洪安通",   master_id = "hong antong",    master_place = 2246, enemy_name = "朝廷武官", enemy_id = "chaoting wuguan"},
     ["万兽山庄"] =   {master_name = "史伯威",   master_id = "shi bowei",      master_place = 2734, enemy_name = "蒙古哒子", enemy_id = "menggu dazi"},
     ["姑苏慕容"] =   {master_name = "慕容复",   master_id = "murong fu",      master_place = 2067, enemy_name = "朝廷武官", enemy_id = "chaoting wuguan"},
@@ -13,15 +13,15 @@ family_info = {
     ["桃花岛"]   =   {master_name = "陆乘风",   master_id = "lu chengfeng",   master_place = 1470, enemy_name = "强盗",     enemy_id = "qiang dao"},
     ["全真教"]   =   {master_name = "马钰",     master_id = "ma yu",          master_place = 792,  enemy_name = "魔教弟子", enemy_id = "mojiao dizi"},
     ["星宿派"]   =   {master_name = "丁春秋",   master_id = "ding chunqiu",   master_place = 1442, enemy_name = "江湖侠士", enemy_id = "jianghu xiashi"},
-    ["嵩山派"]   =   {master_name = "左冷禅",   master_id = "zuo lengchan",   master_place = 2478},
+    ["嵩山派"]   =   {master_name = "左冷禅",   master_id = "zuo lengchan",   master_place = 2478,  enemy_name = "强盗",     enemy_id = "qiang dao"},
     ["雪山派"]   =   {master_name = "鸠摩智",   master_id = "jiumozhi",       master_place = 436,  enemy_name = "强盗",     enemy_id = "qiang dao"},
     ["血刀门"]   =   {master_name = "鸠摩智",   master_id = "jiumozhi",       master_place = 436,  enemy_name = "强盗",     enemy_id = "qiang dao"},
-    ["大理段家"] =   {master_name = "段正淳",   master_id = "duan zhengchun", master_place = 191},
+    ["大理段家"] =   {master_name = "段正淳",   master_id = "duan zhengchun", master_place = 191,  enemy_name = "强盗",     enemy_id = "qiang dao"},
     ["白驼山"]   =   {master_name = "欧阳峰",   master_id = "ouyang feng",    master_place = 1801, enemy_name = "江湖侠士", enemy_id = "jianghu xiashi"},
     ["武当派"]   =   {master_name = "张三丰",   master_id = "zhang sanfeng",  master_place = 677,  enemy_name = "蒙古哒子", enemy_id = "menggu dazi"},
     ["古墓派"]   =   {master_name = "黄衫女子", master_id = "huangshan nuzi", master_place = 2374, enemy_name = "蒙古哒子", enemy_id = "menggu dazi"},
-    ["灵鹫宫"]   =   {master_name = "天山童姥", master_id = "tong lao",       master_place = 2171},
-    ["关外胡家"] =   {master_name = "平阿四",   master_id = "ping si",        master_place = 3188},
+    ["灵鹫宫"]   =   {master_name = "天山童姥", master_id = "tong lao",       master_place = 2171,  enemy_name = "强盗",     enemy_id = "qiang dao"},
+    ["关外胡家"] =   {master_name = "平阿四",   master_id = "ping si",        master_place = 3188,  enemy_name = "强盗",     enemy_id = "qiang dao"},
 }
 
 local enemy_choose = { -- 敌人选择
