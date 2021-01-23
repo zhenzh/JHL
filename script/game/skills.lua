@@ -416,7 +416,7 @@ function lian_exec(i, j)
         end
         wait(0.1)
         return lian_exec(i, j)
-    elseif string.match(l[0], "开始练习") then
+    elseif string.match(l[0], "开始.*习") then
         automation.idle = false
         automation.skill = false
         var.lian.refresh = true
