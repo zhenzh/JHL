@@ -541,6 +541,12 @@ function family_job_one_step()
         if recover(config.job_nl) ~= 0 then
             return -1
         end
+        rc = wield((config.fight["门派任务"] or config.fight["通用"]).weapon or config.fight["通用"].weapon)
+        if rc < 0 then
+            return -1
+        elseif rc == 1 then
+            return 0
+        end
         if config.jobs["门派任务"].phase > phase["任务执行"] then
             return family_job()
         end
