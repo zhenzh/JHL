@@ -371,7 +371,7 @@ end
 
 function lian_exec(i, j)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ lian_num_ij ］参数：i = "..tostring(i)..",参数：j = "..tostring(j))
-    local l = wait_line("lian "..config.lian[i].." "..tostring(var.lian.times), 30, nil, 30, "^你\\S+，开始练习\\S+。$|"..
+    local l = wait_line("lian "..config.lian[i].." "..tostring(var.lian.times), 30, nil, 30, "^你\\S+，开始(?:练|修)习\\S+。$|"..
                                                                                              "^这里不是练功的地方。$|"..
                                                                                              "^你只能练习用 enable 指定的特殊技能。$|".. 
                                                                                              "^(?:修行|练(?:习|))\\S+必须空手(?:挥掌运气方可|静坐|)。$|"..
