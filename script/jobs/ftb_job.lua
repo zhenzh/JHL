@@ -331,7 +331,7 @@ function ftb_job_ask_npc(room, npc)
     if var.job.refresh == true then
         var.job.refresh = nil
         local current_id = env.current.id
-        if wait_line("look", 30, nil, nil, "^> $") == false then
+        if wait_line("look", 30, nil, nil, "^\\S+\\s+- $", "^> $") == false then
             return -1
         end
         env.current.id = current_id

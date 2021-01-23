@@ -572,9 +572,6 @@ end
 function feima_job_arrive()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_arrive ］")
     jia_min()
-    if wield(config.fight["通用"].weapon or config.fight["通用"].weapon) < 0 then
-        return -1
-    end
     timer.add("feima_job_wait_timeout", 10, "config.jobs['飞马镖局'].phase = "..tostring(phase["任务放弃"]), "feima_job", {Enable=true, OneShot=true})
     while config.jobs["飞马镖局"].phase < phase["任务结算"] do
         wait(0.1)
@@ -593,6 +590,9 @@ function feima_job_arrive()
         end
         var.job.thread_suspend = false
         coroutine.resume(var.job.thread)
+    end
+    if wield(config.fight["通用"].weapon or config.fight["通用"].weapon) < 0 then
+        return -1
     end
     return feima_job_p3()
 end
