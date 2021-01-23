@@ -28,7 +28,7 @@ function unwield()
                                                      "^你回身收剑，刹那间\\S+凛冽的光华陡然没入了你腰间的剑鞘，四周顿时阴暗了下来。$|"..
                                                      "^你手一抖，将\\S+插回刀鞘。$|"..
                                                      "^你仰天一声清啸，伸手在屠龙刀上一弹，放入长袍之内。$|"..
-                                                     var.wield.personal_unweapon, "^> $") == false then
+                                                     carryon.weapon.unwield, "^> $") == false then
         return -1
     end
     carryon.wield = {"", ""}
@@ -117,7 +117,7 @@ function wield_position(pos)
                                                     "^你已经装备著了。$|"..
                                                     "^你必须空出一只手来使用武器。$|"..
                                                     "^你必须先放下你目前装备的武器。$|"..
-                                                    var.wield.personal_weapon..
+                                                    carryon.weapon.wield..
                                                     "^你「\\S+」的一声\\S+握在手中。$|"..
                                                     "^你(?:抽|拿|拔)出一\\S+。$|"..
                                                     "^你从背后\\S+在手中。$|"..
