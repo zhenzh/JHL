@@ -83,10 +83,16 @@ function wield_position(pos)
     end
     if is_own(var.wield.weapon[pos]) ~= true then
         if var.job ~= nil then
-            if items[var.wield.weapon[pos]] ~= nil and items[var.wield.weapon[pos]].spare ~= nil then
+            if items[var.wield.weapon[pos]].spare ~= nil then
                 var.job.weapon = var.job.weapon or table.copy(var.wield.weapon)
                 var.job.weapon_ori = var.wield.weapon
                 var.wield.weapon[pos] = items[var.wield.weapon[pos]].spare
+                return wield(var.wield.weapon)
+            end
+            if pos == 2 then
+                var.job.weapon = var.job.weapon or table.copy(var.wield.weapon)
+                var.job.weapon_ori = var.wield.weapon
+                var.wield.weapon[pos] = ""
                 return wield(var.wield.weapon)
             end
         end
