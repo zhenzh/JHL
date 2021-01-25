@@ -136,7 +136,7 @@ function family_job_return(rc)
     end
     trigger.disable_group("family_job_active")
     config.jobs["门派任务"].active = false
-    append_statistics("门派任务")
+    statistics_append("门派任务")
     if var.job.weapon_ori ~= nil then
         var.job.weapon_ori[1] = var.job.weapon[1]
         var.job.weapon_ori[2] = var.job.weapon[2]

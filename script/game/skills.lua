@@ -394,6 +394,7 @@ function lian_exec(i, j)
                                                                                              "^寒冰绵掌必须通过特殊的法门才能修炼。$|"..
                                                                                              "^岳家枪法岂是你这等奸邪之人所能习之！$|"..
                                                                                              "^你还是多与别人切磋切磋吧。$|"..
+                                                                                             "^\\S+，再难更上一层楼。$|"..
                                                                                              "^你的内功水平有限，无法领会更高深的\\S+。$|"..
                                                                                              "^你的\\S+的熟练度不够。$")
     if l == false then
@@ -466,6 +467,7 @@ function lian_exec(i, j)
            string.match(l[0], "水平有限") or 
            string.match(l[0], "到顶峰") or 
            string.match(l[0], "火候不够") or 
+           string.match(l[0], "再难更上") or 
            string.match(l[0], "不够坏") then
         if wait_line(nil, 30, {Gag=true}, 30, "^> $") == false then
             return -1

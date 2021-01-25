@@ -60,7 +60,7 @@ function hengshan_job_return(rc)
     trigger.disable_group("hengshan_job")
     config.jobs["恒山任务"].confirm = nil
     config.jobs["恒山任务"].area = nil
-    append_statistics("恒山任务")
+    statistics_append("恒山任务")
     if var.job.weapon_ori ~= nil then
         var.job.weapon_ori[1] = var.job.weapon[1]
         var.job.weapon_ori[2] = var.job.weapon[2]

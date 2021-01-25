@@ -36,7 +36,7 @@ function automation_reset(func)
     automation.reconnect = func or "automation.reconnect = nil"
     set.append(automation.statistics.reset, time.epoch())
     if var.job ~= nil then
-        append_statistics(var.job.name)
+        statistics_append(var.job.name)
         if var.job.name == "飞马镖局" and config.jobs["飞马镖局"].phase == 2 then
             config.jobs["飞马镖局"].biaoche = nil
             config.jobs["飞马镖局"].dest = nil
@@ -817,54 +817,6 @@ function break_event()
         end
     end
     return false
-end
-
-function append_statistics(job)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ append_statistics ］参数：job = "..tostring(job))
-    if var.job.statistics ~= nil then
-        var.job.statistics.exp = state.exp - (var.job.statistics.exp or state.exp)
-        var.job.statistics.pot = state.pot - (var.job.statistics.pot or state.pot)
-        var.job.statistics.end_time = time.epoch()
-        var.job.statistics.elapsed = var.job.statistics.end_time - var.job.statistics.begin_time
-        if automation.statistics.processing[job] == nil then
-            if var.job.statistics.result == nil then
-                automation.statistics.processing[job] = var.job.statistics
-            else
-                var.statistics = var.job.statistics
-            end
-        else
-            automation.statistics.processing[job].exp = var.job.statistics.exp + automation.statistics.processing[job].exp
-            automation.statistics.processing[job].pot = var.job.statistics.pot + automation.statistics.processing[job].pot
-            automation.statistics.processing[job].end_time = var.job.statistics.end_time
-            automation.statistics.processing[job].elapsed = var.job.statistics.elapsed + automation.statistics.processing[job].elapsed
-            automation.statistics.processing[job].result = var.job.statistics.result
-            if automation.statistics.processing[job].result ~= nil then
-                var.statistics = automation.statistics.processing[job]
-                automation.statistics.processing[job] = nil
-            end
-        end
-        var.job.statistics = nil
-    end
-    archive_statistics()
-end
-
-function archive_statistics()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statistics ］")
-    if var.statistics ~= nil then
-        if time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statistics.end_time then
-            local idle,death,reset,connect,processing = automation.statistics.idle,automation.statistics.death,automation.statistics.reset,automation.statistics.connect,automation.statistics.processing
-            automation.statistics.idle = nil
-            automation.statistics.death = nil
-            automation.statistics.reset = nil
-            automation.statistics.connect = nil
-            automation.statistics.processing = nil
-            table.save(get_work_path().."log/statistics."..automation.statistics.date, automation.statistics)
-            automation.statistics = { date = time.date("%Y%m%d") }
-            automation.statistics.idle,automation.statistics.death,automation.statistics.reset,automation.statistics.connect,automation.statistics.processing = idle,death,reset,connect,processing
-        end
-        set.append(automation.statistics, var.statistics)
-        var.statistics = nil
-    end
 end
 
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

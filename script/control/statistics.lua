@@ -32,9 +32,9 @@ function statistics_get_range(list)
             return list
         end
     end
-    for i=time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$")-86400000,list.begin_time-86399999,-86400000 do
-        if io.exists(get_work_path().."log/statistics."..time.todate(i, "%Y%m%d")) then
-            local history = table.load(get_work_path().."log/statistics."..time.todate(i, "%Y%m%d"))
+    for i=time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)(%d%d)$")-3600000,list.begin_time-3599999,-3600000 do
+        if io.exists(get_work_path().."log/statistics."..time.todate(i, "%Y%m%d%H")) then
+            local history = table.load(get_work_path().."log/statistics."..time.todate(i, "%Y%m%d%H"))
             for j=#history,1,-1 do
                 if history[j].end_time >= list.begin_time then
                     set.insert(list, 1, history[j])
@@ -48,6 +48,8 @@ function statistics_get_range(list)
 end
 
 function statistics_summary(list)
+    local format = "%2s%-8s%12s%-8s%12s%-12s%-16s%-10s"
+    local font_color,back_color = "yellow","dimgray"
     local summary = { total = {exp = 0, pot = 0, elapsed = 0} }
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
@@ -70,19 +72,9 @@ function statistics_summary(list)
             end
         end
     end
-    local margin = math.floor((window_wrap()-1)*0.02)
-    show(string.format("%"..tostring(margin).."s统计概览（%19s ~ %19s）%"..tostring(window_wrap()-margin-53).."s", "", time.todate(list.begin_time, "%Y-%m-%d %H:%M:%S"), time.todate(list.end_time, "%Y-%m-%d %H:%M:%S"), ""), "olivedrab", "ivory")
-    show(string.format("%"..tostring(margin).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s%-"..tostring(math.floor((window_wrap()-margin*2)/4)).."s", "", "机器重置次数："..tostring(list.reset), "重连次数："..tostring(list.connect), "死亡次数："..tostring(list.death), "发呆次数："..tostring(list.idle)), "yellow", "black")
-    local c1,c2,c3,c4,c5,c6 = math.floor((window_wrap()-1)*0.1),
-                              math.floor((window_wrap()-1)*0.15),
-                              math.floor((window_wrap()-1)*0.1),
-                              math.floor((window_wrap()-1)*0.15),
-                              math.floor((window_wrap()-1)*0.15),
-                              math.floor((window_wrap()-1)*0.2)
-    local c7 = window_wrap()-margin-c1-c2-c3-c4-c5-c6
-    local format = "%"..tostring(margin).."s%-"..tostring(c1).."s%"..tostring(c2).."s%-"..tostring(c3).."s%"..tostring(c4).."s%-"..tostring(c5).."s%-"..tostring(c6).."s%-"..tostring(c7).."s"
+    show(string.format("%2s统计概览（%19s ~ %19s）%25s", "", time.todate(list.begin_time, "%Y-%m-%d %H:%M:%S"), time.todate(list.end_time, "%Y-%m-%d %H:%M:%S"), ""), "olivedrab", "ivory")
+    show(string.format("%2s%-20s%-20s%-20s%-16s", "", "重置次数："..tostring(list.reset), "重连次数："..tostring(list.connect), "死亡次数："..tostring(list.death), "发呆次数："..tostring(list.idle)), "yellow", "black")
     show(string.format(format, "", "任务名", "获得经验", " / 效率", "获得潜能", " / 效率", "总用时（占比）", "完成数（成功率）"), "white", "dimgray")
-    local font_color,back_color = "yellow","dimgray"
     local lxmsg
     for _,v in ipairs(summary) do
         local ratio = string.format("%.2f", math.decimal(v.elapsed/(list.end_time-list.begin_time)*100, 2))
@@ -129,18 +121,10 @@ function statistics_summary(list)
 end
 
 function statistics_list(list)
-    local margin = math.floor((window_wrap()-1)*0.02)
-    local c1,c2,c3,c4,c5,c6 = math.floor((window_wrap()-1)*0.23),
-                              math.floor((window_wrap()-1)*0.15),
-                              math.floor((window_wrap()-1)*0.1),
-                              math.floor((window_wrap()-1)*0.15),
-                              math.floor((window_wrap()-1)*0.15),
-                              math.floor((window_wrap()-1)*0.1)
-    local c7 = window_wrap()-margin-c1-c2-c3-c4-c5-c6
-    local format = "%"..tostring(margin).."s%-"..tostring(c1).."s%-"..tostring(c2).."s%-"..tostring(c3).."s%"..tostring(c4).."s%"..tostring(c5).."s%"..tostring(c6).."s%-"..tostring(c7).."s"
-    show(string.format(format, "", "完成时间", "任务名", "任务结果", "获得经验", "获得潜能", "", "用时"), "white", "dimgray")
+    local format = "%2s%-18s%-12s%-8s%12s%12s%8s%-8s"
     local font_color,back_color = "yellow","dimgray"
     local sum = { exp = 0, pot = 0, elapsed = 0 }
+    show(string.format(format, "", "完成时间", "任务名", "任务结果", "获得经验", "获得潜能", "", "用时"), "white", "dimgray")
     for _,v in ipairs(list) do
         if v.name ~= "龙象破障" then
             if back_color == "black" then
@@ -167,6 +151,54 @@ function statistics_classify(list, classify)
         end
     end
     return sum.exp,sum.pot,sum.elapsed
+end
+
+function statistics_append(job)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ statistics_append ］参数：job = "..tostring(job))
+    if var.job.statistics ~= nil then
+        var.job.statistics.exp = state.exp - (var.job.statistics.exp or state.exp)
+        var.job.statistics.pot = state.pot - (var.job.statistics.pot or state.pot)
+        var.job.statistics.end_time = time.epoch()
+        var.job.statistics.elapsed = var.job.statistics.end_time - var.job.statistics.begin_time
+        if automation.statistics.processing[job] == nil then
+            if var.job.statistics.result == nil then
+                automation.statistics.processing[job] = var.job.statistics
+            else
+                var.statistics = var.job.statistics
+            end
+        else
+            automation.statistics.processing[job].exp = var.job.statistics.exp + automation.statistics.processing[job].exp
+            automation.statistics.processing[job].pot = var.job.statistics.pot + automation.statistics.processing[job].pot
+            automation.statistics.processing[job].end_time = var.job.statistics.end_time
+            automation.statistics.processing[job].elapsed = var.job.statistics.elapsed + automation.statistics.processing[job].elapsed
+            automation.statistics.processing[job].result = var.job.statistics.result
+            if automation.statistics.processing[job].result ~= nil then
+                var.statistics = automation.statistics.processing[job]
+                automation.statistics.processing[job] = nil
+            end
+        end
+        var.job.statistics = nil
+    end
+    statistics_archive()
+end
+
+function statistics_archive()
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ statistics_archive ］")
+    if var.statistics ~= nil then
+        if time.toepoch(automation.statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)(%d%d)$") + 3600000 <= var.statistics.end_time then
+            local idle,death,reset,connect,processing = automation.statistics.idle,automation.statistics.death,automation.statistics.reset,automation.statistics.connect,automation.statistics.processing
+            automation.statistics.idle = nil
+            automation.statistics.death = nil
+            automation.statistics.reset = nil
+            automation.statistics.connect = nil
+            automation.statistics.processing = nil
+            table.save(get_work_path().."log/statistics."..automation.statistics.date, automation.statistics)
+            automation.statistics = { date = time.date("%Y%m%d%H") }
+            automation.statistics.idle,automation.statistics.death,automation.statistics.reset,automation.statistics.connect,automation.statistics.processing = idle,death,reset,connect,processing
+        end
+        set.append(automation.statistics, var.statistics)
+        var.statistics = nil
+    end
 end
 
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

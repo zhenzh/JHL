@@ -71,7 +71,7 @@ function ftb_job_return(rc)
     config.jobs["斧头帮任务"].enemy = 0
     config.jobs["斧头帮任务"].confirm = {}
     config.jobs["斧头帮任务"].exclude = {}
-    append_statistics("斧头帮任务")
+    statistics_append("斧头帮任务")
     if var.job.weapon_ori ~= nil then
         var.job.weapon_ori[1] = var.job.weapon[1]
         var.job.weapon_ori[2] = var.job.weapon[2]

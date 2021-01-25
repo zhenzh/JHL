@@ -62,7 +62,7 @@ function songshan_job_return(rc)
     config.jobs["嵩山任务"].area = nil
     config.jobs["嵩山任务"].discuss = nil
     config.jobs["嵩山任务"].arrest = nil
-    append_statistics("嵩山任务")
+    statistics_append("嵩山任务")
     if var.statistics ~= nil and var.statistics.result == "成功" then
         if var.job.statistics.exp < 10 then
             config.jobs["嵩山任务"].active = false
