@@ -356,17 +356,23 @@ function songshan_job_discuss(room, npc)
         return songshan_job_arrest(room, npc)
     else
         config.jobs["嵩山任务"].discuss = true
-        l = wait_line(nil, 30, nil, nil, "^"..npc[1].."\\S*往(\\S+)(?:离开|走了出去)。$")
+        trigger.add("songshan_job_npc_esc", "songshan_job_npc_esc(get_matches(1))", "songshan_job", {Enable=false, OneShot=true}, 100, "^"..npc[1].."\\S*往(\\S+)(?:离开|走了出去)。$")
+        l = wait_line(nil, 30, nil, nil, "^> $")
         if l == false then
             return -1
         else
-            room = get_room_id_by_roomsfrom({room}, get_room_id_around(), get_desc_dir(l[1]))[1]
             if wait_no_busy("halt") < 0 then
                 return -1
             end
-            l = wait_line(get_desc_dir(l[1]), 30, nil, nil, "^\\S+ - |"..
-                                                            "^什么\\?$|"..
-                                                            "^没有这个方向。$")
+            if var.job.esc == nil then
+                local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
+                config.jobs["嵩山任务"].area = set.union(set.compl(config.jobs["嵩山任务"].area, around), around)
+            else
+                room = get_room_id_by_roomsfrom({room}, get_room_id_around(), var.job.esc)[1]
+            end
+            l = wait_line(var.job.esc, 30, nil, nil, "^\\S+ - |"..
+                                                     "^什么\\?$|"..
+                                                     "^没有这个方向。$")
             if l == false then
                 return -1
             elseif l[0] == "什么?" or l[0] == "没有这个方向。" then
@@ -526,6 +532,10 @@ function songshan_job_win()
     if var.fight ~= nil then
         var.fight.stop = 0
     end
+end
+
+function songshan_job_npc_esc(esc)
+    var.job.esc = get_desc_dir(esc)
 end
 
 config.jobs["嵩山任务"].func = songshan_job
