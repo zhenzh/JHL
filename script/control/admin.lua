@@ -11,11 +11,16 @@ function dump()
     show("保存文件路径："..dfile, "yellow")
 end
 
+function clear_log(threshold)
+    os.remove(get_work_path().."log/*.txt")
+end
+
+function clear_dump()
+    os.remove(get_work_path().."log/*.dump")
+end
+
 function fresh_statistics()
-    automation.statistics.death = {}
-    automation.statistics.idle = {}
-    automation.statistics.reset = {}
-    automation.statistics.connect = {}
+    os.remove(get_work_path().."log/statistics.*")
 end
 
 function add_yun_desc(force_name, yun, valid_desc, invalid_desc)
