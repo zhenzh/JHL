@@ -1,17 +1,14 @@
 global = global or { flood = 0, uid = {}, buffer = {}, regex = {} }
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
-statistics = statistics or {}
-config = config or {}
 var = var or {}
 
-local HOME = string.gsub(debug.getinfo(1).source:gsub("^@", ""), "script/main.lua", "")
 function get_work_path()
-    return HOME.."profiles/JHL/"
+    return HOME
 end
 
 function get_script_path()
-    return HOME.."script/"
+    return SCRIPT
 end
 
 package.path = package.path..";"..
@@ -22,14 +19,20 @@ get_script_path().."gps/?.lua;"..
 get_script_path().."control/?.lua;"..
 get_script_path().."jobs/?.lua"
 
+require "config"
 require "client"
 require "common"
 require "gps"
 require "info"
 require "action"
-require "update"
+require "admin"
+require "statistics"
 
 timer.add("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
+
+if io.exists(get_work_path().."char.cfg") then
+    loadfile(get_work_path().."char.cfg")()
+end
 
 if io.exists(get_work_path().."log/global.tmp") then
     global.buffer = table.load(get_work_path().."log/global.tmp")
@@ -41,16 +44,23 @@ if io.exists(get_work_path().."log/automation.tmp") then
     os.remove(get_work_path().."log/automation.tmp")
 end
 
+automation.timer = automation.timer or {}
 automation.items = automation.items or {}
 automation.killer = automation.killer or {}
 automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
 
-automation.skill = nil
-config = automation.config
-automation.config = nil
-if config == nil or table.is_empty(config) then
-    require "config"
+if automation.timer["invalid_ask_ping"] ~= nil then
+    local seconds = math.max(0.001, automation.timer["invalid_ask_ping"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["invalid_ask_ping"], seconds)
+    automation.timer["invalid_ask_ping"] = nil
 end
+if automation.timer["invalid_ask_yuluwan"] ~= nil then
+    local seconds = math.max(0.001, automation.timer["invalid_ask_yuluwan"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["invalid_ask_yuluwan"], seconds)
+    automation.timer["invalid_ask_yuluwan"] = nil
+end
+
+automation.skill = nil
 
 for k,v in pairs(automation.items) do
     items[k] = v
@@ -63,14 +73,13 @@ end
 
 global.debug.level = automation.debug or global.debug.level
 
-statistics.date = statistics.date or time.date("%Y%m%d")
-if io.exists(get_work_path().."log/statistics."..statistics.date) then
-    statistics = table.load(get_work_path().."log/statistics."..statistics.date)
-end
-statistics.death = statistics.death or {}
-statistics.idle = statistics.idle or {}
-statistics.reset = statistics.reset or {}
-statistics.connect = statistics.connect or {}
+automation.statistics = automation.statistics or {}
+automation.statistics.date = automation.statistics.date or time.date("%Y%m%d")
+automation.statistics.death = automation.statistics.death or {}
+automation.statistics.idle = automation.statistics.idle or {}
+automation.statistics.reset = automation.statistics.reset or {}
+automation.statistics.connect = automation.statistics.connect or {}
+automation.statistics.processing = automation.statistics.processing or {}
 
 collectgarbage("collect")
 
@@ -109,12 +118,16 @@ function login()
 end
 
 function load_jobs()
-    require "family_job"
-    require "feima_job"
-    require "ftb_job"
+    if automation.config_jobs ~= nil then
+        config.jobs = automation.config_jobs
+        automation.config_jobs = nil
+    end
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
-            config.jobs[v].efunc()
+            loadstring("require '"..config.jobs[v].name.."'")()
+            if config.jobs[v].efunc ~= nil then
+                config.jobs[v].efunc() 
+            end
         else
             if config.jobs[v].dfunc ~= nil then
                 config.jobs[v].dfunc()

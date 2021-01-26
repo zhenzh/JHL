@@ -41,7 +41,7 @@ map_attr.cost = map_attr.cost or {
     ["open door;southwest"] = 3,           ["kill gongye qian;enter"] = 4,        ["kill changle bangzhong;east"] = 4,
     ["open door;northeast"] = 3,           ["kill liang fa;east"] = 4,            ["kill menggu junguan;southeast"] = 4,
     ["open door;north"] = 3,               ["kill wu shi;north"] = 4,             ["kill qingle biqiu;north"] = 4,
-    ["open gate;south"] = 3,               ["kill tan chuduan;up"] = 4,           ["kill xuming;kill xutong;eastup"] = 4,
+    ["open gate;south"] = 3,               ["kill tan chuduan;up"] = 4,           ["kill xu ming;kill xu tong;eastup"] = 4,
     ["push men;south"] = 3,                ["northeast387"] = 3,                  ["hit ping si;north"] = 8,
     ["open door;up"] = 3,                  ["eastdown388"] = 3,                   ["hit guan bing;north"] = 8,
     ["open east;east"] = 3,                ["westup387"] = 3,                     ["hit ya yi;south"] = 8,
@@ -64,6 +64,7 @@ map_attr.cost = map_attr.cost or {
     ["drop eluan shi;swim up"] = 3,        ["drop eluan shi;swim light"] = 3,     ["north;north;north;north;north;north"] = 6,
     ["wield jian;strike wall;out"] = 3,    ["say 青衫磊落险峰行;northeast"] = 2,    ["south;south;south;south;south;south"] = 6,
     ["go1826"] = 6,                        ["go1327"] = 6,                        ["yell boat"] = 15,
+    ["go1984"] = 17,
     ["push left;push left;push left;push right;push right;push right;push front;enter"] = 8,
     ["southwest;southeast;north;south;west;east;west;east;east;south;west;north;northwest;north"] = 14,
 }
@@ -317,7 +318,7 @@ calibration = {
             map[1650].links["kill qingle biqiu;north"] = 1651
             map[1667].links["kill huikong zunzhe;northup"] = 1627
             map[1656].links["kill qingguan biqiu;open door;north"] = 1789
-            map[1553].links["kill xuming;kill xutong;eastup"] = 1548
+            map[1553].links["kill xu ming;kill xu tong;eastup"] = 1548
             map_attr.cost["northup1693"] = 10000
             map_attr.cost["enter1682"] = 10000
 
@@ -486,7 +487,7 @@ calibration = {
             map[1650].links["kill qingle biqiu;north"] = nil
             map[1667].links["kill huikong zunzhe;northup"] = nil
             map[1656].links["kill qingguan biqiu;open door;north"] = nil
-            map[1553].links["kill xuming;kill xutong;eastup"] = nil
+            map[1553].links["kill xu ming;kill xu tong;eastup"] = nil
             map[1650].links["north"] = 1651
             map[1667].links["northup"] = 1627
             map[1656].links["open door;north"] = 1789
@@ -929,11 +930,11 @@ calibration = {
     ["天龙殿壁画"] = {
         ["启用"] = function()
             map[434].links["enter picture"] = 1854
-            calibration["灵鹫索桥"][1] = "禁用"
+            calibration["天龙殿壁画"][1] = "禁用"
         end,
         ["禁用"] = function()
              map[434].links["enter picture"] = nil
-             calibration["灵鹫索桥"][1] = "禁用"
+             calibration["天龙殿壁画"][1] = "禁用"
         end,
     },
 

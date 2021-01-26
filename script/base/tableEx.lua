@@ -17,7 +17,7 @@
   table.tostring(t)             将表 t 转换成字符串
   table.save(f, t)              将表 t 写入文件 f
   table.load(f)                 返回从文件 f 读入的表
-  table.tojson(t)               将表 t 转换成 JSON 格式
+  table.fmtstring(t)            将表 t 转换成 JSON 格式
 --]]
 
 table = table or {}
@@ -279,16 +279,16 @@ function table.load(f)
     return tbl
 end
 
-function table.tojson(t)
+function table.fmtstring(t)
     if t == nil then return "" end
     if type(t) == "boolean" then return tostring(t) end
     local s,i,k = { "{" },1,set.union(table.index(t), table.keys(t))
     for _,v in ipairs(k) do
         local c = ","
-        local r = table.transfer(t[v], table.tojson)
+        local r = table.transfer(t[v], table.fmtstring)
         if i == #k then c = "" end
         if type(r) == "table" then
-            set.append(s, "  ["..table.transfer(v, table.tojson).."] = "..set.shift(r))
+            set.append(s, "  ["..table.transfer(v, table.fmtstring).."] = "..set.shift(r))
             for j=1,#r do
                 if j == #r then
                     set.append(s, "  "..r[j]..c)
@@ -297,10 +297,60 @@ function table.tojson(t)
                 end
             end
         else
-            set.append(s, "  ["..table.transfer(v, table.tojson).."] = "..r..c)
+            set.append(s, "  ["..table.transfer(v, table.fmtstring).."] = "..r..c)
         end
         i = i + 1
     end
     set.append(s, "}")
     return s
+end
+
+function table.snap(t)
+    local r = {}
+    for k,v in pairs(t) do
+        if v ~= t then
+            if k == "loaded" then
+                r[k] = {}
+                for i,j in pairs(v) do
+                    r[k][i] = tostring(j)
+                end
+            elseif type(v) == "table" then
+				r[k] = table.snap(v)
+            else
+				r[k] = tostring(v)
+			end
+        end
+    end
+    if not table.is_empty(r) then
+        return r
+    else
+        return tostring(t)
+    end
+end
+
+function table.diff(a, b)
+    local r = {}
+    for k,v in pairs(a) do
+        if b[k] == nil then
+            r[k] = tostring(v).." <===> nil"
+        elseif type(v) == "table" then
+            if type(b[k]) == "table" then
+                r[k] = table.diff(v, b[k])
+            else
+                r[k] = tostring(v).." <===> "..tostring(b[k])
+            end
+        else
+            if b[k] ~= v then
+                r[k] = tostring(v).." <===> "..tostring(b[k])
+            end
+        end
+    end
+    for k,v in pairs(b) do
+        if a[k] == nil then
+            r[k] = "nil <===> "..tostring(v)
+        end
+    end
+    if not table.is_empty(r) then
+        return r
+    end
 end

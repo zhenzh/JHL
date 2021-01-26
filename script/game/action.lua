@@ -50,6 +50,8 @@ end
 
 function look_dir(dir)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ look_dir ］参数：dir = "..tostring(dir))
+    var.look_dir = var.look_dir or {}
+    var.look_dir.dir = dir
     env.room = env.nextto
     trigger.add("look_dir", "", nil, {Enable=true, Gag=true}, nil, "^.*")
     local l = wait_line("look "..dir, 30, nil, 10, "^你要看什么？$|^\\S+\\s+-\\s+$")
@@ -68,6 +70,10 @@ end
 
 function look_dir_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ look_dir_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
+    if var.look_dir == nil then
+        return rc,msg
+    end
+    var.look_dir = nil
     trigger.delete("look_dir")
     env.room = env.current
     return rc,msg
@@ -553,8 +559,7 @@ end
 
 function drop_nonstack(carry, seq)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ drop_nonstack ］参数：carry = "..table.tostring(carry)..", seq = "..tostring(seq))
-    if var.drop.count == 0 or 
-       carry.count == 0 then
+    if var.drop.count == 0 or carry.count == 0 then
         if run_i() < 0 then
             return -1
         end
@@ -568,6 +573,8 @@ function drop_nonstack(carry, seq)
     end
     local l = wait_line("drop "..carry.id..seq, 30, {StopEval=true}, 10, "^你现在正忙着呢。$|"..
                                                                          "^你丢下\\S+。$|"..
+                                                                         "^你将\\S+从背上放了下来，躺在地上。$|"..
+                                                                         "^这样东西不能随意丢弃。$|"..
                                                                          "^你身上没有这样东西。$")
     if l == false then
         return -1
@@ -576,6 +583,8 @@ function drop_nonstack(carry, seq)
         return drop_nonstack(carry, seq)
     elseif l[0] == "你身上没有这样东西。" then
         carry.count = 0
+    elseif l[0] == "这样东西不能随意丢弃。" then
+        return
     else
         var.drop.count = var.drop.count - 1
         carry.count = carry.count - 1
@@ -585,7 +594,7 @@ end
 
 function drop_stack(carry)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ drop_stack ］参数：carry = "..table.tostring(carry))
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         wait(1)
         global.flood = 0
     end
@@ -902,7 +911,7 @@ function feed_drink()
     elseif rc == 1 then
         return
     end
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         wait(1)
         global.flood = 0
     end
@@ -994,7 +1003,7 @@ function feed_eat()
     if rc ~= nil then
         return rc
     end
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         wait(1)
         global.flood = 0
     end
@@ -1282,12 +1291,54 @@ function aquire_other(method, list)
     return aquire_other(method, list)
 end
 
+function zero_mole(target)
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ zero_mole ］参数：target = "..tostring(target))
+    if target == nil then
+        target = 0
+    end
+    if math.abs(profile.mole) <= target then
+        wait(3)
+        if wait_no_busy() < 0 then
+            return -1
+        end
+        return 0
+    end
+    if env.current.id[1] ~= 1790 then
+        local rc = goto(1790)
+        if rc ~= 0 then
+            return rc
+        end
+    end
+    if math.abs(profile.mole) < 40 then
+        if math.abs(math.abs(profile.mole)) - 10 > target then
+            for i = 1,10 do
+                run("mianbi")
+            end
+        else
+            run("mianbi")
+        end
+    elseif math.abs(math.abs(profile.mole)) * math.pow(0.95, 10) >= target then
+        for i = 1,10 do
+            run("mianbi")
+        end
+    else
+        run("mianbi")
+    end
+    if run_score() < 0 then
+        return -1
+    end
+    if global.flood > config.flood then
+        wait(1)
+    end
+    return zero_mole(target)
+end
+
 function search(obj, rooms)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search ］参数：obj = "..tostring(obj)..", rooms = "..table.tostring(rooms))
-    trigger.add("search_found_obj", "search_found_obj()", "search", {Enable=true}, nil, obj)
+    trigger.add("search_found_obj", "search_found_obj()", "search", {Enable=true}, 99, obj)
     trigger.add("search_check_result", "search_check_result()", "search", {Enable=false}, 90, "^> $")
     trigger.add("search_locate", "search_locate()", "search", {Enable=true}, 90, "^\\S+\\s+- [、a-z0-9]+$")
-    var.search = var.search or { result = {}, obj = {}, optical = {}, past = {} }
+    var.search = var.search or { result = {}, obj = {}, nobj = {}, optical = {}, past = {} }
     var.search.area = set.copy(rooms)
     return search_return(search_room(obj))
 end
@@ -1297,8 +1348,8 @@ function search_return(rc, msg1, msg2)
     if var.search == nil then
         return rc,msg1,msg2
     end
-    var.search = nil
     trigger.delete_group("search")
+    var.search = nil
     return rc,msg1,msg2
 end
 
@@ -1350,22 +1401,37 @@ function search_room(obj)
 end
 
 function search_found_obj()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_found_obj ］")
-    set.append(var.search.obj, get_matches())
+    if var.look_dir ~= nil then
+        var.search.nobj[var.look_dir] = var.search.nobj[var.look_dir] or {}
+        set.append(var.search.nobj[var.look_dir], get_matches())
+    else
+        set.append(var.search.obj, get_matches())
+    end
     trigger.enable("search_check_result")
 end
 
 function search_check_result()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_check_result ］")
     trigger.disable("search_check_result")
     if #env.current.id == 1 then
-        if env.current.id[1] == var.search.dest then
-            var.search.result[env.current.id[1]] = var.search.obj
-        elseif set.has(var.search.area, env.current.id[1]) then
-            var.search.result[env.current.id[1]] = var.search.obj
-        elseif var.job ~= nil and var.job.search ~= nil then
-            if set.has(var.job.search, env.current.id[1]) then
+        local area = var.search.area
+        if var.job ~= nil and var.job.search ~= nil then
+            area = set.union(area, var.job.search)
+        end
+        if not table.is_empty(var.search.obj) then
+            if env.current.id[1] == var.search.dest then
                 var.search.result[env.current.id[1]] = var.search.obj
+            elseif set.has(area, env.current.id[1]) then
+                var.search.result[env.current.id[1]] = var.search.obj
+            end
+        end
+        if not table.is_empty(var.search.nobj) then
+            for k,v in pairs(var.search.nobj) do
+                local nid = get_room_id_by_roomsfrom(env.current.id, nil, k)
+                if #nid > 0 then
+                    if var.search.result[nid] == nil and set.has(area, nid)then
+                        var.search.result[nid] = v
+                    end
+                end
             end
         end
     else
@@ -1385,10 +1451,10 @@ function search_check_result()
         end
     end
     var.search.obj = {}
+    var.search.nobj = {}
 end
 
 function search_locate()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ search_locate ］")
     env.current.id = get_room_id_by_name(env.current.name)
     if #env.current.id > 1 then
         env.current.exits = string.split(env.current.exits, "[ 、]+")

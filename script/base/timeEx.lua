@@ -7,6 +7,7 @@
   time.toepoch(s, p)            将字符串 s 根据正则 p 转换为 epoch 秒数
   time.totime(s, p)             将字符串 s 根据正则 p 转换为时间元表
   time.todate(e, f)             将 epoch 秒数 e 根据格式 f 转换为时间
+  time.tohms(e, m)              将 epoch 秒数 e 以时分秒的单位显示，m 为 true 则显示微秒数
 
     f 格式： %b = 月份缩写
             %B = 月份全名
@@ -53,4 +54,13 @@ end
 
 function time.todate(e, f)
     return os.date(f, e/1000)
+end
+
+function time.tohms(e, m)
+    local t = os.date("!*t", e/1000)
+    if m == nil then
+        return string.format("%02d:%02d:%02d", (t.yday-1)*24+t.hour, t.min, t.sec)
+    else
+        return string.format("%02d:%02d:%02d.%03d", (t.yday-1)*24+t.hour, t.min, t.sec, e%1000)
+    end
 end

@@ -73,11 +73,11 @@ end
 function feima_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job ］")
     automation.idle = false
-    var.job = var.job or {name = "飞马镖局"}
-    var.job.statistics = var.job.statistics or {name = "飞马镖局"}
-    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
-    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
+    var.job = var.job or { name = "飞马镖局" }
+    var.job.statistics = var.job.statistics or { name = "飞马镖局" }
+    var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
+    var.job.statistics.exp = var.job.statistics.exp or state.exp
+    var.job.statistics.pot = var.job.statistics.pot or state.pot
     var.job.enemy_name = var.job.enemy_name or ("(?:"..set.concat(job_enemys, "|")..")")
     var.job.enemy = {count = 0}
     var.job.addenemy = {count = 0}
@@ -108,14 +108,18 @@ function feima_job_return(rc)
     if var.job == nil then
         return rc
     end
+    trigger.disable_group("feima_job")
+    trigger.disable_group("feima_job_active")
     config.jobs["飞马镖局"].biaoche = nil
     config.jobs["飞马镖局"].npc = nil
     config.jobs["飞马镖局"].dest = nil
     config.jobs["飞马镖局"].recover = nil
     config.jobs["飞马镖局"].path = nil
-    var.statistics = var.job.statistics
-    trigger.disable_group("feima_job")
-    trigger.disable_group("feima_job_active")
+    statistics_append("飞马镖局")
+    if var.job.weapon_ori ~= nil then
+        var.job.weapon_ori[1] = var.job.weapon[1]
+        var.job.weapon_ori[2] = var.job.weapon[2]
+    end
     var.job = nil
     return rc
 end
@@ -139,9 +143,6 @@ function feima_job_p2()
     if rc ~= nil then
         return rc
     end
-    var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
-    var.job.statistics["exp"] = var.job.statistics["exp"] or state.exp
-    var.job.statistics["pot"] = var.job.statistics["pot"] or state.pot
     map_adjust("门派接引", "禁用", "过河", "渡船", "丐帮密道", "禁用")
     if calibration["南阳城"][1] == "开放" then
         map_attr.cost["north2401"] = 10000
@@ -199,17 +200,21 @@ end
 function feima_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_p3 ］")
     local rc = feima_job_goto_maxingkong()
-    if rc ~= nil then
-        return rc
+    if rc == nil then
+        return feima_job_settle()
     end
-    return feima_job_settle()
+    if rc >= 0 then
+        if recover(config.job_nl) ~= 0 then
+            return -1
+        end
+    end
+    return rc
 end
 
 function feima_job_p4()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_p4 ］")
     if var.job ~= nil then
-        if var.job.thread_suspend == false and 
-           automation.skill ~= nil then
+        if var.job.thread_suspend == false and automation.skill ~= nil then
             run("set 中断事件")
         end
         if var.job.thread ~= nil then
@@ -220,18 +225,16 @@ function feima_job_p4()
             coroutine.resume(var.job.thread)
         end
     end
-    local rc
-    if feima_job_goto_maxingkong() == nil then
+    local rc = feima_job_goto_maxingkong()
+    if rc == nil then
         rc = feima_job_abandon_job()
     end
-    if var.job ~= nil and 
-       var.job.statistics ~= nil then
-        var.job.statistics["result"] = "失败"
-        var.job.statistics["end"] = time.epoch()
-        return 1
-    else
-        return rc
+    if rc >= 0 then
+        if recover(config.job_nl) ~= 0 then
+            return -1
+        end
     end
+    return rc
 end
 
 function feima_job_wait_sub_thread_break()
@@ -255,7 +258,7 @@ end
 function feima_job_goto_maxingkong()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_goto_maxingkong ］")
     if env.current.id[1] ~= 2921 then
-        var.job.statistics["begin"] = var.job.statistics["begin"] or time.epoch()
+        var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
         local rc = goto(2921)
         if rc ~= 0 then
             return rc
@@ -268,19 +271,21 @@ function feima_job_aquire()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_aquire ］")
     local l = wait_line("ask ma xingkong about 押镖", 30, nil, nil, "^你向马行空打听有关「押镖」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^\\S+忙着呢，你等会儿在问话吧。$|"..
-                                                                    "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                    "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif l[0] == "你向马行空打听有关「押镖」的消息。" then
         l = wait_line(nil, 30, nil, nil, "^马行空说道：这位\\S+不是正在护镖么，请先完成手上的工作再来。$|"..
                                          "^马行空点了点头。$|"..
-                                         "^马行空说道：最近镖局生意惨淡，生意不好做呀。$")
+                                         "^马行空说道：最近镖局生意惨淡，生意不好做呀。$|"..
+                                         "^但是很显然的，马行空现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
         elseif l[0] == "马行空点了点头。" then
             config.jobs["飞马镖局"].phase = phase["任务执行"]
             config.jobs["飞马镖局"].biaoche = 2921
+        elseif l[0] == "但是很显然的，马行空现在的状况没有办法给你任何答覆。" then
+            return 1
         else
             config.jobs["飞马镖局"].phase = phase["任务放弃"]
             return feima_job_p4()
@@ -446,7 +451,7 @@ function feima_job_get_dir()
             return -1
         elseif string.match(l[0], "别急嘛") then
             wait(1)
-            return feima_job_get_dir(config.jobs["飞马镖局"].path)
+            return feima_job_get_dir()
         end
     elseif string.match(dir, "knock gate") or 
            string.match(dir, "open ") then
@@ -569,9 +574,6 @@ end
 function feima_job_arrive()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_arrive ］")
     jia_min()
-    if wield(config.fight["通用"].weapon) < 0 then
-        return -1
-    end
     timer.add("feima_job_wait_timeout", 10, "config.jobs['飞马镖局'].phase = "..tostring(phase["任务放弃"]), "feima_job", {Enable=true, OneShot=true})
     while config.jobs["飞马镖局"].phase < phase["任务结算"] do
         wait(0.1)
@@ -591,19 +593,17 @@ function feima_job_arrive()
         var.job.thread_suspend = false
         coroutine.resume(var.job.thread)
     end
-    var.job.statistics["result"] = "成功"
-    var.job.statistics["end"] = time.epoch()
-    var.job.statistics["exp"] = state.exp - var.job.statistics["exp"]
-    var.job.statistics["pot"] = state.pot - var.job.statistics["pot"]
-    return 0
+    if wield(config.fight["通用"].weapon or config.fight["通用"].weapon) < 0 then
+        return -1
+    end
+    return feima_job_p3()
 end
 
 function feima_job_settle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_settle ］")
     local l = wait_line("ask ma xingkong about 完成", 30, nil, nil, "^你向马行空打听有关「完成」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
-                                                                    "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "忙着") then
@@ -615,43 +615,27 @@ function feima_job_settle()
     elseif l[0] == "你向马行空打听有关「完成」的消息。" then
         l = wait_line(nil, 30, nil, nil, "^马行空轻轻地拍了拍你的头。$|"..
                                          "^马行空说道：我没让你走镖啊？$|"..
+                                         "^但是很显然的，马行空现在的状况没有办法给你任何答覆。$|"..
                                          "^> $")
         if l == false then
             return -1
         elseif l[0] == "> " then
             config.jobs["飞马镖局"].phase = phase["任务放弃"]
             return
+        elseif l[0] == "马行空轻轻地拍了拍你的头。" then
+            config.jobs["飞马镖局"].phase = phase["任务获取"]
+            if run_score() < 0 then
+                return -1
+            end
+            var.job.statistics.result = "成功"
+            return 0
+        elseif l[0] == "但是很显然的，马行空现在的状况没有办法给你任何答覆。" then
+            return 1
         else
             config.jobs["飞马镖局"].phase = phase["任务获取"]
-            if l[0] == "马行空轻轻地拍了拍你的头。" then
-                if run_score() < 0 then
-                    return -1
-                end
-                for i = #statistics, 1, -1 do
-                    if statistics[i]["name"] == "飞马镖局" and 
-                       statistics[i]["result"] == "成功" then
-                        statistics[i]["exp"] = (statistics[i]["exp"] or 0) + state.exp - var.job.statistics["exp"]
-                        statistics[i]["pot"] = (statistics[i]["pot"] or 0) + state.pot - var.job.statistics["pot"]
-                    end
-                end
-                var.job.statistics["exp"] = state.exp
-                var.job.statistics["pot"] = state.pot
-            end
-            if privilege_job("飞马镖局") == true then
-                var.job.statistics = nil
-                return 0
-            end
-            return feima_job()
+            return 1
         end
     else
-        if var.job.thread ~= nil then
-            while var.job.thread_suspend == false do
-                wait(0.1)
-            end
-            var.job.thread_suspend = false
-            coroutine.resume(var.job.thread)
-        end
-        var.job.statistics["end"] = time.epoch()
         return 1
     end
 end
@@ -660,8 +644,7 @@ function feima_job_abandon_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_abandon_job ］")
     local l = wait_line("ask ma xingkong about 放弃", 30, nil, nil, "^你向马行空打听有关「放弃」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
-                                                                    "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "忙着") then
@@ -675,8 +658,8 @@ function feima_job_abandon_job()
             l = wait_line("ask ma xingkong about 赔偿", 30, nil, nil, "^你可以重新开始押镖了。$|"..
                                                                       "^马行空似乎不懂你是什么意思。$|"..
                                                                       "^这里没有 \\S+ 这个人$|"..
-                                                                      "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
-                                                                      "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                      "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
+                                                                      "^但是很显然的，马行空现在的状况没有办法给你任何答覆。$")
             if l == false then
                 return -1
             elseif string.match(l[0], "忙着") then
@@ -684,29 +667,20 @@ function feima_job_abandon_job()
                 if l[1] == "你" then
                     run("halt")
                 end
-            elseif l[0] == "你可以重新开始押镖了。" or 
-                   l[0] == "马行空似乎不懂你是什么意思。" then
-                if l[0] == "你可以重新开始押镖了。" then
-                    for i = #statistics, 1, -1 do
-                        if statistics[i]["name"] == "飞马镖局" and 
-                           statistics[i]["result"] == nil then
-                            statistics[i]["exp"] = (statistics[i]["exp"] or 0) + state.exp - var.job.statistics["exp"]
-                            statistics[i]["pot"] = (statistics[i]["pot"] or 0) + state.pot - var.job.statistics["pot"]
-                        end
-                    end
-                end
+            elseif l[0] == "你可以重新开始押镖了。" then
                 config.jobs["飞马镖局"].phase = phase["任务获取"]
-                if config.jobs["飞马镖局"].dest == nil then
-                    return feima_job()
-                else
-                    break
-                end
+                var.job.statistics.result = "失败"
+                return 1
+            elseif l[0] == "马行空似乎不懂你是什么意思。"  then
+                config.jobs["飞马镖局"].phase = phase["任务获取"]
+                return feima_job()
             else
-                break
+                return 1
             end
         until false
+    else
+        return 1
     end
-    return
 end
 
 function feima_job_start_sub_thread()
@@ -755,7 +729,7 @@ function feima_job_start_sub_thread()
         return feima_job_pause_sub_thread()
     end
     rc = feima_job_full_skill()
-    if rc < 0 then
+    if (rc or 0) < 0 then
         return -1
     end
     return feima_job_pause_sub_thread()
@@ -784,7 +758,7 @@ function feima_job_dazuo()
             return -1
         end
     end
-    
+
     repeat
         if state.jl <= state.jl_max - 10 then
             if yun_refresh() ~= 0 then
@@ -824,6 +798,9 @@ end
 
 function feima_job_full_skill()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_full_skill ］")
+    if var.job.skill == false then
+        return 0
+    end
     if var.job.enemy.count <= 0 and var.job.addenemy.count <= 0 then
         automation.skill = true
         local rc = zuanyan()
@@ -838,6 +815,7 @@ function feima_job_full_skill()
             else
                 if automation.skill == true then
                     automation.skill = nil
+                    var.job.skill = false
                     return 0
                 end
             end

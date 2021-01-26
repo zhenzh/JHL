@@ -31,7 +31,7 @@ local map_events = {
     ["kill nv lang;northdown"] = kill_npc,  ["kill jiading;westup"] = kill_npc,     ["kill yideng shiwei;north"] = kill_npc,
     ["kill shuo bude;up"] = kill_npc,       ["kill jiaozhong;north"] = kill_npc,    ["kill wugen daoren;northup"] = kill_npc,
     ["kill jian zhanglao;east"] = kill_npc, ["kill xiao lan;east"] = kill_npc,      ["kill zhang zhiguang;westup"] = kill_npc,
-    ["kill wang furen;up"] = kill_npc,      ["kill lao denuo;south"] = kill_npc,    ["kill xuming;kill xutong;eastup"] = kill_npc,
+    ["kill wang furen;up"] = kill_npc,      ["kill lao denuo;south"] = kill_npc,    ["kill xu ming;kill xu tong;eastup"] = kill_npc,
     ["kill yue lingshan;west"] = kill_npc,  ["kill xihua zi;south"] = kill_npc,     ["kill ning zhongze;west"] = kill_npc,
     ["kill zhang songxi;west"] = kill_npc,  ["kill du dajin;enter"] = kill_npc,     ["kill huangshan nuzi;west"] = kill_npc,
     ["kill lu dayou;south"] = kill_npc,     ["kill lao denuo;west"] = kill_npc,     ["kill gao genming;northup"] = kill_npc,
@@ -246,6 +246,7 @@ function gonext(mode)
             var.goto.next = true
             trigger.add(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
             trigger.add(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
+            trigger.add(nil, "hinder()", "goto", {Enable=true}, 19, "^你的动作还没有完成，不能移动。$")
             trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
             trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
             trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
@@ -269,6 +270,7 @@ function goto(dst, mode)
         var.goto.thread = coroutine.running()
         trigger.add(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
         trigger.add(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
+        trigger.add(nil, "hinder()", "goto", {Enable=true}, 19, "^你的动作还没有完成，不能移动。$")
         trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
         trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
         trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
@@ -488,7 +490,7 @@ function goto_exec(current_id)
             pause_msg = "地图事件"
             break
         end
-        if flood > config.flood_control then
+        if flood > config.flood then
             if #path_overflow == 0 and (var.goto.path[next_id].last == 3039 or
                set.has(maze, next_id) == true and set.has(maze, var.goto.path[next_id].last) == true) then
                 set.append(path, var.goto.path[next_id].step)
@@ -497,7 +499,7 @@ function goto_exec(current_id)
             else
                 set.append(path_overflow, var.goto.path[next_id].step)
                 overflow_id = next_id
-                if flood > config.flood_control + 10 then
+                if flood > config.flood + 10 then
                     path_overflow = {}
                     pause_msg = "稍事休息"
                     break

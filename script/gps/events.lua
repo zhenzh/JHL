@@ -120,6 +120,20 @@ function tired()
     end
 end
 
+function hinder()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ hinder ］")
+    trigger.disable_group("goto")
+    var.goto.pause = function()
+        var.goto.pause = nil
+        env.current.name = ""
+        trigger.enable_group("goto")
+        if wait_no_busy("halt") < 0 then
+            return -1
+        end
+        return 0
+    end
+end
+
 function yell_boat()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ yell_boat ］")
     var.goto.yell_boat = var.goto.yell_boat or {}
@@ -1000,8 +1014,8 @@ function navigation_drive_ship(dst)
 end
 
 local kill_npc_list = {
-    ["虚通"] = "kill xutong",
-    ["虚明"] = "kill xuming"
+    ["虚通"] = "kill xu tong",
+    ["虚明"] = "kill xu ming"
 }
 
 function kill_npc()
@@ -1461,7 +1475,7 @@ function xueshan()
     if #env.current.id == 0 then
         return 1,"重新定位"
     end
-    if global.flood > config.flood_control then
+    if global.flood > config.flood then
         var.goto.pause = true
         local l = wait_line(nil, 1, {StopEval=true}, 20, "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                                                          "^你的眼前一黑，接著什么也不知道了....$|"..
@@ -1672,7 +1686,7 @@ function quanzhou_gate()
     elseif var.goto.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "什么?" or l[0] == "这个方向没有出路。" then
-        map_adjust("泉州城门", "关闭")
+        map_adjust("泉州新门", "关闭")
         return 1,"移动调整"
     else
         if wait_line(nil, 30, nil, 20, "^> $") == false then
@@ -1855,7 +1869,7 @@ function kitchen()
                 trash[v] = carryon.inventory[v].count
             end
         end
-        if table.is_empty(trash) == false then
+        if not table.is_empty(trash) then
             if drop(trash) ~= 0 then
                 return -1
             end

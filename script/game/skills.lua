@@ -32,6 +32,9 @@ end
 
 function zuanyan(times)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ zuanyan ］参数：times = "..tostring(times))
+    if config.job_zuanyan == false and var.job ~= nil then
+        return zuanyan_return(0)
+    end
     var.zuanyan = var.zuanyan or { times = math.max(30, times or 100) }
     _,var.zuanyan.income = dazuo_analysis()
     return zuanyan_num_i(1)
@@ -123,7 +126,7 @@ function zuanyan_num_i(i)
         if rc ~= nil then
             return zuanyan_refresh_hp(rc)
         end
-        if global.flood > config.flood_control then
+        if global.flood > config.flood then
             wait(1)
         end
         if break_event() == true then
@@ -198,6 +201,9 @@ function zuanyan_exec(i)
         automation.idle = false
         if wait_line(nil, 30, {Gag=true}, 30, "^> $") == false then
             return -1
+        end
+        if var.job ~= nil and var.job.statistics ~= nil then
+            var.job.statistics.pot = var.job.statistics.pot - (var.zuanyan.times)
         end
         var.zuanyan.refresh = true
     else
@@ -304,8 +310,12 @@ function lian_num_ij(i, j)
         end
     end
     if skills.enable[config.lian[i]].name ~= skills.special[config.lian[config.lian[i]][j]].name then
-        if wait_line("enable "..config.lian[i].." "..config.lian[config.lian[i]][j], 30, nil, 30, "^你从现在起用\\S+作为基本\\S+的特殊技能。$") == false then
+        local l = wait_line("enable "..config.lian[i].." "..config.lian[config.lian[i]][j], 30, nil, 30, "^你从现在起用\\S+作为基本\\S+的特殊技能。$|"..
+                                                                                                         "^这个技能不能当成这种用途。$")
+        if l == false then
             return -1
+        elseif l[0] == "这个技能不能当成这种用途。" then
+            return lian_num_ij(i, j+1)
         end
     end
     repeat
@@ -329,7 +339,7 @@ function lian_num_ij(i, j)
         if rc ~= nil then
             return lian_refresh_hp(rc)
         end
-        if global.flood > config.flood_control then
+        if global.flood > config.flood then
             wait(1)
         end
         if break_event() == true then
@@ -365,7 +375,7 @@ end
 
 function lian_exec(i, j)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ lian_num_ij ］参数：i = "..tostring(i)..",参数：j = "..tostring(j))
-    local l = wait_line("lian "..config.lian[i].." "..tostring(var.lian.times), 30, nil, 30, "^你\\S+，开始练习\\S+。$|"..
+    local l = wait_line("lian "..config.lian[i].." "..tostring(var.lian.times), 30, nil, 30, "^你\\S+，开始(?:练|修)习\\S+。$|"..
                                                                                              "^这里不是练功的地方。$|"..
                                                                                              "^你只能练习用 enable 指定的特殊技能。$|".. 
                                                                                              "^(?:修行|练(?:习|))\\S+必须空手(?:挥掌运气方可|静坐|)。$|"..
@@ -387,6 +397,7 @@ function lian_exec(i, j)
                                                                                              "^寒冰绵掌必须通过特殊的法门才能修炼。$|"..
                                                                                              "^岳家枪法岂是你这等奸邪之人所能习之！$|"..
                                                                                              "^你还是多与别人切磋切磋吧。$|"..
+                                                                                             "^\\S+，再难更上一层楼。$|"..
                                                                                              "^你的内功水平有限，无法领会更高深的\\S+。$|"..
                                                                                              "^你的\\S+的熟练度不够。$")
     if l == false then
@@ -410,7 +421,7 @@ function lian_exec(i, j)
         end
         wait(0.1)
         return lian_exec(i, j)
-    elseif string.match(l[0], "开始练习") then
+    elseif string.match(l[0], "开始.*习") then
         automation.idle = false
         automation.skill = false
         var.lian.refresh = true
@@ -458,6 +469,7 @@ function lian_exec(i, j)
            string.match(l[0], "水平有限") or 
            string.match(l[0], "到顶峰") or 
            string.match(l[0], "火候不够") or 
+           string.match(l[0], "再难更上") or 
            string.match(l[0], "不够坏") then
         if wait_line(nil, 30, {Gag=true}, 30, "^> $") == false then
             return -1

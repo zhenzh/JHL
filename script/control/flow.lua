@@ -1,5 +1,4 @@
 require "skills"
-require "statistics"
 
 global.phase = {
     ["挂起"] = 0,
@@ -23,17 +22,35 @@ local noisy_rooms = {
     ["星宿海"] = 1356,
 }
 
+trigger.add("reduce_exp", "reduce_exp(tonumber(get_matches(1)))", "automation", {Enable=true}, 100, "^你的经验下降了(\\d+)点。$")
+
+function reduce_exp(exp)
+    state.exp = state.exp - exp
+    if var.job.statistics ~= nil then
+        var.job.statistics.exp = var.job.statistics.exp - exp
+    end
+end
+
 function automation_reset(func)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset ］参数："..tostring(func))
     automation.reconnect = func or "automation.reconnect = nil"
-    set.append(statistics.reset, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.reset, time.epoch())
+    if var.job ~= nil then
+        statistics_append(var.job.name)
+        if var.job.name == "飞马镖局" and config.jobs["飞马镖局"].phase == 2 then
+            config.jobs["飞马镖局"].biaoche = nil
+            config.jobs["飞马镖局"].dest = nil
+            config.jobs["飞马镖局"].phase = 4
+        end
+    end
     reset()
 end
 
 function automation_reset_faint()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_faint ］")
     automation.reconnect = nil
-    local l = wait_line(nil, 180, {StopEval=true}, 9, "^慢慢地一阵眩晕感传来，你终于又有了知觉....$|^鬼门关 - ")
+    automation.idle = false
+    local l = wait_line(nil, 180, {StopEval=true}, 9, "^慢慢地一阵眩晕感传来，你终于又有了知觉....$|^鬼门关 - $")
     if l == false then
         return -1
     elseif l[0] == "慢慢地一阵眩晕感传来，你终于又有了知觉...." then
@@ -49,13 +66,8 @@ end
 function automation_reset_die()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_die ］")
     automation.reconnect = nil
-    set.append(statistics.death, time.date("%Y%m%d%H%M%S"))
-    if config.jobs[global.jid] == "飞马镖局" then
-        if config.jobs["飞马镖局"].phase == 2 then
-            config.jobs["飞马镖局"].biaoche = nil
-            config.jobs["飞马镖局"].phase = 4
-        end
-    end
+    automation.idle = false
+    set.append(automation.statistics.death, time.epoch())
     local l = wait_line(nil, 60, nil, 10, "^鬼卒将你的「阴司路引」收了起来，伸手指了指关门，好象是叫你进去。$|"..
                                           "^你被吓了一大跳，连滚代爬地跑进关内去了。$|"..
                                           "^但见阴天子把手一招，飘来了牛头马面，架起你就往内殿而去。$|"..
@@ -69,7 +81,7 @@ function automation_reset_die()
         wait_line("north", 60, nil, 10, "^阴司第\\S+殿 - $")
         return automation_reset_die()
     else
-        if run_hp() < 0 then
+        if wait_line("score;hp;skills;enable;prepare", 30, nil, 10, "^以下是你目前组合中的特殊拳术技能。$|^你现在没有组合任何特殊拳术技能。$", "^> $") == false then
             return automation_reset()
         end
     end
@@ -79,7 +91,7 @@ end
 function automation_reset_connect()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_connect ］")
     automation.reconnect = nil
-    set.append(statistics.connect, time.date("%Y%m%d%H%M%S"))
+    set.append(automation.statistics.connect, time.epoch())
     if get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" then
         local last_line = get_lines(-1)[1]
@@ -109,12 +121,18 @@ end
 function automation_reset_killer()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_killer ］")
     automation.reconnect = nil
+    automation.idle = false
+    local rc = one_step()
+    if rc ~= 0 then
+        return automation_reset()
+    end
+    return 0
 end
 
 function automation_idle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_idle ］")
-    set.append(statistics.idle, time.date("%Y%m%d%H%M%S"))
     if automation.idle == true then
+        set.append(automation.statistics.idle, time.epoch())
         automation_reset()
     end
     automation.idle = true
@@ -131,11 +149,15 @@ function start()
     trigger.add(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
     trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
-    trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$")
+    trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|"..
+                                                                                                       "^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$|"..
+                                                                                                       "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
+    if config.jobs["斧头帮任务"].phase == 2 then
+        config.jobs["斧头帮任务"].phase = 1
+    end
     run("halt")
     if flow() < 0 then
-        show("dbg", "red")
-        --automation_reset()
+        automation_reset()
     else
         return 0
     end
@@ -145,16 +167,48 @@ function flow()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ flow ］")
     var.flow = var.flow or { loop = 0 }
     global.jid = automation.jid or 1
-    if config.jobs["门派任务"].enable and 
-       config.jobs["门派任务"].phase == nil then
+    if config.jobs["门派任务"].enable and config.jobs["门派任务"].phase == nil then
         config.jobs["门派任务"].active = true
     end
     automation.phase = global.phase['空闲']
-
+    if profile.family == "雪山派" and profile.master == "金轮法王" then
+        require "longxiang_pozhang"
+        if config.jobs["龙象破障"] == nil then
+            config.jobs["龙象破障"] = { active = true }
+        end
+        if config.jobs[2] ~= "龙象破障" then
+            table.insert(config.jobs, 2, "龙象破障")
+        end
+        config.jobs["龙象破障"].enable = true
+        if profile.longxiang == nil then
+            profile.longxiang = { progress = 0, pozhang = 0 }
+        end
+        local l = wait_line("set pozhang", 30, nil, nil, "^你目前还没有任何为 pozhang 的变量设定。$|^您目前 pozhang 的变量设定为：\\s+(\\d+)$")
+        if l == false then
+            return -1
+        elseif l[0] == "你目前还没有任何为 pozhang 的变量设定。" then
+            run("set pozhang 0")
+        end
+        profile.longxiang.pozhang = tonumber(l[1] or 0)
+        trigger.add("get_longxiang_level", "get_longxiang_level(get_matches(1))", nil, {Enable=true, OneShot=true}, 5, "^你手结\\S+印，运起的龙象般若功(\\S+)层功法「\\S+」$")
+        trigger.add("get_longxiang_status", "get_longxiang_status(get_matches(1), get_matches(2))", nil, {Enable=true, Multi=true, OneShot=true}, 5, "^你向鸠摩智打听有关「熟练度」的消息。\\n鸠摩智说道：你现在的熟练度是(\\d+)点，还需要精研龙象神功((?:-|)\\d+)次方可精进。$")
+        trigger.add("get_longxiang_progress", "get_longxiang_progress()", nil, {Enable=true}, 5, "^你的龙象之力运行完毕，将内力收回丹田。$")
+        trigger.add("get_longxiang_pozhang", "get_longxiang_pozhang()", nil, {Enable=true, OneShot=true}, 5, "^汝须破除我他迷障，才能精进无碍！$")
+        if trigger.is_exist("longxiang_pozhang_cd") == true then
+            config.jobs["龙象破障"].active = false
+        else
+            config.jobs["龙象破障"].active = true
+            config.jobs["龙象破障"].phase = nil
+        end
+    elseif config.jobs["龙象破障"] ~= nil then
+        config.jobs["龙象破障"] = nil
+        table.delete(config.jobs, "龙象破障")
+    end
+    local s1 = table.snap(_G)
+    s1.s2 = nil
+    s1.global.buffer = nil
     repeat
-        collectgarbage("collect")
-        collectgarbage("collect")
-        collectgarbage("collect")
+        automation.idle = false
         local rc = flow_prepare_job()
         if rc ~= nil then
             return rc
@@ -173,6 +227,10 @@ function flow()
                 flow_suspend()
             end
         end
+        local s2 = table.snap(_G)
+        s2.s1 = nil
+        s2.global.buffer = nil
+        printf(table.diff(s1, s2))
     until false
 end
 
@@ -241,14 +299,15 @@ function flow_do_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ flow_do_job ］")
     automation.phase = global.phase["任务"]
     local rc
-    if config.jobs[config.jobs[global.jid]].active ~= false then
-        rc = config.jobs[config.jobs[global.jid]].func()
-        if rc < 0 then
+    if config.jobs[config.jobs[global.jid]].enable == true and config.jobs[config.jobs[global.jid]].active == true then
+        if config.jobs[config.jobs[global.jid]].limit == nil then
+            rc = config.jobs[config.jobs[global.jid]].func()
+        elseif statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+            rc = config.jobs[config.jobs[global.jid]].func()
+        end
+        if (rc or 0) < 0 then
             return -1
         end
-    end
-    if rc ~= nil then
-        archive_statistics()
     end
     if rc == 0 then
         global.jid = 1
@@ -260,6 +319,11 @@ function flow_do_job()
         end
         return 0
     else
+        if config.jobs[global.jid] == "嵩山任务" then
+            if statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+                global.jid = global.jid - 1
+            end
+        end
         if global.jid == #config.jobs then
             global.jid = 0
         end
@@ -492,7 +556,7 @@ function plan_fight_weapon()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ plan_fight_weapon ］")
     local list = {}
     for k,v in pairs(config.fight) do
-        if  v.weapon ~= nil and (config.jobs[k] or {}).enable == true then
+        if  v.weapon ~= nil and (k == "通用" or (config.jobs[k] or {}).enable == true) then
             local fight_weapon = {}
             if v.weapon[1] == "" then
                 fight_weapon["圣阿武契的战书:santa glove"] = 1
@@ -574,10 +638,10 @@ function plan_fight_weapon()
                     end
                 end
             end
-            for k,v in pairs(fight_weapon) do
-                list[k] = math.max(v, (list[k] or 0))
-                if config.lian.weapon[items[k].type] == nil then
-                    config.lian.weapon[items[k].type] = k
+            for i,j in pairs(fight_weapon) do
+                list[i] = math.max(j, (list[j] or 0))
+                if config.lian.weapon[items[i].type] == nil then
+                    config.lian.weapon[items[i].type] = i
                 end
             end
         end
@@ -701,9 +765,12 @@ function privilege_job(job)
         if k >= set.index_of(config.jobs, job) then
             return false
         end
-        if config.jobs[v].enable == true and 
-           config.jobs[v].active == true then
-            return true
+        if config.jobs[v].enable == true and config.jobs[v].active == true then
+            if config.jobs[config.jobs[global.jid]].limit == nil then
+                return true
+            elseif statistics("-c", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+                return true
+            end
         end
     end
 end
@@ -750,18 +817,6 @@ function break_event()
         end
     end
     return false
-end
-
-function archive_statistics()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ archive_statistics ］")
-    if var.statistics ~= nil then
-        if time.toepoch(statistics.date, "^(%d%d%d%d)(%d%d)(%d%d)$") + 86400000 <= var.statistics["end"] then
-            table.save(get_work_path().."log/statistics."..statistics.date, statistics)
-            statistics = { date = time.date("%Y%m%d") }
-        end
-        set.append(statistics, var.statistics)
-        var.statistics = nil
-    end
 end
 
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")
