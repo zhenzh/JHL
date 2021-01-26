@@ -356,20 +356,15 @@ function songshan_job_discuss(room, npc)
         return songshan_job_arrest(room, npc)
     else
         config.jobs["嵩山任务"].discuss = true
-        trigger.add("songshan_job_npc_esc", "songshan_job_npc_esc(get_matches(1))", "songshan_job", {Enable=false, OneShot=true}, 100, "^"..npc[1].."\\S*往(\\S+)(?:离开|走了出去)。$")
-        l = wait_line(nil, 30, nil, nil, "^> $")
-        if l == false then
+        trigger.add("songshan_job_npc_esc", "songshan_job_npc_esc(get_matches(1))", "songshan_job", {Enable=true, OneShot=true}, 100, "^"..npc[1].."\\S*往(\\S+)(?:离开|走了出去)。$")
+        if wait_no_busy("halt") < 0 then
             return -1
+        end
+        if var.job.esc == nil then
+            local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
+            config.jobs["嵩山任务"].area = set.union(set.compl(config.jobs["嵩山任务"].area, around), around)
         else
-            if wait_no_busy("halt") < 0 then
-                return -1
-            end
-            if var.job.esc == nil then
-                local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
-                config.jobs["嵩山任务"].area = set.union(set.compl(config.jobs["嵩山任务"].area, around), around)
-            else
-                room = get_room_id_by_roomsfrom({room}, get_room_id_around(), var.job.esc)[1]
-            end
+            room = get_room_id_by_roomsfrom({room}, get_room_id_around(), var.job.esc)[1]
             l = wait_line(var.job.esc, 30, nil, nil, "^\\S+ - |"..
                                                      "^什么\\?$|"..
                                                      "^没有这个方向。$")
@@ -390,8 +385,8 @@ function songshan_job_discuss(room, npc)
                 end
                 room = env.current.id[1]
             end
-            return songshan_job_arrest(room, npc)
         end
+        return songshan_job_arrest(room, npc)
     end
     return songshan_job_discuss(room, npc)
 end
