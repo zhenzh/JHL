@@ -166,8 +166,7 @@ function songshan_job_refresh()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ songshan_job_refresh ］")
     local l = wait_line("ask zuo lengchan about job", 30, nil, nil, "^你向左冷禅打听有关「job」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                    "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "忙着") then
@@ -181,7 +180,8 @@ function songshan_job_refresh()
                                          "^左冷禅说道：叫你去福建你怎么还在这里闲逛？$|"..
                                          "^左冷禅说道：去了这么久才回来，那些恒山派的女尼早已脱身了！$|"..
                                          "^左冷禅对着你竖起了右手大拇指，好样的。$|"..
-                                         "^左冷禅说道：我辈学武之人，最讲究的是正邪是非之辨，\\S+居然和妖魔勾搭成奸，实已犯了武林的大忌。$")
+                                         "^左冷禅说道：我辈学武之人，最讲究的是正邪是非之辨，\\S+居然和妖魔勾搭成奸，实已犯了武林的大忌。$|"..
+                                         "^但是很显然的，左冷禅现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
         elseif l[0] == "左冷禅对着你竖起了右手大拇指，好样的。" then
@@ -202,9 +202,15 @@ function songshan_job_refresh()
                 return 1
             end
             return songshan_job_p1()
+        elseif l[0] == "但是很显然的，左冷禅现在的状况没有办法给你任何答覆。" then
+            var.job.statistics = nil
+            return 1
         end
         config.jobs["嵩山任务"].phase = phase["任务执行"]
         return
+    else
+        var.job.statistics = nil
+        return 1
     end
 end
 
@@ -296,22 +302,20 @@ function songshan_job_ask_npc(room, npc)
     end
     local l = wait_line("ask "..string.lower(set.last(npc)[2]).." "..tostring(var.job.num[set.last(npc)[1]]).." about 援助", 30, nil, nil, "^你向"..set.last(npc)[1].."打听有关「援助」的消息。$|"..
                                                                                                                                           "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                                                                                          "^这里没有 .+ 这个人。$|"..
-                                                                                                                                          "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                                                                                          "^这里没有 .+ 这个人。$")
     if l == false then
         return -1
     elseif string.match(l[0], "打听有关") then
         l = wait_line(nil, 30, nil, nil, "^"..set.last(npc)[1].."说道：“原来是嵩山派的朋友，派师姐被魔教之人伏击，多谢这位师兄解围。”$|"..
                                          "^"..set.last(npc)[1].."对你说道：“多谢你的好意，现今我无需援助！”$|"..
-                                         "^"..set.last(npc)[1].."说道：“嵩山派这样狼子野心，休想知道我师姐妹们的下落。”$")
+                                         "^"..set.last(npc)[1].."说道：“嵩山派这样狼子野心，休想知道我师姐妹们的下落。”$|"..
+                                         "^但是很显然的，"..set.last(npc)[1].."现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
-        elseif string.match(l[0], "无需援助") then
+        elseif string.match(l[0], "无需援助") or string.match(l[0], "任何答覆") then
             var.job.num[set.last(npc)[1]] = var.job.num[set.last(npc)[1]] - 1
             return songshan_job_ask_npc(room, npc)
         elseif string.match(l[0], "狼子野心") then
-            show("dbg songshan")
-            print(config.jobs["嵩山任务"])
             config.jobs["嵩山任务"].discuss = true
             return songshan_job_arrest(room, set.last(npc))
         end
@@ -476,14 +480,14 @@ function songshan_job_order_npc(room, npc)
     end
     local l = wait_line("ask "..string.lower(npc[2]).." "..tostring(var.job.num[npc[1]]).." about 动身", 30, nil, nil, "^你向"..npc[1].."打听有关「动身」的消息。$|"..
                                                                                                                         "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                                                                        "^这里没有 .+ 这个人。$|"..
-                                                                                                                        "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                                                                        "^这里没有 .+ 这个人。$")
     if l == false then
         return -1
     elseif string.match(l[0], "打听有关") then
         l = wait_line(nil, 30, nil, nil, "^"..npc[1].."被迫开始跟随你一起行动。$|"..
                                          "^"..npc[1].."说道：我现在正忙着呢，有事儿等会再说吧。$|"..
-                                         "^"..npc[1].."说道：我与你素未谋面，你想带我到哪去？$")
+                                         "^"..npc[1].."说道：我与你素未谋面，你想带我到哪去？$|"..
+                                         "^但是很显然的，"..npc[1].."现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
         elseif string.match(l[0], "跟随你") then

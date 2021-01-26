@@ -140,8 +140,7 @@ function ftb_job_refresh()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ ftb_job_refresh ］")
     local l = wait_line("ask cheng jinfu about job", 30, nil, nil, "^你向程金斧打听有关「job」的消息。$|"..
                                                                    "^这里没有 \\S+ 这个人$|"..
-                                                                   "^(\\S+)忙着呢，你等会儿在问话吧。$|"..
-                                                                   "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                   "^(\\S+)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "忙着") then
@@ -157,6 +156,7 @@ function ftb_job_refresh()
                                          "^程金斧说道：BUG|"..
                                          "^程金斧一脚正好踢中你的屁股！$|"..
                                          "^程金斧对着你竖起了右手大拇指，好样的。$|"..
+                                         "^但是很显然的，程金斧现在的状况没有办法给你任何答覆。$|"..
                                          "^> $")
         if l == false then
             return -1
@@ -196,6 +196,10 @@ function ftb_job_refresh()
         elseif string.find(l[0], "BUG") then
             timer.add("ftb_job_cd", 900, "ftb_job_active()", "ftb_job", {Enable=true, OneShot=true})
             return ftb_job_p3()
+        elseif l[0] == "但是很显然的，程金斧现在的状况没有办法给你任何答覆。" then
+            config.jobs["斧头帮任务"].phase = phase["任务失败"]
+            var.job.statistics = nil
+            return 1
         elseif l[0] == "程金斧说道：我早就告诉过你了:" then
             if (config.jobs["斧头帮任务"].phase or 0) == phase["任务失败"] then
                 timer.delete("ftb_job_cd")
@@ -210,6 +214,10 @@ function ftb_job_refresh()
             timer.add("ftb_job_cd", 900, "ftb_job_active()", "ftb_job", {Enable=true, OneShot=true})
             return
         end
+    else
+        var.job.statistics = nil
+        timer.delete("ftb_job_cd")
+        return ftb_job_p3()
     end
 end
 
@@ -359,8 +367,7 @@ function ftb_job_ask_npc(room, npc)
     end
     local l = wait_line("ask "..string.lower(set.last(npc)[2]).." about 刺客", 30, nil, nil, "^你向"..set.last(npc)[1].."打听有关「刺客」的消息。$|"..
                                                                                             "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                                            "^这里没有 .+ 这个人。$|"..
-                                                                                            "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                                            "^这里没有 .+ 这个人。$")
     if l == false then
         return -1
     elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
@@ -370,9 +377,10 @@ function ftb_job_ask_npc(room, npc)
         local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
         set.pop(npc)
-    elseif string.match(l[0], "打听有关") then
+    else
         l = wait_line(nil, 30, nil, nil, "^"..set.last(npc)[1].."说道：老子怎么看都觉得你比我像杀手!$|"..
                                          "^"..set.last(npc)[1].."说道：青天白日的, 哪里有刺客\\? 笑话.$|"..
+                                         "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
                                          "^"..set.last(npc)[1].."摇摇头，说道：没听说过。$|"..
                                          "^"..set.last(npc)[1].."耸了耸肩，很抱歉地说：无可奉告。$|"..
                                          "^"..set.last(npc)[1].."睁大眼睛望着你，显然不知道你在说什么。$|"..
@@ -395,8 +403,6 @@ function ftb_job_ask_npc(room, npc)
         else
             set.append(config.jobs["斧头帮任务"].exclude, set.pop(npc)[1])
         end
-    else
-        set.append(config.jobs["斧头帮任务"].exclude, set.pop(npc)[1])
     end
     return ftb_job_ask_npc(room, npc)
 end

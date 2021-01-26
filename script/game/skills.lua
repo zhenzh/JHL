@@ -310,8 +310,12 @@ function lian_num_ij(i, j)
         end
     end
     if skills.enable[config.lian[i]].name ~= skills.special[config.lian[config.lian[i]][j]].name then
-        if wait_line("enable "..config.lian[i].." "..config.lian[config.lian[i]][j], 30, nil, 30, "^你从现在起用\\S+作为基本\\S+的特殊技能。$") == false then
+        local l = wait_line("enable "..config.lian[i].." "..config.lian[config.lian[i]][j], 30, nil, 30, "^你从现在起用\\S+作为基本\\S+的特殊技能。$|"..
+                                                                                                         "^这个技能不能当成这种用途。$")
+        if l == false then
             return -1
+        elseif l[0] == "这个技能不能当成这种用途。" then
+            return lian_num_ij(i, j+1)
         end
     end
     repeat
@@ -385,7 +389,6 @@ function lian_exec(i, j)
                                                                                              "^你的\\S+已经练习到顶峰了，必须先打好基础才能继续提高。$|"..
                                                                                              "^你的\\S+火候不够，无法练\\S+。$|"..
                                                                                              "^你不够坏呀，怎么能练习\\S+呢。$|"..
-                                                                                             "^这个技能不能当成这种用途。$|"..
                                                                                              "^你不能通过练习招架来提高这项技能。$|"..
                                                                                              "^凌波微步只能通过研读《北冥秘籍》来提高。$|"..
                                                                                              "^九阴白骨爪只能向周芷若学习。$|"..
@@ -463,7 +466,6 @@ function lian_exec(i, j)
            l[0] == "寒冰绵掌必须通过特殊的法门才能修炼。" or 
            l[0] == "你还是多与别人切磋切磋吧。" or 
            l[0] == "你不能通过练习招架来提高这项技能。" or 
-           l[0] == "这个技能不能当成这种用途。" or 
            string.match(l[0], "水平有限") or 
            string.match(l[0], "到顶峰") or 
            string.match(l[0], "火候不够") or 

@@ -271,19 +271,21 @@ function feima_job_aquire()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_aquire ］")
     local l = wait_line("ask ma xingkong about 押镖", 30, nil, nil, "^你向马行空打听有关「押镖」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                    "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                    "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif l[0] == "你向马行空打听有关「押镖」的消息。" then
         l = wait_line(nil, 30, nil, nil, "^马行空说道：这位\\S+不是正在护镖么，请先完成手上的工作再来。$|"..
                                          "^马行空点了点头。$|"..
-                                         "^马行空说道：最近镖局生意惨淡，生意不好做呀。$")
+                                         "^马行空说道：最近镖局生意惨淡，生意不好做呀。$|"..
+                                         "^但是很显然的，马行空现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
         elseif l[0] == "马行空点了点头。" then
             config.jobs["飞马镖局"].phase = phase["任务执行"]
             config.jobs["飞马镖局"].biaoche = 2921
+        elseif l[0] == "但是很显然的，马行空现在的状况没有办法给你任何答覆。" then
+            return 1
         else
             config.jobs["飞马镖局"].phase = phase["任务放弃"]
             return feima_job_p4()
@@ -601,8 +603,7 @@ function feima_job_settle()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_settle ］")
     local l = wait_line("ask ma xingkong about 完成", 30, nil, nil, "^你向马行空打听有关「完成」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                    "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "忙着") then
@@ -614,6 +615,7 @@ function feima_job_settle()
     elseif l[0] == "你向马行空打听有关「完成」的消息。" then
         l = wait_line(nil, 30, nil, nil, "^马行空轻轻地拍了拍你的头。$|"..
                                          "^马行空说道：我没让你走镖啊？$|"..
+                                         "^但是很显然的，马行空现在的状况没有办法给你任何答覆。$|"..
                                          "^> $")
         if l == false then
             return -1
@@ -627,6 +629,8 @@ function feima_job_settle()
             end
             var.job.statistics.result = "成功"
             return 0
+        elseif l[0] == "但是很显然的，马行空现在的状况没有办法给你任何答覆。" then
+            return 1
         else
             config.jobs["飞马镖局"].phase = phase["任务获取"]
             return 1
@@ -640,8 +644,7 @@ function feima_job_abandon_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ feima_job_abandon_job ］")
     local l = wait_line("ask ma xingkong about 放弃", 30, nil, nil, "^你向马行空打听有关「放弃」的消息。$|"..
                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                    "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                    "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "忙着") then
@@ -656,7 +659,7 @@ function feima_job_abandon_job()
                                                                       "^马行空似乎不懂你是什么意思。$|"..
                                                                       "^这里没有 \\S+ 这个人$|"..
                                                                       "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                      "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                      "^但是很显然的，马行空现在的状况没有办法给你任何答覆。$")
             if l == false then
                 return -1
             elseif string.match(l[0], "忙着") then

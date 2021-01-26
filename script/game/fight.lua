@@ -2,7 +2,7 @@ trigger.add("fight_snake", "fight_stop(1)", "fight", {Enable=false}, nil, "^忽�
 trigger.add("fight_danger", "fight_stop()", "fight", {Enable=false}, nil, "^\\( 你(?:已经一副头重脚轻的模样，正在勉力支撑著不倒下去|已经陷入半昏迷状态，随时都可能摔倒晕去|受伤过重，已经有如风中残烛，随时都可能断气)。 \\)$")
 trigger.add("fight_faint", "fight_stop(2)", "fight", {Enable=false}, nil, "^你的眼前一黑，接著什么也不知道了....$")
 trigger.add("fight_idle", "fight_idle()", "fight", {Enable=false}, nil, "^\\S+只能对战斗中的对手使用。$|^\\S+只有在战斗中才能使用。$")
-trigger.add("fight_lost_weapon", "fight_lost_weapon()", "fight", {Enable=false}, nil, "^你只觉得手中\\S+把持不定，脱手飞出！$|^只听见「啪」地一声，你手中的\\S+已经断为两截！$")
+trigger.add("fight_lost_weapon", "fight_lost_weapon()", "fight", {Enable=false}, 99, "^你只觉得手中\\S+把持不定，脱手飞出！$|^只听见「啪」地一声，你手中的\\S+已经断为两截！$")
 
 function unwield()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ unwield ］")
@@ -74,12 +74,18 @@ function wield_position(pos)
                 return wield(var.wield.weapon)
             end
         end
+        show("dbg1")
+        printf(var.wield.weapon[pos])
+        printf(carryon.inventory)
         return 1
     end
     local wid
     if var.wield.weapon[1] == var.wield.weapon[2] then
         if pos == 2 then
             if carryon.inventory[var.wield.weapon[pos]].count < 2 then
+                show("dbg2")
+                printf(var.wield.weapon[pos])
+                printf(carryon.inventory)
                 return 1
             end
             wid = carryon.inventory[var.wield.weapon[pos]].id.." "..carryon.inventory[var.wield.weapon[pos]].seq[2]
@@ -210,6 +216,8 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
         run(set.concat((config.fight[config.jobs[global.jid]].yuns or config.fight["通用"].yuns), ";")..";"..set.concat((config.fight[config.jobs[global.jid]].performs or config.fight["通用"].performs), ";"))
     end
     wait_line(nil, 2, nil, 100, "^"..(var.job.enemy_name or "\\S+").."倒在地上，挣扎了几下就死了。$|"..
+                                "^你只觉得手中\\S+把持不定，脱手飞出！$|"..
+                                "^只听见「啪」地一声，你手中的\\S+已经断为两截！$|"..
                                 "^你目前还没有任何为 中断事件 的变量设定。$")
     return fight()
 end

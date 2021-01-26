@@ -89,8 +89,7 @@ function longxiang_pozhang_refresh()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_refresh ］")
     local l = wait_line("ask jinlun fawang about 破障", 30, nil, nil, "^你向金轮法王打听有关「破障」的消息。$|"..
                                                                      "^这里没有 \\S+ 这个人$|"..
-                                                                     "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                     "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+                                                                     "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "忙着") then
@@ -107,7 +106,8 @@ function longxiang_pozhang_refresh()
                                          "^金轮法王说道：你\\S+不足，切莫妄图强行修行。$|"..
                                          "^金轮法王说道：武学精进固然重要，但是却也不能操之过急，你先好好的休息休息吧。$|"..
                                          "^金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事$|"..
-                                         "^金轮法王说道：不是让你去找能海上师了么，你还留在这里做什么？$")
+                                         "^金轮法王说道：不是让你去找能海上师了么，你还留在这里做什么？$|"..
+                                         "^但是很显然的，金轮法王现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
         elseif l[0] == "金轮法王说道：你龙象般若功修为不足，不足以破关修行下一层。" or 
@@ -130,12 +130,17 @@ function longxiang_pozhang_refresh()
             if wait_no_busy() < 0 then
                 return -1
             end
+        elseif l[0] == "但是很显然的，金轮法王现在的状况没有办法给你任何答覆。" then
+            wait(1)
+            return longxiang_pozhang_refresh()
         end
         if timer.is_exist("longxiang_pozhang_cd") == false then
             timer.add("longxiang_pozhang_cd", (profile.longxiang.cd or 3600), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
         end
         config.jobs["龙象破障"].phase = phase["任务执行"]
         return
+    else
+        return 1
     end
 end
 
