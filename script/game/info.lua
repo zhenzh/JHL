@@ -93,6 +93,14 @@ for k,v in pairs(status_triggers) do
 end
 status_triggers = nil
 
+trigger.add("invalid_fu_qixuedanyao", "invalid_fu_qixuedanyao()", "状态记录", {Enable=true}, 2, "^你吃下一颗丹药，觉得自己的气息更加悠长。$")
+trigger.add("invalid_fu_jingshendanyao", "invalid_fu_jingshendanyao()", "状态记录", {Enable=true}, 2, "^你吃下一颗丹药，觉得自己的气息更加悠长。$")
+trigger.add("invalid_fu_yuluwan", "invalid_fu_yuluwan()", "状态记录", {Enable=true}, 2, "^你吃下一粒九花玉露丸，(?:一股清香之气直透丹田，只觉得精神健旺，气血充盈，体内真力源源滋生，将疲乏一扫而空! |只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
+trigger.add("invalid_fu_sanhuangwan", "invalid_fu_sanhuangwan()", "状态记录", {Enable=true}, 2, "^你服下一颗三黄宝蜡丸，(?:只觉通体舒泰，精神焕发，伤势大有好转。|觉得体内真气逆行，内力大损。原来服食)$")
+trigger.add("invalid_fu_daxueteng", "invalid_fu_daxueteng()", "状态记录", {Enable=true}, 2, "^你吃下一棵大血藤，(?:顿时血气翻涌血脉膨胀，气力大长。|只觉得肝肠寸断，五脏欲裂，原来服食太多药物，药效适得其反！)$")
+trigger.add("invalid_fu_renshenguo", "invalid_fu_renshenguo()", "状态记录", {Enable=true}, 2, "^你吃下一枚人参果，（?:只觉得精神健旺，气血充盈，体内真力源源滋生，将疲乏饥渴一扫而空! |只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
+trigger.add("invalid_fu_xuelian", "invalid_fu_xuelian()", "状态记录", {Enable=true}, 2, "^你吃下一支雪莲，(?:一股秋菊似的幽香沁入心肺，顿觉神清气爽。|只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
+
 -- 信息采集
 trigger.add("get_room_objs", "get_room_objs(get_matches(1))", "信息采集", {Enable=false}, 3, "^  ((?:\\S+ \\S+|\\S+)(?:\\((?:\\w+ \\w+|\\w+)\\)|))(?:| <\\S+>)$")
 trigger.add("get_room_exits", "get_room_exits(get_matches(1))", "信息采集", {Enable=true}, 3, "^\\s+这里(?:明显|唯一)的出口是 (.*)。$|"..
@@ -1299,18 +1307,34 @@ function valid_ask_yuluwan()
         set.insert(items["九花玉露丸:yulu wan"].get, 1, "ask lu chengfeng about 九花玉露丸")
     end
 end
--- 信息刷新
---trigger.add("update_i", "^你(?:捡起|丢下)\\S+。$|"..
---                        "^你将\\S+保存了起来。$|"..
---                        "^你(?:取(?:光|出)|卖掉|从\\S+那里买下)了\\S+$", "if get_last_cmd() ~= 'quit' then run('i') end", nil, "信息采集",
---            bit.bor(trigger_flag.KeepEvaluating, trigger_flag.Temporary, trigger_flag.OmitFromOutput), 30)
---trigger.add("update_hp", "^你深深吸了几口气，(?:精神|脸色)看起来好多了|"..
---                         "^你伸了伸腰，长长地吸了口气|现在(?:(?:精|气)力充沛|精神饱满)。$|"..
---                         "^你运功完毕，深深吸了口气，站了起来。$|"..
---                         "^你把正在运行的真气强行压回丹田，站了起来。$|"..
---                         "^你改用另一种内功，内力必须重新锻练。$|"..
---                         "^你吃下大力丸之后，顿时感觉百病全消。$|"..
---                         "^你已经精疲力尽，动弹不得。$", "run('hp')", nil, "信息采集",
---            bit.bor(trigger_flag.KeepEvaluating, trigger_flag.Temporary, trigger_flag.OmitFromOutput), 30)
+
+function invalid_fu_qixuedanyao()
+    state.buff["气血丹药:qixue danyao"] = false
+end
+
+function invalid_fu_yuluwan()
+    state.buff["九花玉露丸:yulu wan"] = false
+    timer.add("invalid_fu_yuluwan", 1800, "state.buff['九花玉露丸:yulu wan'] = true", "state", {Enable=true, OneShot=true})
+end
+
+function invalid_fu_sanhuangwan()
+    state.buff["三黄宝蜡丸:sanhuang wan"] = false
+    timer.add("invalid_fu_sanhuangwan", 1800, "state.buff['三黄宝蜡丸:sanhuang wan'] = true", "state", {Enable=true, OneShot=true})
+end
+
+function invalid_fu_daxueteng()
+    state.buff["大血藤:da xueteng"] = false
+    timer.add("invalid_fu_daxueteng", 1800, "state.buff['大血藤:da xueteng'] = true", "state", {Enable=true, OneShot=true})
+end
+
+function invalid_fu_renshenguo()
+    state.buff["人参果:renshen guo"] = false
+    timer.add("invalid_fu_renshenguo", 1800, "state.buff['人参果:renshen guo'] = true", "state", {Enable=true, OneShot=true})
+end
+
+function invalid_fu_xuelian()
+    state.buff["雪莲:xuelian"] = false
+    timer.add("invalid_fu_xuelian", 1800, "state.buff['雪莲:xuelian'] = true", "state", {Enable=true, OneShot=true})
+end
 
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

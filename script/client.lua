@@ -86,6 +86,11 @@ function reset()
         local timer_record = {
             "invalid_ask_ping",
             "invalid_ask_yuluwan",
+            "invalid_fu_yuluwan",
+            "invalid_fu_sanhuangwan",
+            "invalid_fu_daxueteng",
+            "invalid_fu_renshenguo",
+            "invalid_fu_xuelian",
             "ftb_job_cd",
             "songshan_job_cd",
             "hengshan_job_cd",

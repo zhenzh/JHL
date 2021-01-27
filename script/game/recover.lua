@@ -640,9 +640,11 @@ function take_drugs(drugs, layer)
         var.take_drugs.layer = var.take_drugs.layer + 1
     end
     for _,v in ipairs(drugs) do
-        local rc = take_drugs_exec(v)
-        if (rc or 1) <= 0 then
-            return take_drugs_return(rc)
+        if state.buff[v] ~= false then
+            local rc = take_drugs_exec(v)
+            if (rc or 1) <= 0 then
+                return take_drugs_return(rc)
+            end
         end
     end
     return take_drugs_return(1, "治疗失败")
@@ -662,11 +664,20 @@ function take_drugs_exec(drug)
     local msg = is_own(drug)
     local rc
     if msg == true then
-        rc = take(items[drug].id)
-        if run_hp() < 0 then
-            return -1
+        rc,msg = take(items[drug].id)
+        if rc == 0 then
+            if run_hp() < 0 then
+                return -1
+            end
         end
-        return rc
+        if rc ~= 1 or msg == "你已经吃过一颗了，多吃无益。" then
+            return rc
+        else
+            if run_i() < 0 then
+                return -1
+            end
+            return take_drugs_exec(drug)
+        end
     elseif msg == false then
         if var.move == nil then
             rc = aquire({[drug] = 1})

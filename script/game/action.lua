@@ -353,10 +353,10 @@ function take(drug)
         if run_i() < 0 then
             return take_return(-1)
         end
-        if l[0] == "你要服用什么？" or l[0] == "你已经吃过一颗了，多吃无益。" then
-            return take_return(1, l[0])
-        else
+        if string.match(l[0], "什么") then
             return take_return(0)
+        else
+            return take_return(1, l[0])
         end
     end
 end
