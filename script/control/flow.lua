@@ -118,6 +118,23 @@ function automation_reset_connect()
     return automation_reset_connect()
 end
 
+function automation_reset_heal()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_heal ］")
+    automation.reconnect = nil
+    automation.idle = false
+    local l = wait_line(nil, 120, nil, 10, "^纪晓芙正在运功为你疗伤，忽觉自己内息後继乏力，祗得暂缓疗伤，站起身来。$|"..
+                                           "^运功良久，你感觉经脉顺畅，内伤尽去，神元气足地站了起来。$")
+    if l == false then
+        return automation_reset()
+    elseif l[0] == "纪晓芙正在运功为你疗伤，忽觉自己内息後继乏力，祗得暂缓疗伤，站起身来。" then
+        local rc = one_step()
+        if rc ~= 0 then
+            return automation_reset()
+        end
+    end
+    return 0
+end
+
 function automation_reset_killer()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_killer ］")
     automation.reconnect = nil
@@ -149,6 +166,7 @@ function start()
     trigger.add(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
     trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
+    trigger.add(nil, "automation_reset('automation_reset_heal()')", "automation", {Enable=true}, 10, "^纪晓芙坐了下来运起内功，将手掌贴在你背心，缓缓地将真气输入你的体内....")
     trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|"..
                                                                                                        "^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$|"..
                                                                                                        "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")

@@ -235,7 +235,7 @@ function ftb_job_get_dest()
                 break
             end
             if #v > 1 then
-                arounds = table.union(arounds, set.permute(v, #v-1))
+                arounds = set.union(arounds, set.permute(v, #v-1))
             end
         end
     end

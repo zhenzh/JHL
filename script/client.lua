@@ -134,7 +134,7 @@ function show(msg, fcolor, bcolor, breaker)
     bcolor = color_map[bcolor] or bcolor
     fcolor = fcolor or "pink"
     fcolor = color_map[fcolor] or fcolor
-    cecho("<:"..bcolor.."><"..fcolor..">"..msg..(breaker or "\n"))
+    cecho("<:"..bcolor.."><"..fcolor..">"..tostring(msg)..(breaker or "\n"))
 end
 
 function printf(parameter)

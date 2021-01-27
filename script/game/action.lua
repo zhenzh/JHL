@@ -431,15 +431,15 @@ function qu(list)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ qu ］参数：list = "..table.tostring(list))
     var.qu = var.qu or { mapping = {} }
     local rc,msg
+    local _list = table.copy(list)
     if env.current.name ~= "存物室" then
         rc = goto(290)
         if rc ~= 0 then
             return rc
         end
     end
-    for k,v in pairs(list) do
-        if items[k] ~= nil and 
-           carryon.repository[items[k].name] ~= nil then
+    for k,_ in pairs(_list) do
+        if items[k] ~= nil and carryon.repository[items[k].name] ~= nil then
             for _,i in ipairs(carryon.repository[items[k].name].index) do
                 var.qu.mapping[tonumber(i)] = k
             end
@@ -448,7 +448,7 @@ function qu(list)
     var.qu.index = table.index(var.qu.mapping)
     set.reverse(var.qu.index)
     for _,v in ipairs(var.qu.index) do
-        rc,msg = qu_exec(list, v)
+        rc,msg = qu_exec(_list, v)
         if rc ~= nil then
             return qu_return(rc, msg)
         end
@@ -463,10 +463,10 @@ function qu(list)
            end
        end
     end
-    if table.is_empty(list) then
+    if table.is_empty(_list) then
         return qu_return(0)
     else
-        return qu_return(1, list)
+        return qu_return(1, _list)
     end
 end
 
@@ -1081,7 +1081,7 @@ function aquire(list)
 end
 
 function aquire_return(rc, msg)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ aquire_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ aquire_return ］参数：rc = "..tostring(rc)..", msg = "..table.tostring(msg))
     if var.aquire == nil then
         return rc,msg
     end
@@ -1194,10 +1194,10 @@ function aquire_buy(list)
         return -1
     else
         if rc > 0 then
-            var.aquire.list = table.compl(var.aquire.list, table.compl(list, msg))
+            var.aquire.list = table.minus(var.aquire.list, table.minus(list, msg))
             return 1,msg
         else
-            var.aquire.list = table.compl(var.aquire.list, list)
+            var.aquire.list = table.minus(var.aquire.list, list)
         end
     end
     var.aquire.refresh = true
@@ -1211,10 +1211,10 @@ function aquire_qu(list)
         return -1
     else
         if rc > 0 then
-            var.aquire.list = table.compl(var.aquire.list, table.compl(list, msg))
+            var.aquire.list = table.minus(var.aquire.list, table.minus(list, msg))
             return 1,msg
         else
-            var.aquire.list = table.compl(var.aquire.list, list)
+            var.aquire.list = table.minus(var.aquire.list, list)
         end
     end
     var.aquire.refresh = true
