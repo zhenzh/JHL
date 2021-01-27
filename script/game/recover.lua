@@ -663,12 +663,10 @@ function take_drugs_exec(drug)
     local rc
     if msg == true then
         rc = take(items[drug].id)
-        if rc ~= 1 then
-            if run_hp() < 0 then
-                return -1
-            end
-            return rc
+        if run_hp() < 0 then
+            return -1
         end
+        return rc
     elseif msg == false then
         if var.move == nil then
             rc = aquire({[drug] = 1})
