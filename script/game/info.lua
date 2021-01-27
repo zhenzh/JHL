@@ -98,7 +98,7 @@ trigger.add("invalid_fu_jingshendanyao", "invalid_fu_jingshendanyao()", "状态�
 trigger.add("invalid_fu_yuluwan", "invalid_fu_yuluwan()", "状态记录", {Enable=true}, 2, "^你吃下一粒九花玉露丸，(?:一股清香之气直透丹田，只觉得精神健旺，气血充盈，体内真力源源滋生，将疲乏一扫而空! |只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
 trigger.add("invalid_fu_sanhuangwan", "invalid_fu_sanhuangwan()", "状态记录", {Enable=true}, 2, "^你服下一颗三黄宝蜡丸，(?:只觉通体舒泰，精神焕发，伤势大有好转。|觉得体内真气逆行，内力大损。原来服食)$")
 trigger.add("invalid_fu_daxueteng", "invalid_fu_daxueteng()", "状态记录", {Enable=true}, 2, "^你吃下一棵大血藤，(?:顿时血气翻涌血脉膨胀，气力大长。|只觉得肝肠寸断，五脏欲裂，原来服食太多药物，药效适得其反！)$")
-trigger.add("invalid_fu_renshenguo", "invalid_fu_renshenguo()", "状态记录", {Enable=true}, 2, "^你吃下一枚人参果，（?:只觉得精神健旺，气血充盈，体内真力源源滋生，将疲乏饥渴一扫而空! |只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
+trigger.add("invalid_fu_renshenguo", "invalid_fu_renshenguo()", "状态记录", {Enable=true}, 2, "^你吃下一枚人参果，(?:只觉得精神健旺，气血充盈，体内真力源源滋生，将疲乏饥渴一扫而空! |只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
 trigger.add("invalid_fu_xuelian", "invalid_fu_xuelian()", "状态记录", {Enable=true}, 2, "^你吃下一支雪莲，(?:一股秋菊似的幽香沁入心肺，顿觉神清气爽。|只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
 
 -- 信息采集
