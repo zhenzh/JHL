@@ -361,7 +361,7 @@ function hengshan_job_discuss(room, npc)
             return -1
         end
         if var.job.esc == nil then
-            local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
+            local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
             config.jobs["恒山任务"].area = set.union(set.compl(config.jobs["恒山任务"].area, around), around)
         else
             room = get_room_id_by_roomsfrom({room}, get_room_id_around(), var.job.esc)[1]

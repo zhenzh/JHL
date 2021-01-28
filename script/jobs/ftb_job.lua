@@ -429,7 +429,7 @@ function ftb_job_kill_npc(room, npc)
     elseif l[0] == "你现在正忙着呢。" then
         wait(0.1)
     elseif l[0] == "这里没有这个人。" then
-        local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
+        local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
         return
     elseif l[0] == "这里不准战斗。" then
@@ -478,14 +478,14 @@ function ftb_job_drive_npc(npc)
         end
         return ftb_job_drive_npc(npc)
     elseif string.match(l[0], "这里没有") then
-        local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
+        local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
     elseif l[1] ~= false then
-        local around =  get_room_id_by_tag("nojob", get_room_id_by_roomsfrom(env.current.id, get_room_id_around(), get_desc_dir(l[1])), "execlude")
+        local around =  get_room_id_by_tag("nojob", get_room_id_by_roomsfrom(env.current.id, get_room_id_around(), get_desc_dir(l[1])), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
     else
         if config.jobs["斧头帮任务"].enemy > 1 then
-            local around = get_room_id_by_tag("nojob", get_room_id_around(), "execlude")
+            local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
             set.insert(around, env.current.id[1], 1)
             config.jobs["斧头帮任务"].dest = set.union(around, config.jobs["斧头帮任务"].dest)
         else
