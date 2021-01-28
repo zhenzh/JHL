@@ -179,12 +179,15 @@ function yell_boat()
         l = wait_line("enter", 30, {StopEval=true}, 20, "^\\S+\\s+- |"..
                                                         "^你的眼前一黑，接著什么也不知道了....$|"..
                                                         "^你已经精疲力尽，动弹不得。$|"..
+                                                        "^什么\\?$|"..
                                                         "^鬼门关 - $|"..
                                                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return yell_boat_return(-1)
         elseif var.goto.pause ~= nil then
             return yell_boat_return(1, "移动暂停")
+        elseif l[0] == "什么?" then
+            return yell_boat()
         else
            if wait_line(nil, 30, nil, 20, "^> $") == false then
                 return yell_boat_return(-1)

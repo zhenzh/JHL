@@ -312,18 +312,23 @@ function songshan_job_ask_npc(room, npc)
                                          "^但是很显然的，"..set.last(npc)[1].."现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
-        elseif string.match(l[0], "无需援助") or string.match(l[0], "任何答覆") then
+        elseif string.match(l[0], "嵩山派的朋友") then
+            local num = var.job.num[set.last(npc)[1]]
+            var.job.num = {}
+            var.job.num[set.last(npc)[1]] = num
+            config.jobs["嵩山任务"].confirm = set.last(npc)[1]
+            return songshan_job_discuss(room, set.last(npc))
+        else
+            if string.match(l[0], "嵩山派的朋友") then
+                config.jobs["嵩山任务"].discuss = true
+                local rc = songshan_job_arrest(room, set.last(npc))
+                if rc ~= 1 then
+                    return rc
+                end
+            end
             var.job.num[set.last(npc)[1]] = var.job.num[set.last(npc)[1]] - 1
             return songshan_job_ask_npc(room, npc)
-        elseif string.match(l[0], "狼子野心") then
-            config.jobs["嵩山任务"].discuss = true
-            return songshan_job_arrest(room, set.last(npc))
         end
-        local num = var.job.num[set.last(npc)[1]]
-        var.job.num = {}
-        var.job.num[set.last(npc)[1]] = num
-        config.jobs["嵩山任务"].confirm = set.last(npc)[1]
-        return songshan_job_discuss(room, set.last(npc))
     elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
         if wait_no_busy("halt") < 0 then
             return -1
@@ -424,11 +429,15 @@ function songshan_job_arrest(room, npc)
     l = wait_line("arrest "..string.lower(npc[2]).." "..tostring(var.job.num[npc[1]]), 30, nil, nil, "^看起来"..npc[1].."想杀死你！$|"..
                                                                                                      "^这里不准战斗。$|"..
                                                                                                      "^这里并无此人！$|"..
-                                                                                                     "^左盟主派你来抓的不是此人。$")
+                                                                                                     "^左盟主派你来抓的不是此人。$|"..
+                                                                                                     "^抓她回去并不能讨好左盟主。$")
     if l == false then
         return -1
     elseif l[0] == "这里并无此人！" or l[0] == "左盟主派你来抓的不是此人。" then
         var.job.num[npc[1]] = var.job.num[npc[1]] - 1
+    elseif l[0] == "抓她回去并不能讨好左盟主。" then
+        config.jobs["嵩山任务"].discuss = nil
+        return 1
     elseif l[0] == "这里不准战斗。" then
         config.jobs["嵩山任务"].phase = phase["任务失败"]
         return songshan_job_p5()

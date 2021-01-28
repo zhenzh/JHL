@@ -173,22 +173,7 @@ function start()
     if config.jobs["斧头帮任务"].phase == 2 then
         config.jobs["斧头帮任务"].phase = 1
     end
-    run("halt")
-    if flow() < 0 then
-        automation_reset()
-    else
-        return 0
-    end
-end
 
-function flow()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ flow ］")
-    var.flow = var.flow or { loop = 0 }
-    global.jid = automation.jid or 1
-    if config.jobs["门派任务"].enable and config.jobs["门派任务"].phase == nil then
-        config.jobs["门派任务"].active = true
-    end
-    automation.phase = global.phase['空闲']
     if profile.family == "雪山派" and profile.master == "金轮法王" then
         require "longxiang_pozhang"
         if config.jobs["龙象破障"] == nil then
@@ -222,6 +207,24 @@ function flow()
         config.jobs["龙象破障"] = nil
         table.delete(config.jobs, "龙象破障")
     end
+
+    run("halt")
+    if flow() < 0 then
+        automation_reset()
+    else
+        return 0
+    end
+end
+
+function flow()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ flow ］")
+    var.flow = var.flow or { loop = 0 }
+    global.jid = automation.jid or 1
+    if config.jobs["门派任务"].enable and config.jobs["门派任务"].phase == nil then
+        config.jobs["门派任务"].active = true
+    end
+    automation.phase = global.phase['空闲']
+
     local s1 = table.snap(_G)
     s1.s2 = nil
     s1.global.buffer = nil
@@ -550,6 +553,9 @@ function prepare_items_obtain()
     trash["黑木令:heimu ling"] = nil
     trash["侍卫腰牌:yaopai"] = nil
     trash["皮帽:wanshou pimao"] = nil
+    if automation.statistics.processing["嵩山任务"] ~= nil then
+        trash["面罩:mian zhao"] = nil
+    end
     if drop(trash) < 0  then
         return -1
     end
