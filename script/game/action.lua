@@ -825,6 +825,7 @@ function pack_nonstack(box, item)
     end
     local l = wait_line("put "..id.." in "..box, 30, {StopEval=true}, 10, "^你将\\S+放进(?:食盒|皮腰带|布袋)。$|"..
                                                                           "^\\S+对(?:食盒|皮腰带|布袋)而言太重了。$|"..
+                                                                          "^你先忙完再说吧。$|"..
                                                                           "^这里没有 \\S+ 这个容器或不能将物品放进\\(上\\)去。$|"..
                                                                           "^你身上没有.+这样东西。$")
     if l == false then
@@ -834,6 +835,10 @@ function pack_nonstack(box, item)
         var.pack.refresh = true
     elseif string.match(l[0], "这里没有") then
         return 1
+    elseif l[0] == "你先忙完再说吧。" then
+        if wait_no_busy() < 0 then
+            return -1
+        end
     else
         var.pack.refresh = true
         return
