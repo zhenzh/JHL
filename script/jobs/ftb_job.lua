@@ -372,6 +372,9 @@ function ftb_job_ask_npc(room, npc)
         return -1
     elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
         wait(0.1)
+    elseif l[0] == "对方正忙着呢，你等会儿在问话吧。" then
+        set.append(config.jobs["斧头帮任务"].exclude, set.pop(npc)[1])
+        set.pop(npc)
     elseif string.match(l[0], "这里没有") then
         var.job.refresh = true
         local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
