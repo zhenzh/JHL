@@ -568,8 +568,11 @@ function walk_ice()
         return rc,msg
     end
     local current_wield
-    if carryon.wield[1] ~= "" then
+    if carryon.wield[1] ~= "" and carryon.wield[1] ~= "未知" then
         current_wield = table.copy(carryon.wield)
+        if current_wield[2] == "未知" then
+            current_wield[2] = ""
+        end
         if unwield() < 0 then
             return -1
         end
