@@ -127,7 +127,6 @@ function longxiang_pozhang_refresh()
             config.jobs["龙象破障"].phase = phase["任务完成"]
             return longxiang_pozhang_p3()
         elseif l[0] == "金轮法王对你并不理睬，只是微不可查的扬了下白眉。" then
-            timer.add("longxiang_pozhang_cd", (profile.longxiang.cd or 3600), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
             if wait_line(nil, 30, nil, nil, "^金轮法王挥了挥手：你去吧，为师当年却是意志未坚，未能得到上师垂青，中原之行，才一败涂地！$") == false then
                 return -1
             end
@@ -249,9 +248,11 @@ function longxiang_pozhang_poguan()
                 if wait_line(nil, 30, nil, nil, "^你倒在地上，挣扎了几下就死了。$") == false then
                     return -1
                 end
+                timer.add("longxiang_pozhang_cd", (profile.longxiang.cd or 3600), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
                 config.jobs["龙象破障"].phase = phase["任务完成"]
                 return 0
             end
+            timer.add("longxiang_pozhang_cd", (profile.longxiang.cd or 3600), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
         else
             timer.delete("longxiang_pozhang_cd")
             profile.longxiang.progress = 0
