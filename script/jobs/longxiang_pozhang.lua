@@ -99,7 +99,7 @@ function longxiang_pozhang_refresh()
         end
         return longxiang_pozhang_refresh()
     elseif l[0] == "你向金轮法王打听有关「破障」的消息。" then
-        l = wait_line(nil, 30, nil, nil, "^金轮法王挥了挥手：你去吧，为师当年却是意志未坚，未能得到上师垂青，中原之行，才一败涂地！$|"..
+        l = wait_line(nil, 30, nil, nil, "^金轮法王对你并不理睬，只是微不可查的扬了下白眉。$|"..
                                          "^金轮法王说道：龙象般若功共十三层，威力巨大，所以，每层都要以相应的佛法来化解。$|"..
                                          "^金轮法王说道：你龙象般若功修为不足，不足以破关修行下一层。$|"..
                                          "^金轮法王说道：龙象般若功修为不易，若不能掌控好反而会走火入魔。$|"..
@@ -126,16 +126,18 @@ function longxiang_pozhang_refresh()
             end
             config.jobs["龙象破障"].phase = phase["任务完成"]
             return longxiang_pozhang_p3()
-        elseif l[0] == "金轮法王挥了挥手：你去吧，为师当年却是意志未坚，未能得到上师垂青，中原之行，才一败涂地！" then
+        elseif l[0] == "金轮法王对你并不理睬，只是微不可查的扬了下白眉。" then
+            timer.add("longxiang_pozhang_cd", (profile.longxiang.cd or 3600), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
+            if wait_line(nil, 30, nil, nil, "^金轮法王挥了挥手：你去吧，为师当年却是意志未坚，未能得到上师垂青，中原之行，才一败涂地！$") == false then
+                return -1
+            end
+            wait(2)
             if wait_no_busy() < 0 then
                 return -1
             end
         elseif l[0] == "但是很显然的，金轮法王现在的状况没有办法给你任何答覆。" then
             wait(1)
             return longxiang_pozhang_refresh()
-        end
-        if timer.is_exist("longxiang_pozhang_cd") == false then
-            timer.add("longxiang_pozhang_cd", (profile.longxiang.cd or 3600), "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
         end
         config.jobs["龙象破障"].phase = phase["任务执行"]
         return
