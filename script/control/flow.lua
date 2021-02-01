@@ -139,6 +139,8 @@ function automation_reset_killer()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ automation_reset_killer ］")
     automation.reconnect = nil
     automation.idle = false
+    trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
+    trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     local rc = one_step()
     if rc ~= 0 then
         return automation_reset()
@@ -163,13 +165,13 @@ function start()
     trigger.enable("others_leave")
     trigger.enable("hide_busy")
     timer.add(nil, 180, "automation_idle()", "automation", {Enable=true})
-    trigger.add(nil, "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
-    trigger.add(nil, "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
-    trigger.add(nil, "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
-    trigger.add(nil, "automation_reset('automation_reset_heal()')", "automation", {Enable=true}, 10, "^纪晓芙坐了下来运起内功，将手掌贴在你背心，缓缓地将真气输入你的体内....")
-    trigger.add(nil, "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|"..
-                                                                                                       "^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$|"..
-                                                                                                       "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
+    trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
+    trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
+    trigger.add("automation_reset_connect", "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
+    trigger.add("automation_reset_heal", "automation_reset('automation_reset_heal()')", "automation", {Enable=true}, 10, "^纪晓芙坐了下来运起内功，将手掌贴在你背心，缓缓地将真气输入你的体内....")
+    trigger.add("automation_reset_killer", "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|"..
+                                                                                                                             "^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$|"..
+                                                                                                                             "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
     if config.jobs["斧头帮任务"].phase == 2 then
         config.jobs["斧头帮任务"].phase = 1
     end
