@@ -2,7 +2,7 @@ trigger.add("fight_snake", "fight_stop(1)", "fight", {Enable=false}, nil, "^忽�
 trigger.add("fight_danger", "fight_stop()", "fight", {Enable=false}, nil, "^\\( 你(?:已经一副头重脚轻的模样，正在勉力支撑著不倒下去|已经陷入半昏迷状态，随时都可能摔倒晕去|受伤过重，已经有如风中残烛，随时都可能断气)。 \\)$")
 trigger.add("fight_faint", "fight_stop(2)", "fight", {Enable=false}, nil, "^你的眼前一黑，接著什么也不知道了....$")
 trigger.add("fight_idle", "fight_idle()", "fight", {Enable=false}, nil, "^\\S+只能对战斗中的对手使用。$|^\\S+只有在战斗中才能使用。$")
-trigger.add("fight_lost_weapon", "fight_lost_weapon()", "fight", {Enable=false}, 99, "^你只觉得手中\\S+把持不定，脱手飞出！$|^只听见「啪」地一声，你手中的\\S+已经断为两截！$")
+trigger.add("fight_lost_weapon", "fight_lost_weapon(get_matches(1) or get_matches(2))", "fight", {Enable=false}, 99, "^你只觉得手中(\\S+)把持不定，脱手飞出！$|^只听见「啪」地一声，你手中的(\\S+)已经断为两截！$")
 
 function unwield()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ unwield ］")
@@ -232,22 +232,31 @@ function fight_return(rc)
     return rc
 end
 
-function fight_lost_weapon()
-    if carryon.inventory[carryon.wield[1]] == nil then
+function fight_lost_weapon(weapon)
+    for k,v in ipairs(carryon.wield) do
+        if items[v].name == weapon then
+            weapon = v
+            carryon.wield[k] = ""
+            break
+        end
+    end
+    if items[weapon] == nil then
         fight_stop(2)
         return
     end
-    carryon.inventory[carryon.wield[1]].count = carryon.inventory[carryon.wield[1]].count - 1
-    if carryon.wield[1] == "金轮:jin lun" or 
-       carryon.wield[1] == "法轮:fa lun" or 
-       carryon.wield[1] == "铜轮:fa lun" then
-        carryon.inventory[carryon.wield[1]].count = 0
+    if carryon.inventory[weapon] == nil then
+        fight_stop(2)
+        return
     end
-    if carryon.inventory[carryon.wield[1]].count == 0 then
-        carryon.inventory[carryon.wield[1]] = nil
+    carryon.inventory[weapon].count = carryon.inventory[weapon].count - 1
+    if weapon == "金轮:jin lun" or 
+       weapon == "法轮:fa lun" or 
+       weapon == "铜轮:fa lun" then
+        carryon.inventory[weapon].count = 0
     end
-    set.remove(carryon.wield, 1)
-    set.append(carryon.wield, "")
+    if carryon.inventory[weapon].count == 0 then
+        carryon.inventory[weapon] = nil
+    end
 end
 
 function fight_stop(rc)
