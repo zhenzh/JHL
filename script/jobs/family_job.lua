@@ -758,8 +758,10 @@ function family_job_kill_enemy()
     if enemy_choose["全杀"] == false then
         trigger.add("family_job_enemy_change", "family_job_enemy_change()", "family_job_active", {Enable=true, OneShot=true, StopEval=true}, 100, "^"..family_info[profile.family].enemy_name.."只觉得手中\\S+把持不定，脱手飞出！$")
     end
+    timer.add("family_job_fight_timeout", 60, "var.fight.stop = 2", "family_job", {Enable=true, OneShot=true})
     local rc = fight()
     trigger.delete("family_job_enemy_change")
+    timer.delete("family_job_fight_timeout")
     if rc < 0 then
         return -1
     elseif rc == 2 then
