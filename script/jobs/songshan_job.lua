@@ -308,6 +308,7 @@ function songshan_job_ask_npc(room, npc)
     elseif string.match(l[0], "打听有关") then
         l = wait_line(nil, 30, nil, nil, "^"..set.last(npc)[1].."说道：“原来是嵩山派的朋友，派师姐被魔教之人伏击，多谢这位师兄解围。”$|"..
                                          "^"..set.last(npc)[1].."对你说道：“多谢你的好意，现今我无需援助！”$|"..
+                                         "^"..set.last(npc)[1].."说道：“是掌门请你来的吧，我派师姐被魔教之人伏击，多谢大侠相助。”$|"..
                                          "^"..set.last(npc)[1].."说道：“嵩山派这样狼子野心，休想知道我师姐妹们的下落。”$|"..
                                          "^但是很显然的，"..set.last(npc)[1].."现在的状况没有办法给你任何答覆。$")
         if l == false then
@@ -319,7 +320,7 @@ function songshan_job_ask_npc(room, npc)
             config.jobs["嵩山任务"].confirm = set.last(npc)[1]
             return songshan_job_discuss(room, set.last(npc))
         else
-            if string.match(l[0], "嵩山派的朋友") then
+            if string.match(l[0], "狼子野心") then
                 config.jobs["嵩山任务"].discuss = true
                 local rc = songshan_job_arrest(room, set.last(npc))
                 if rc ~= 1 then
