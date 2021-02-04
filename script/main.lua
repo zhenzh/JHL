@@ -120,7 +120,7 @@ end
 function load_jobs()
     if automation.config_jobs ~= nil then
         for k,v in pairs(automation.config_jobs) do
-            if config.jobs[k] ~= nil then
+            if type(config.jobs[k]) == "table" then
                 for i,j in pairs(v) do
                     if i ~= "enable" then
                         config.jobs[k].i = j
