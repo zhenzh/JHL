@@ -74,7 +74,7 @@ end
 global.debug.level = automation.debug or global.debug.level
 
 automation.statistics = automation.statistics or {}
-automation.statistics.date = automation.statistics.date or time.date("%Y%m%d")
+automation.statistics.date = automation.statistics.date or time.date("%Y%m%d%H")
 automation.statistics.death = automation.statistics.death or {}
 automation.statistics.idle = automation.statistics.idle or {}
 automation.statistics.reset = automation.statistics.reset or {}

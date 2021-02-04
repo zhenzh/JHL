@@ -1,18 +1,18 @@
 config = {
-    userid      = nil,          -- 用户 ID
-    passwd      = nil,          -- 登录密码
+    userid      = "unknown",          -- 用户 ID
+    passwd      = "unknown",          -- 登录密码
     flood       = 30,           -- 单次传输指令数上限
     skill_prior = false,        -- 是否提升技能优先于获取经验
     save_pots   = true,         -- 是否自动储存潜能
     job_zuanyan = false,        -- 任务期间是否消耗潜能钻研
     mole_limit  = 0,            -- 控制神上限
-    job_nl      = "double",     -- 任务所需内力, 可直接写具体数字
+    job_nl      = "double",     -- 任务所需内力, 可添写 具体数字(如: 10000) 或 "double"(表示最大内力值的双倍)
     jobs = {
         "门派任务",     ["门派任务"]     = { name = "family_job", active = false, enable = true, echoose = {}, contribution = 150 },
         "寻访任务",     ["寻访任务"]     = { name = "visit_job", active = false, enable = false },
-        "斧头帮任务",   ["斧头帮任务"]    = { name = "ftb_job", active = true, enable = true, enemy = 0, confirm = {}, exclude = {} },
-        "嵩山任务",     ["嵩山任务"]     = { name = "songshan_job", active = true, enable = true, limit = 5000 },
-        "飞马镖局",     ["飞马镖局"]     = { name = "feima_job", active = true, enable = true },
+        "斧头帮任务",   ["斧头帮任务"]    = { name = "ftb_job", active = true, enable = false, enemy = 0, confirm = {}, exclude = {} },
+        "嵩山任务",     ["嵩山任务"]     = { name = "songshan_job", active = true, enable = false, limit = 5000 },
+        "飞马镖局",     ["飞马镖局"]     = { name = "feima_job", active = true, enable = false },
     },
     zuanyan = {     -- 钻研技能
         "parry",    ["parry"]   = { enable = "", place = 1653 },
