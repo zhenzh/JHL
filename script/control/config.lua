@@ -1,6 +1,6 @@
 config = {
-    userid      = "unknown",          -- 用户 ID
-    passwd      = "unknown",          -- 登录密码
+    userid      = nil,          -- 用户 ID
+    passwd      = nil,          -- 登录密码
     flood       = 30,           -- 单次传输指令数上限
     skill_prior = false,        -- 是否提升技能优先于获取经验
     save_pots   = true,         -- 是否自动储存潜能
