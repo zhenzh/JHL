@@ -7,7 +7,8 @@ local phase = {
 }
 
 function longxiang_pozhang()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang ］")
     automation.idle = false
     var.job = var.job or {name = "龙象破障"}
     var.job.statistics = var.job.statistics or { name = "龙象破障" }
@@ -30,7 +31,8 @@ function longxiang_pozhang()
 end
 
 function longxiang_pozhang_return(rc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_return ］参数：rc = "..tostring(rc))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_return ］参数：rc = "..tostring(rc))
     if var.job == nil then
         return rc
     end
@@ -42,7 +44,8 @@ function longxiang_pozhang_return(rc)
 end
 
 function longxiang_pozhang_p1()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_p1 ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_p1 ］")
     local rc = longxiang_pozhang_goto_fawang()
     if rc ~= nil then
         return rc
@@ -54,7 +57,8 @@ function longxiang_pozhang_p1()
 end
 
 function longxiang_pozhang_p2()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_p2 ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_p2 ］")
     local rc = longxiang_pozhang_search_nenghai()
     if rc ~= nil then
         return rc
@@ -66,7 +70,8 @@ function longxiang_pozhang_p2()
 end
 
 function longxiang_pozhang_p3()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_p3 ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_p3 ］")
     automation.idle = false
     if recover(config.job_nl) ~= 0 then
         return -1
@@ -75,7 +80,8 @@ function longxiang_pozhang_p3()
 end
 
 function longxiang_pozhang_goto_fawang()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_goto_fawang ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_goto_fawang ］")
     if env.current.id[1] ~= 1787 then
         local rc = goto(1787)
         if rc ~= 0 then
@@ -86,10 +92,13 @@ function longxiang_pozhang_goto_fawang()
 end
 
 function longxiang_pozhang_refresh()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_refresh ］")
-    local l = wait_line("ask jinlun fawang about 破障", 30, nil, nil, "^你向金轮法王打听有关「破障」的消息。$|"..
-                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                     "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_refresh ］")
+    local l = wait_line("ask jinlun fawang about 破障",
+                        30, nil, nil,
+                        "^你向金轮法王打听有关「破障」的消息。$|"..
+                        "^这里没有 \\S+ 这个人$|"..
+                        "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
     elseif string.match(l[0], "忙着") then
@@ -99,15 +108,17 @@ function longxiang_pozhang_refresh()
         end
         return longxiang_pozhang_refresh()
     elseif l[0] == "你向金轮法王打听有关「破障」的消息。" then
-        l = wait_line(nil, 30, nil, nil, "^金轮法王对你并不理睬，只是微不可查的扬了下白眉。$|"..
-                                         "^金轮法王说道：龙象般若功共十三层，威力巨大，所以，每层都要以相应的佛法来化解。$|"..
-                                         "^金轮法王说道：你龙象般若功修为不足，不足以破关修行下一层。$|"..
-                                         "^金轮法王说道：龙象般若功修为不易，若不能掌控好反而会走火入魔。$|"..
-                                         "^金轮法王说道：你\\S+不足，切莫妄图强行修行。$|"..
-                                         "^金轮法王说道：武学精进固然重要，但是却也不能操之过急，你先好好的休息休息吧。$|"..
-                                         "^金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事$|"..
-                                         "^金轮法王说道：不是让你去找能海上师了么，你还留在这里做什么？$|"..
-                                         "^但是很显然的，金轮法王现在的状况没有办法给你任何答覆。$")
+        l = wait_line(nil,
+                      30, nil, nil,
+                      "^金轮法王对你并不理睬，只是微不可查的扬了下白眉。$|"..
+                      "^金轮法王说道：龙象般若功共十三层，威力巨大，所以，每层都要以相应的佛法来化解。$|"..
+                      "^金轮法王说道：你龙象般若功修为不足，不足以破关修行下一层。$|"..
+                      "^金轮法王说道：龙象般若功修为不易，若不能掌控好反而会走火入魔。$|"..
+                      "^金轮法王说道：你\\S+不足，切莫妄图强行修行。$|"..
+                      "^金轮法王说道：武学精进固然重要，但是却也不能操之过急，你先好好的休息休息吧。$|"..
+                      "^金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事$|"..
+                      "^金轮法王说道：不是让你去找能海上师了么，你还留在这里做什么？$|"..
+                      "^但是很显然的，金轮法王现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
         elseif l[0] == "金轮法王说道：你龙象般若功修为不足，不足以破关修行下一层。" or 
@@ -146,7 +157,8 @@ function longxiang_pozhang_refresh()
 end
 
 function longxiang_pozhang_search_nenghai()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_search_nenghai ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_search_nenghai ］")
     local rc,npc = search("^\\s+苦行僧「密宗上师」能海\\(Neng hai\\)$", longxiang_pozhang_nenghai_area)
     if rc == -1 then
         return -1
@@ -160,7 +172,9 @@ function longxiang_pozhang_search_nenghai()
                 return -1
             end
         end
-        local l = wait_line("follow nenghai", 30, nil, nil, "^你决定开始跟随能海一起行动。$|^这里没有 nenghai。$")
+        local l = wait_line("follow nenghai",
+                            30, nil, nil,
+                            "^你决定开始跟随能海一起行动。$|^这里没有 nenghai。$")
         if l == false then
             return -1
         elseif l[0] == "你决定开始跟随能海一起行动。" then
@@ -172,11 +186,14 @@ function longxiang_pozhang_search_nenghai()
 end
 
 function longxiang_pozhang_kneel_nenghai()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_kneel_nenghai ］")
-    local l = wait_line("kneel", 30, nil, nil, "^能海默默的回头看了看你，一言不发，转身离去。$|"..
-                                               "^能海静静的看了你一眼，轻微颔首，然后消失在了风雪之中。$|"..
-                                               "^能海对你继续说道：谁料到，唉……我密宗近年来日益势微，恐法统断绝，你为我密宗弟子，当继我密宗衣钵。随我来。$|"..
-                                               "^什么\\?$")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_kneel_nenghai ］")
+    local l = wait_line("kneel",
+                        30, nil, nil,
+                        "^能海默默的回头看了看你，一言不发，转身离去。$|"..
+                        "^能海静静的看了你一眼，轻微颔首，然后消失在了风雪之中。$|"..
+                        "^能海对你继续说道：谁料到，唉……我密宗近年来日益势微，恐法统断绝，你为我密宗弟子，当继我密宗衣钵。随我来。$|"..
+                        "^什么\\?$")
     if l == false then
         return -1
     elseif l[0] == "能海默默的回头看了看你，一言不发，转身离去。" or 
@@ -197,10 +214,13 @@ function longxiang_pozhang_kneel_nenghai()
 end
 
 function longxiang_pozhang_poguan()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ longxiang_pozhang_poguan ］")
-    local l = wait_line("xiuxing", 30, nil, nil, "^你跪在大雪中高声朗读\\S+$|"..
-                                                 "^什么\\?$|"..
-                                                 "^你默默的在大雪中苦修，突然间能海上师再次出现，对着你默默颔首。$")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ longxiang_pozhang_poguan ］")
+    local l = wait_line("xiuxing",
+                        30, nil, nil,
+                        "^你跪在大雪中高声朗读\\S+$|"..
+                        "^什么\\?$|"..
+                        "^你默默的在大雪中苦修，突然间能海上师再次出现，对着你默默颔首。$")
     if l == false then
         return -1
     elseif string.match(l[0], "高声朗读") then
@@ -224,15 +244,19 @@ function longxiang_pozhang_poguan()
     if recover(config.job_nl) < 0 then
         return -1
     end
-    l = wait_line("poguan", 30, nil, nil, "^你以天穹为盖，大地为基，凝冰为壁，以作静室。$|"..
-                                          "你跑哪里去了")
+    l = wait_line("poguan",
+                  30, nil, nil,
+                  "^你以天穹为盖，大地为基，凝冰为壁，以作静室。$|"..
+                  "你跑哪里去了")
     if l == false then
         return -1
     elseif l[0] == "你跑哪里去了" then
     else
         trigger.add("longxiang_pozhang_idle", "automation.idle = false", "longxiang_pozhang", {Enable=true}, nil, "^你控制体内的龙象般若内功，缓缓游走")
-        l = wait_line(nil, 1800, nil, nil, "^你心魔骤起，无法自制。$|"..
-                                           "^你已经成功的领悟了龙象般若功\\S+$")
+        l = wait_line(nil,
+                      1800, nil, nil,
+                      "^你心魔骤起，无法自制。$|"..
+                      "^你已经成功的领悟了龙象般若功\\S+$")
         if l == false then
             return -1
         end
@@ -240,8 +264,10 @@ function longxiang_pozhang_poguan()
         run("set pozhang "..tostring(profile.longxiang.pozhang))
         config.jobs["龙象破障"].active = false
         if l[0] == "你心魔骤起，无法自制。" then
-            l = wait_line(nil, 30, nil, nil, "^事已至此，你已知不可为，心中默念：于尔所世，无我相，无人相，无众生相，无寿者相,当舍此身证菩提。$|"..
-                                             "^你赶紧散去凝聚的内劲，方才躲过走火入魔的厄运。$")
+            l = wait_line(nil,
+                          30, nil, nil,
+                          "^事已至此，你已知不可为，心中默念：于尔所世，无我相，无人相，无众生相，无寿者相,当舍此身证菩提。$|"..
+                          "^你赶紧散去凝聚的内劲，方才躲过走火入魔的厄运。$")
             if l == false then
                 return -1
             elseif l[0] == "事已至此，你已知不可为，心中默念：于尔所世，无我相，无人相，无众生相，无寿者相,当舍此身证菩提。" then
