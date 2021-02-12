@@ -500,6 +500,7 @@ function ftb_job_drive_npc(npc)
                         "^这里没有 .+ 这个人。$|"..
                         "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
                         "^"..npc[1].."\\S*往(\\S+)(?:离开|走了出去)。$|"..
+                        "^"..npc[1].."说道：好家伙，真来了。$|"..
                         "^"..npc[1].."忙着呢，你等会儿在问话吧。$")
     if l == false then
         return -1
@@ -511,6 +512,10 @@ function ftb_job_drive_npc(npc)
     elseif string.match(l[0], "这里没有") then
         local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
+    elseif string.match(l[0], "真来了") then
+        set.delete(config.jobs["斧头帮任务"].dest, env.current.id[1])
+        set.append(config.jobs["斧头帮任务"].exclude, set.pop(npc)[1])
+        config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy - 1
     elseif l[1] ~= false then
         local around =  get_room_id_by_tag("nojob", get_room_id_by_roomsfrom(env.current.id, get_room_id_around(), get_desc_dir(l[1])), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
