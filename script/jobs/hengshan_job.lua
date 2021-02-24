@@ -30,6 +30,7 @@ function hengshan_job()
     automation.idle = false
     var.job = var.job or {name = "恒山任务"}
     var.job.enemy_name = "蒙面人"
+    var.job.search = {"秦娟", "郑鄂", "仪文", "仪和", "仪琳", "仪质", "仪清"}
     var.job.delta = -1
     var.job.statistics = var.job.statistics or {name = "恒山任务"}
     var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
@@ -104,16 +105,53 @@ function hengshan_job_p2()
     if config.jobs["恒山任务"].area == nil then
         config.jobs["恒山任务"].area = hengshan_job_area
     end
-    if config.jobs["恒山任务"].arrest == nil then
-        if run_i() < 0 then
-            return -1
-        end
-        if is_own("面罩:mian zhao") ~= true then
-            config.jobs["恒山任务"].phase = phase["任务失败"]
-            return hengshan_job_p5()
+    jia_min()
+    if wield(config.fight["通用"].weapon) < 0 then
+        return -1
+    end
+    if config.jobs["恒山任务"].phase > phase["任务执行"] then
+        return hengshan_job()
+    end
+    local rc
+    if var.job.npc == nil then
+        rc = hengshan_job_search()
+        if rc ~= nil then
+            return rc
         end
     end
-    return hengshan_job_exec()
+    for k,v in pairs(var.job.npc) do
+        if env.current.id[1] ~= k then
+            rc = goto(k)
+            if rc < 0 then
+                return -1
+            end
+        end
+        if (rc or 0) == 0 then
+            var.job.num = {}
+            for _,i in ipairs(v) do
+                var.job.num[i[1]] = 0
+            end
+            for _,i in ipairs(env.current.objs) do
+                local name = string.match(i, "%S*恒山派第十四代弟子 (%S+)%(.*%)") or string.match(i, "^(%S+)正在运功疗伤$")
+                if var.job.num[name] ~= nil then
+                    var.job.num[name] = var.job.num[name] + obj_analysis(string.gsub(i, "恒山派第十四代弟子 ", "").."(a b)")
+                end
+            end
+            trigger.enable("hengshan_job_npc_come")
+            trigger.enable("hengshan_job_npc_leave")
+            rc = hengshan_job_ask_npc(k, v)
+            trigger.disable("hengshan_job_npc_come")
+            trigger.disable("hengshan_job_npc_leave")
+            if rc ~= nil then
+                return rc
+            end
+        end
+        if config.jobs["恒山任务"].phase > phase["任务执行"] then
+            return hengshan_job()
+        end
+    end
+    var.job.npc = nil
+    return hengshan_job_p2()
 end
 
 function hengshan_job_p3()
@@ -194,17 +232,22 @@ function hengshan_job_refresh()
                       "^定闲师太对你说道：“唉！施主既肯出手相助，为何不能彻底相助呢$|"..
                       "^定闲师太说道：施主上次未能将本派弟子尽数救出，看来未把本派弟子放在心上，贫尼暂时不敢劳烦施主大驾了。$|"..
                       "^定闲师太说道：施主救我派弟子于大难，无以为报，贫尼只有朝夕以清香一炷，祷祝施主福体康健，万事如意了。”$|"..
-                      "^左冷禅说道：我辈学武之人，最讲究的是正邪是非之辨，\\S+居然和妖魔勾搭成奸，实已犯了武林的大忌。$|"..
+                      "^定闲师太说道：施主已堕入魔道，贫尼岂敢劳烦。$|"..
                       "^但是很显然的，定闲师太现在的状况没有办法给你任何答覆。$")
         if l == false then
             return -1
         elseif l[0] == "定闲师太说道：施主救我派弟子于大难，无以为报，贫尼只有朝夕以清香一炷，祷祝施主福体康健，万事如意了。”" then
+            config.jobs["恒山任务"].phase = phase["任务完成"]
             return hengshan_job_p4()
         elseif l[0] == "定闲师太对你说道：“唉！施主既肯出手相助，为何不能彻底相助呢" then
+            config.jobs["恒山任务"].phase = phase["任务完成"]
+            config.jobs["恒山任务"].active = false
+            timer.add("hengshan_job_cd", 900, "config.jobs['恒山任务'].active = true", "hengshan_job", {Enable=true, OneShot=true})
+            return hengshan_job_p4()
         elseif l[0] == "定闲师太说道：施主上次未能将本派弟子尽数救出，看来未把本派弟子放在心上，贫尼暂时不敢劳烦施主大驾了。" then
             config.jobs["恒山任务"].phase = phase["任务失败"]
             return hengshan_job_p5()
-        elseif l[0] == "左冷禅说道：我辈学武之人，最讲究的是正邪是非之辨，老匹夫居然和妖魔勾搭成奸，实已犯了武林的大忌。" then
+        elseif l[0] == "定闲师太说道：施主已堕入魔道，贫尼岂敢劳烦。" then
             if run_score() < 0 then
                 return -1
             end
@@ -225,64 +268,12 @@ function hengshan_job_refresh()
     end
 end
 
-function hengshan_job_exec()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ hengshan_job_exec ］")
-    jia_min()
-    if wield(config.fight["通用"].weapon) < 0 then
-        return -1
-    end
-    if config.jobs["恒山任务"].phase > phase["任务执行"] then
-        return
-    end
-    local rc
-    if var.job.npc == nil then
-        rc = hengshan_job_search()
-        if rc ~= nil then
-            return rc
-        end
-    end
-    for k,v in pairs(var.job.npc) do
-        if env.current.id[1] ~= k then
-            rc = goto(k)
-            if rc < 0 then
-                return -1
-            end
-        end
-        if (rc or 0) == 0 then
-            var.job.num = {}
-            for _,i in ipairs(v) do
-                var.job.num[i[1]] = 0
-            end
-            for _,i in ipairs(env.current.objs) do
-                local name = string.match(i, "%S*恒山派第十四代弟子 (%S+)%(.*%)") or string.match(i, "^(%S+)正在运功疗伤$")
-                if var.job.num[name] ~= nil then
-                    var.job.num[name] = var.job.num[name] + obj_analysis(string.gsub(i, "恒山派第十四代弟子 ", "").."(a b)")
-                end
-            end
-            trigger.enable("hengshan_job_npc_come")
-            trigger.enable("hengshan_job_npc_leave")
-            rc = hengshan_job_ask_npc(k, v)
-            trigger.disable("hengshan_job_npc_come")
-            trigger.disable("hengshan_job_npc_leave")
-            if rc ~= nil then
-                return rc
-            end
-        end
-        if config.jobs["恒山任务"].phase > phase["任务执行"] then
-            return hengshan_job()
-        end
-    end
-    var.job.npc = nil
-    return hengshan_job_exec()
-end
-
 function hengshan_job_search()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ hengshan_job_search ］")
     local rc
     if var.job.pattern == nil then
-        rc,var.job.npc,config.jobs["恒山任务"].area = search("^\\s+(?:\\S+位|)恒山派第十四代弟子 (\\S+)\\((\\w+ \\w+)\\)$", config.jobs["恒山任务"].area)
+        rc,var.job.npc,config.jobs["恒山任务"].area = search("^\\s+(?:\\S+位|)恒山派第十四代弟子 (set.concat(var.job.search, '|'))\\((\\w+ \\w+)\\)$", config.jobs["恒山任务"].area)
     else
         rc,var.job.npc,var.job.area = search(var.job.pattern, var.job.area)
     end
@@ -367,7 +358,7 @@ function hengshan_job_rescue_npc(room, npc)
     elseif l[0] == "这是你要救的人吗？" or l[0] == "你要救谁？" then
         var.job.num[npc[1]] = var.job.num[npc[1]] - 1
     elseif l[0] == "已经救醒了，还救什么？想吃豆腐呀！" then
-        config.jobs["恒山任务"].confirm[npc[1]] = false
+        config.jobs["恒山任务"].confirm[npc[1]] = true
         return hengshan_job_order_npc(room, npc)
     else
         config.jobs["恒山任务"].confirm[npc[1]] = false
@@ -375,6 +366,7 @@ function hengshan_job_rescue_npc(room, npc)
         local rc = fight()
         if rc == 0 then
             config.jobs["恒山任务"].confirm[npc[1]] = true
+            set.delete(var.job.search, npc[1])
             if wait_no_busy() < 0 then
                 return -1
             end
@@ -385,8 +377,9 @@ function hengshan_job_rescue_npc(room, npc)
                 return rc
             end
             if goto(room) ~= 0 then
-                config.jobs["恒山任务"].phase = phase["任务失败"]
-                return hengshan_job_p5()
+                var.job.pattern = nil
+                var.job.area = nil
+                return hengshan_job_p2()
             end
         end
     end
@@ -407,9 +400,11 @@ function hengshan_job_order_npc(room, npc)
         var.job.delta = 1
         var.job.num[npc[1]] = 2
     end
-    local l = wait_line("ask "..string.lower(npc[2]).." "..tostring(var.job.num[npc[1]]).." about 动身", 30, nil, nil, "^你向"..npc[1].."打听有关「动身」的消息。$|"..
-                                                                                                                      "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                                                                      "^这里没有 .+ 这个人。$")
+    local l = wait_line("ask "..string.lower(npc[2]).." "..tostring(var.job.num[npc[1]]).." about 动身",
+                        30, nil, nil,
+                        "^你向"..npc[1].."打听有关「动身」的消息。$|"..
+                        "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
+                        "^这里没有 .+ 这个人。$")
     if l == false then
         return -1
     elseif string.match(l[0], "打听有关") then
