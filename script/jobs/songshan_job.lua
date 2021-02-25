@@ -77,7 +77,7 @@ function songshan_job_return(rc)
     end
     var.job = nil
     if rc == 1 then
-        config.jobs["嵩山任务"].failure = config.jobs["嵩山任务"].failure + 1
+        config.jobs["嵩山任务"].failure = (config.jobs["嵩山任务"].failure or 0) + 1
         if config.jobs["嵩山任务"].failure >= 3 then
             config.jobs["嵩山任务"].active = false
             timer.add("songshan_job_cd", 300, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})
