@@ -39,7 +39,8 @@ function verbose(level)
 end
 
 function run_i()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ run_i ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ run_i ］")
     if wait_line("i", 30, nil, 10, "^你\\(你\\)身上携带物品的别称如下\\(右方\\)：$|^目前你身上没有任何东西。$") == false then
         return -1
     else
@@ -52,7 +53,8 @@ function run_i()
 end
 
 function run_hp()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ run_hp ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ run_hp ］")
     if wait_line("hp", 30, nil, 10, "^\\s+饮水：\\s+\\d+/\\s+\\d+\\s+经验：\\s+[-\\d]+$") == false then
         return -1
     else
@@ -65,7 +67,8 @@ function run_hp()
 end
 
 function run_score()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ run_score ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ run_score ］")
     if wait_line("score", 30, {Gag=true}, 11, "^└[─]+ Brotherhood ─┘$", "^> $") == false then
         return -1
     else
@@ -74,7 +77,8 @@ function run_score()
 end
 
 function run_skills()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ run_skills ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ run_skills ］")
     if wait_line("skills", 30, {Gag=true}, 11, "^你目前所学过的技能：（共\\S+项技能）[　]+$", "^> $") == false then
         return -1
     else
@@ -83,7 +87,8 @@ function run_skills()
 end
 
 function run_enable()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ run_enable ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ run_enable ］")
     if wait_line("enable", 30, {Gag=true}, 11, "^以下是你目前使用中的特殊技能。$", "^> $") == false then
         return -1
     else
@@ -92,7 +97,8 @@ function run_enable()
 end
 
 function run_prepare()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ run_prepare ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ run_prepare ］")
     if wait_line("prepare", 30, nil, 10, "^以下是你目前组合中的特殊拳术技能。$|^你现在没有组合任何特殊拳术技能。$") == false then
         return -1
     else
@@ -105,7 +111,8 @@ function run_prepare()
 end
 
 function run_set()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ run_set ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ run_set ］")
     if wait_line("set", 30, {Gag=true}, 11, "^你目前设定的环境变量有：$", "^> $") == false then
         return -1
     else
@@ -114,7 +121,8 @@ function run_set()
 end
 
 function run_list()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ run_list ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ run_list ］")
     if wait_line("list", 30, {Gag=true}, 11, "^你保存的物品如下:$", "^> $") == false then
         return -1
     else
@@ -123,7 +131,8 @@ function run_list()
 end
 
 function jia_min()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ jia_min ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ jia_min ］")
     local action = {}
     if state.power > 0 then
         set.append(action, "jiali none")
@@ -137,7 +146,8 @@ function jia_min()
 end
 
 function jia_max()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ jia_max ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ jia_max ］")
     local action = {}
     if state.power == 0 then
         set.append(action, "jiali max")
@@ -149,7 +159,8 @@ function jia_max()
 end
 
 function obj_analysis(obj)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ obj_analysis ］参数：obj = "..tostring(obj))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ obj_analysis ］参数：obj = "..tostring(obj))
     local count,name,id
     local unit = {"两", "文", "件", "顶", "柄", "盆", "把", "捆", "杯", "根", "条", "块", "串", "封", "个", "杆", "对", "包", "副", "位", "名", "团",
                   "本", "部", "钱", "面", "锭", "只", "瓶", "盘", "粒", "碟", "碗", "棵", "颗", "枚", "支", "张", "朵", "双", "册", "页", "辆"}
@@ -168,7 +179,8 @@ function obj_analysis(obj)
 end
 
 function compare_carryon(before, after)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ compare_carryon ］参数：before = "..table.tostring(before)..", after = "..table.tostring(after))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ compare_carryon ］参数：before = "..table.tostring(before)..", after = "..table.tostring(after))
     local delta = {}
     for k,v in pairs(after) do
         if before[k] == nil then
@@ -184,7 +196,8 @@ function compare_carryon(before, after)
 end
 
 function chs2num(s)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ chs2num ］参数：s = "..tostring(s))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ chs2num ］参数：s = "..tostring(s))
     if type(s) ~= "string" or s == "" then
         return 0
     else
@@ -228,7 +241,8 @@ function chs2num(s)
 end
 
 function chs2time(s)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ chs2time ］参数：s = "..tostring(s))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ chs2time ］参数：s = "..tostring(s))
     local t = {year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0}
     local m = {["年"] = "year", ["月"] = "month", ["天"] = "day", ["小时"] = "hour", ["分钟"] = "minute", ["秒"] = "second"}
     s = string.gsub(s, "又", "")
@@ -243,7 +257,8 @@ function chs2time(s)
 end
 
 function timec2n(hour, quater)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ timec2n ］参数：hour = "..tostring(hour)..", quater = "..tostring(quater))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ timec2n ］参数：hour = "..tostring(hour)..", quater = "..tostring(quater))
     local ctime_table = {
         ["子"] = 0,
         ["丑"] = 2,
@@ -267,7 +282,8 @@ function timec2n(hour, quater)
 end
 
 function is_own(item)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ is_own ］参数：item = "..tostring(item))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ is_own ］参数：item = "..tostring(item))
     if carryon.inventory[item] ~= nil then
         return true
     else
@@ -281,13 +297,16 @@ function is_own(item)
 end
 
 function is_fighting() -- 0: no fight   1: fight
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ is_fighting ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ is_fighting ］")
     trigger.add("fighting_hide_ga", "", nil, {Enable=true, StopEval=true, Gag=true}, 1, "^> $")
     repeat
-        local l = wait_line("yun lifeheal", 30, {Gag=false}, 10, "^战斗中无法运功疗伤！$|"..
-                                                                 "^你要用真气为谁疗伤？$|"..
-                                                                 "^你要替谁治疗伤口？$|"..
-                                                                 "^\\( 你上一个动作还没有完成，不能施用内功。\\)$")
+        local l = wait_line("yun lifeheal",
+                            30, {Gag=false}, 10,
+                            "^战斗中无法运功疗伤！$|"..
+                            "^你要用真气为谁疗伤？$|"..
+                            "^你要替谁治疗伤口？$|"..
+                            "^\\( 你上一个动作还没有完成，不能施用内功。\\)$")
         if l == false then
             return -1
         elseif l[0] == "你要用真气为谁疗伤？" or l[0] == "你要替谁治疗伤口？" then
@@ -309,62 +328,3 @@ function is_fighting() -- 0: no fight   1: fight
         end
     until false
 end
-
-
---function clean_spirit(spirit)
---    if spirit == nil then
---        spirit = 0
---    end
---
---    if type(spirit) ~= "number" then
---        return false
---    end
---
---    if spirit < dbg0 then
---        return false
---    end
---
---    --待追加如果wuji，先散工
---    send_cmd("score")
---    repeat
---        if math.abs(tonumber(GetVariable("spirit"))) <= spirit then
---            if GetVariable("room_id") == "1790" then
---                wait_nobusy()
---            end
---            return true
---        end
---        if GetVariable("room_id") ~= "1790" then
---            flyto(1790)
---            l,_ = wait.regexp("^[>\\s]*你目前还没有任何为 移动(?:完成|失败) 的变量设定。$", 180)
---            if no_response(l) or string.find(l, "移动失败") then
---                message("#"..debug.getinfo(1).currentline.." [clean_spirit] 放弃降神")
---                return false
---            end
---        end
---
---        if math.abs(tonumber(GetVariable("spirit"))) < 40 then
---            if math.abs(tonumber(GetVariable("spirit"))) - 10 > spirit then
---                for i = 1,10 do
---                Execute("mianbi")
---                end
---                flood = flood + 10
---            else
---                Execute("mianbi")
---                flood = flood + 1
---            end
---        elseif math.abs(tonumber(GetVariable("spirit"))) * math.pow(0.95, 10) >= spirit then
---            for i = 1,10 do
---                Execute("mianbi")
---            end
---            flood = flood + 10
---        else
---            Execute("mianbi")
---            flood = flood + 1
---        end
---        send_cmd("score")
---        if flood > 30 then
---            wait.time(1)
---            flood = 0
---        end
---    until false
---end

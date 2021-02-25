@@ -93,6 +93,14 @@ for k,v in pairs(status_triggers) do
 end
 status_triggers = nil
 
+trigger.add("invalid_fu_qixuedanyao", "invalid_fu_qixuedanyao()", "状态记录", {Enable=true}, 2, "^你吃下一颗丹药，觉得自己的气息更加悠长。$")
+trigger.add("invalid_fu_jingshendanyao", "invalid_fu_jingshendanyao()", "状态记录", {Enable=true}, 2, "^你吃下一颗丹药，觉得自己的精神抖擞。$")
+trigger.add("invalid_fu_yuluwan", "invalid_fu_yuluwan()", "状态记录", {Enable=true}, 2, "^你吃下一粒九花玉露丸，(?:一股清香之气直透丹田，只觉得精神健旺，气血充盈，体内真力源源滋生，将疲乏一扫而空! |只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
+trigger.add("invalid_fu_sanhuangwan", "invalid_fu_sanhuangwan()", "状态记录", {Enable=true}, 2, "^你服下一颗三黄宝蜡丸，(?:只觉通体舒泰，精神焕发，伤势大有好转。|觉得体内真气逆行，内力大损。原来服食)$")
+trigger.add("invalid_fu_daxueteng", "invalid_fu_daxueteng()", "状态记录", {Enable=true}, 2, "^你吃下一棵大血藤，(?:顿时血气翻涌血脉膨胀，气力大长。|只觉得肝肠寸断，五脏欲裂，原来服食太多药物，药效适得其反！)$")
+trigger.add("invalid_fu_renshenguo", "invalid_fu_renshenguo()", "状态记录", {Enable=true}, 2, "^你吃下一枚人参果，(?:只觉得精神健旺，气血充盈，体内真力源源滋生，将疲乏饥渴一扫而空! |只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
+trigger.add("invalid_fu_xuelian", "invalid_fu_xuelian()", "状态记录", {Enable=true}, 2, "^你吃下一支雪莲，(?:一股秋菊似的幽香沁入心肺，顿觉神清气爽。|只觉得头重脚轻，摇摇欲倒，原来服食太急太多，药效适得其反！)$")
+
 -- 信息采集
 trigger.add("get_room_objs", "get_room_objs(get_matches(1))", "信息采集", {Enable=false}, 3, "^  ((?:\\S+ \\S+|\\S+)(?:\\((?:\\w+ \\w+|\\w+)\\)|))(?:| <\\S+>)$")
 trigger.add("get_room_exits", "get_room_exits(get_matches(1))", "信息采集", {Enable=true}, 3, "^\\s+这里(?:明显|唯一)的出口是 (.*)。$|"..
@@ -199,7 +207,8 @@ trigger.add("get_carryon_item_end", "get_carryon_item_end()", "信息采集", {E
 trigger.add("get_container_end", "get_container_end()", "信息采集", {Enable=false}, 7, "^> $")
 
 function get_room_name(name)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_name ］参数：name = "..tostring(name))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_name ］参数：name = "..tostring(name))
     trigger.enable("get_room_end")
     trigger.enable("get_room_desc")
     trigger.enable("get_room_objs")
@@ -212,14 +221,16 @@ function get_room_name(name)
 end
 
 function get_room_desc(desc)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_desc ］参数：desc = "..tostring(desc))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_desc ］参数：desc = "..tostring(desc))
     desc = string.trim(desc)
     desc = skip_info[desc] or desc
     set.append(env.room.desc, desc)
 end
 
 function get_room_exits(exits)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_exits ］参数：exits = "..tostring(exits))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_exits ］参数：exits = "..tostring(exits))
     trigger.disable("get_room_desc")
     if exits == "" then
         exits = {}
@@ -228,20 +239,23 @@ function get_room_exits(exits)
 end
 
 function get_room_objs(obj)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_objs ］参数：obj = "..tostring(obj))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_objs ］参数：obj = "..tostring(obj))
     trigger.disable("get_room_desc")
     set.append(env.room.objs, obj)
 end
 
 function get_room_end()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_end ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_end ］")
     trigger.disable("get_room_end")
     trigger.disable("get_room_desc")
     trigger.disable("get_room_objs")
 end
 
 function get_room_abst(name, exits)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_abst ］参数：name = "..tostring(name)..", exits = "..tostring(exits))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_abst ］参数：name = "..tostring(name)..", exits = "..tostring(exits))
     trigger.enable("get_room_end")
     trigger.enable("get_room_objs")
     env.room.name = name
@@ -405,7 +419,8 @@ state = {
 }
 
 function get_state_l1(js, js_max, js_pct, jl, jl_max, energy)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_state_l1 ］参数：js = "..tostring(js)..", js_max = "..tostring(js_max)..", js_pct = "..tostring(js_pct)..", jl = "..tostring(jl)..", jl_max = "..tostring(jl_max)..", energy = "..tostring(energy))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_state_l1 ］参数：js = "..tostring(js)..", js_max = "..tostring(js_max)..", js_pct = "..tostring(js_pct)..", jl = "..tostring(jl)..", jl_max = "..tostring(jl_max)..", energy = "..tostring(energy))
     state.js = tonumber(js)
     state.js_max = tonumber(js_max)
     state.js_pct = tonumber(js_pct)
@@ -418,7 +433,8 @@ function get_state_l1(js, js_max, js_pct, jl, jl_max, energy)
 end
 
 function get_state_l2(qx, qx_max, qx_pct, nl, nl_max, power)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_state_l2 ］参数：qx = "..tostring(qx)..", qx_max = "..tostring(qx_max)..", qx_pct = "..tostring(qx_pct)..", nl = "..tostring(nl)..", nl_max = "..tostring(nl_max)..", power = "..tostring(power))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_state_l2 ］参数：qx = "..tostring(qx)..", qx_max = "..tostring(qx_max)..", qx_pct = "..tostring(qx_pct)..", nl = "..tostring(nl)..", nl_max = "..tostring(nl_max)..", power = "..tostring(power))
     state.qx = tonumber(qx)
     state.qx_max = tonumber(qx_max)
     state.qx_pct = tonumber(qx_pct)
@@ -431,7 +447,8 @@ function get_state_l2(qx, qx_max, qx_pct, nl, nl_max, power)
 end
 
 function get_state_l3(food, food_max, pot, pot_max)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_state_l3 ］参数：food = "..tostring(food)..", food_max = "..tostring(food_max)..", pot = "..tostring(pot)..", pot_max = "..tostring(pot_max))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_state_l3 ］参数：food = "..tostring(food)..", food_max = "..tostring(food_max)..", pot = "..tostring(pot)..", pot_max = "..tostring(pot_max))
     state.food = tonumber(food)
     state.food_max = tonumber(food_max)
     state.pot = tonumber(pot)
@@ -439,14 +456,16 @@ function get_state_l3(food, food_max, pot, pot_max)
 end
 
 function get_state_l4(drink, drink_max, exp)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_state_l4 ］参数：drink = "..tostring(drink)..", drink_max = "..tostring(drink_max)..", exp = "..tostring(exp))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_state_l4 ］参数：drink = "..tostring(drink)..", drink_max = "..tostring(drink_max)..", exp = "..tostring(exp))
     state.drink = tonumber(drink)
     state.drink_max = tonumber(drink_max)
     state.exp = tonumber(exp)
 end
 
 function get_profile_l1(name, str, str_in, int, int_in)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l1 ］参数：name = "..tostring(name)..", str = "..tostring(str)..", str_in = "..tostring(str_in)..", int = "..tostring(int)..", int_in = "..tostring(int_in))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l1 ］参数：name = "..tostring(name)..", str = "..tostring(str)..", str_in = "..tostring(str_in)..", int = "..tostring(int)..", int_in = "..tostring(int_in))
     profile.name = name
     profile.talent.str = tonumber(str)
     profile.talent.str_in = tonumber(str_in)
@@ -460,7 +479,8 @@ function get_profile_l1(name, str, str_in, int, int_in)
 end
 
 function get_profile_l2(id, con, con_in, dex, dex_in)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l2 ］参数：id = "..tostring(id)..", con = "..tostring(con)..", con_in = "..tostring(con_in)..", dex = "..tostring(dex)..", dex_in = "..tostring(dex_in))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l2 ］参数：id = "..tostring(id)..", con = "..tostring(con)..", con_in = "..tostring(con_in)..", dex = "..tostring(dex)..", dex_in = "..tostring(dex_in))
     profile.id = id
     profile.talent.con = tonumber(con)
     profile.talent.con_in = tonumber(con_in)
@@ -469,7 +489,8 @@ function get_profile_l2(id, con, con_in, dex, dex_in)
 end
 
 function get_profile_l3(sex, app, app_in, luc, luc_in)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l3 ］参数：sex = "..tostring(sex)..", app = "..tostring(app)..", app_in = "..tostring(app_in)..", luc = "..tostring(luc)..", luc_in = "..tostring(luc_in))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l3 ］参数：sex = "..tostring(sex)..", app = "..tostring(app)..", app_in = "..tostring(app_in)..", luc = "..tostring(luc)..", luc_in = "..tostring(luc_in))
     profile.sex = sex
     profile.talent.app = tonumber(app)
     profile.talent.app_in = tonumber(app_in)
@@ -479,20 +500,23 @@ function get_profile_l3(sex, app, app_in, luc, luc_in)
 end
 
 function get_profile_l4(year, month, food)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l4 ］参数：year = "..tostring(year)..", month = "..tostring(month)..", food = "..tostring(food))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l4 ］参数：year = "..tostring(year)..", month = "..tostring(month)..", food = "..tostring(food))
     profile.year = chs2num(year)
     profile.month = chs2num(month)
     state.food = tonumber(food)
 end
 
 function get_profile_l5(title, drink)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l5 ］参数：title = "..tostring(title)..", drink = "..tostring(drink))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l5 ］参数：title = "..tostring(title)..", drink = "..tostring(drink))
     profile.title = title
     state.drink = tonumber(drink)
 end
 
 function get_profile_l6(weight, balance, change)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l6 ］参数：weight = "..tostring(weight)..", balance = "..tostring(balance)..", change = "..tostring(change))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l6 ］参数：weight = "..tostring(weight)..", balance = "..tostring(balance)..", change = "..tostring(change))
     profile.weight = chs2num(weight)
     if change == "很少" then
         if profile.balance == 0 or profile.balance >= 10000 then
@@ -509,12 +533,14 @@ function get_profile_l6(weight, balance, change)
 end
 
 function get_profile_l7(online)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l7 ］参数：online = "..tostring(online))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l7 ］参数：online = "..tostring(online))
     profile.online = online
 end
 
 function get_profile_l8(mole_type, mole, expadd)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l8 ］参数：mole_type = "..tostring(mole_type)..", mole = "..tostring(mole)..", expadd = "..tostring(expadd))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l8 ］参数：mole_type = "..tostring(mole_type)..", mole = "..tostring(mole)..", expadd = "..tostring(expadd))
     profile.mole = tonumber(mole)
     profile.expadd = tonumber(expadd) or 0
     if mole_type == "妖魔孽气" then
@@ -523,27 +549,31 @@ function get_profile_l8(mole_type, mole, expadd)
 end
 
 function get_profile_l9(exp, level, expgap)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l9 ］参数：exp = "..tostring(exp)..", level = "..tostring(level)..", expgap = "..tostring(expgap))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l9 ］参数：exp = "..tostring(exp)..", level = "..tostring(level)..", expgap = "..tostring(expgap))
     state.exp = tonumber((string.gsub(exp, ",", "")))
     profile.level = tonumber(level)
     profile.expgap = tonumber(expgap)
 end
 
 function get_profile_l10(contribute, pot, spot)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l10 ］参数：contribute = "..tostring(contribute)..", pot = "..tostring(pot)..", spot = "..tostring(spot))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l10 ］参数：contribute = "..tostring(contribute)..", pot = "..tostring(pot)..", spot = "..tostring(spot))
     profile.contribute = tonumber(contribute)
     state.pot = tonumber(pot)
     profile.pot = chs2num(spot)
 end
 
 function get_profile_l11(spouse, death)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l11 ］参数：spouse = "..tostring(spouse)..", death = "..tostring(death))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l11 ］参数：spouse = "..tostring(spouse)..", death = "..tostring(death))
     profile.spouse = spouse
     profile.death = tonumber(death)
 end
 
 function get_profile_l12(family, kill)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l12 ］参数：family = "..tostring(family)..", kill = "..tostring(kill))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l12 ］参数：family = "..tostring(family)..", kill = "..tostring(kill))
     profile.family = family
     profile.kill = tonumber(kill)
     if profile.family == "少林派" and not set.has({"小沙弥", "僧　人", "神　僧", "长　老"}, profile.title) then
@@ -554,13 +584,15 @@ function get_profile_l12(family, kill)
 end
 
 function get_profile_l13(master)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_profile_l13 ］参数：master = "..tostring(master))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_profile_l13 ］参数：master = "..tostring(master))
     profile.master = master
     map_adjust("师父", profile.master)
 end
 
 function get_longxiang_level(level)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_level ］参数：level = "..tostring(level))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_longxiang_level ］参数：level = "..tostring(level))
     profile.longxiang.level = chs2num(level)
     if profile.longxiang.level > 10 then
         if timer.is_exist("longxiang_pozhang_cd") == true then
@@ -573,7 +605,8 @@ function get_longxiang_level(level)
 end
 
 function get_longxiang_status(progress, need)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_status ］参数：progress = "..tostring(progress)..", need = "..tostring(need))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_longxiang_status ］参数：progress = "..tostring(progress)..", need = "..tostring(need))
     profile.longxiang.progress = tonumber(progress)
     profile.longxiang.target = profile.longxiang.progress + tonumber(need)
     if profile.longxiang.level == nil then
@@ -613,7 +646,8 @@ function get_longxiang_status(progress, need)
 end
 
 function get_longxiang_progress()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_progress ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_longxiang_progress ］")
     profile.longxiang.progress = profile.longxiang.progress + 1
     if profile.longxiang.progress == profile.longxiang.target then
         trigger.delete("get_longxiang_progress")
@@ -625,7 +659,8 @@ function get_longxiang_progress()
 end
 
 function get_longxiang_pozhang()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_longxiang_pozhang ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_longxiang_pozhang ］")
     profile.longxiang.progress = (profile.longxiang.target or 0)
     trigger.delete("get_longxiang_progress")
     if trigger.is_exist("longxiang_pozhang_cd") == false then
@@ -639,7 +674,8 @@ carryon.weapon = {name = "",wield = "0", unwield = "0"}
 carryon.wield = {"", ""}
 
 function get_carryon_empty()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_empty ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_empty ］")
     carryon.count = 0
     carryon.weight = 0
     carryon.money = 0
@@ -648,7 +684,8 @@ function get_carryon_empty()
 end
 
 function get_carryon_summary(count, weight)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_summary ］参数：count = "..tostring(count)..", weight = "..tostring(weight))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_summary ］参数：count = "..tostring(count)..", weight = "..tostring(weight))
     trigger.enable("get_carryon_item")
     trigger.enable("get_carryon_item_end")
     trigger.enable("get_carryon_wield")
@@ -663,7 +700,8 @@ function get_carryon_summary(count, weight)
 end
 
 function get_carryon_item(item)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_item ］参数：item = "..tostring(item))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_item ］参数：item = "..tostring(item))
     local count, name, id
     count,item,name,id = obj_analysis(item)
     carryon.inventory[item] = carryon.inventory[item] or {name = name, id = id, count = 0, seq = {}}
@@ -671,7 +709,8 @@ function get_carryon_item(item)
 end
 
 function get_carryon_item_end()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_item_end ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_item_end ］")
     trigger.disable("get_carryon_item")
     trigger.disable("get_carryon_item_end")
     trigger.disable("get_carryon_wield")
@@ -692,7 +731,8 @@ function get_carryon_item_end()
 end
 
 function get_carryon_wield(name, id)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_wield ］参数：name = "..tostring(name)..", id = "..tostring(id))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_wield ］参数：name = "..tostring(name)..", id = "..tostring(id))
     local weapon = name..":"..string.lower(id)
     if items[weapon] ~= nil and items[weapon].group == "weapon" then
         set.append(var.wield, weapon)
@@ -700,7 +740,8 @@ function get_carryon_wield(name, id)
 end
 
 function get_carryon_detail()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_detail ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_detail ］")
     trigger.enable("get_carryon_list")
     trigger.enable("get_carryon_list_end")
     trigger.add("get_carryon_end", "get_carryon_end()", "信息采集", {Enable=true, OneShot=true, Gag=true, StopEval=true}, 6, "^> $")
@@ -708,12 +749,14 @@ function get_carryon_detail()
 end
 
 function get_carryon_list(name, ids)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_list ］参数：name = "..tostring(name)..", ids = "..tostring(ids))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_list ］参数：name = "..tostring(name)..", ids = "..tostring(ids))
     set.append(var.item, {name = name, ids = string.split(string.lower(ids), ", ")})
 end
 
 function get_carryon_list_end()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_list_end ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_list_end ］")
     trigger.disable("get_carryon_detail")
     trigger.disable("get_carryon_list")
     trigger.disable("get_carryon_list_end")
@@ -737,7 +780,8 @@ function get_carryon_list_end()
 end
 
 function look_container()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ look_container ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ look_container ］")
     if #var.container == 0 then
         trigger.disable("get_container_end")
         trigger.disable("get_item_container")
@@ -764,13 +808,15 @@ function look_container()
 end
 
 function get_container_end()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_container_end ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_container_end ］")
     set.pop(var.container)
     look_container()
 end
 
 function get_item_container(contents)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_item_container ］参数：contents = "..tostring(contents))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_item_container ］参数：contents = "..tostring(contents))
     local count,_,name,id = obj_analysis(contents)
     local item = name..":"..id
     carryon.container[set.last(var.container)].water = nil
@@ -794,7 +840,8 @@ function get_item_container(contents)
 end
 
 function get_water_container(stage, solid)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_water_container ］参数：stage = "..tostring(stage)..", solid = "..tostring(solid))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_water_container ］参数：stage = "..tostring(stage)..", solid = "..tostring(solid))
     local stage_sample = {
         ["满了"] = 10,
         ["了七、八分满的"] = 5,
@@ -810,12 +857,14 @@ function get_water_container(stage, solid)
 end
 
 function get_carryon_end()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_carryon_end ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_carryon_end ］")
     trigger.add("get_carryon_end", "", "信息采集", {Enable=true, Gag=true, StopEval=true}, 8, "^> $")
 end
 
 function update_coin(coin)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ update_coin ］参数：coin = "..tostring(coin))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ update_coin ］参数：coin = "..tostring(coin))
     local money = chs2num(coin)
     carryon.money = carryon.money + money
     carryon.inventory["铜钱:coin"] = carryon.inventory["铜钱:coin"] or {name = "铜钱", id = "coin", count = 0, seq = {"1"}}
@@ -826,7 +875,8 @@ function update_coin(coin)
 end
 
 function update_silver(silver)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ update_silver ］参数：silver = "..tostring(silver))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ update_silver ］参数：silver = "..tostring(silver))
     local money = chs2num(silver)
     carryon.money = carryon.money + (money * 100)
     carryon.inventory["白银:silver"] = carryon.inventory["白银:silver"] or {name = "白银", id = "silver", count = 0, seq = {"1"}}
@@ -837,7 +887,8 @@ function update_silver(silver)
 end
 
 function update_gold(gold)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ update_gold ］参数：gold = "..tostring(gold))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ update_gold ］参数：gold = "..tostring(gold))
     local money = chs2num(gold)
     carryon.money = carryon.money + (money * 10000)
     carryon.inventory["黄金:gold"] = carryon.inventory["黄金:gold"] or {name = "黄金", id = "gold", count = 0, seq = {"1"}}
@@ -862,7 +913,8 @@ function convert_currency(src_money, src_currency, dst_money, dst_currency)
 end
 
 function get_personal_weapon_name(name)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_personal_weapon_name ］参数：name = "..tostring(name))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_personal_weapon_name ］参数：name = "..tostring(name))
     name = string.gsub(name, "%$%u+%$?", "")
     if carryon.weapon.name ~= name then
         carryon.weapon.name = name
@@ -894,31 +946,36 @@ function get_personal_weapon_name(name)
 end
 
 function get_personal_weapon_wield_msg(msg)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_personal_weapon_wield_msg ］参数：msg = "..tostring(msg))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_personal_weapon_wield_msg ］参数：msg = "..tostring(msg))
     carryon.weapon.wield = string.gsub(string.gsub(string.gsub(msg, "%$%u%u%u%$", ""), "%$N", "你"), "%$n", carryon.weapon.name)
 end
 
 function get_personal_weapon_unwield_msg(msg)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_personal_weapon_unwield_msg ］参数：msg = "..tostring(msg))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_personal_weapon_unwield_msg ］参数：msg = "..tostring(msg))
     carryon.weapon.unwield = string.gsub(string.gsub(string.gsub(msg, "%$%u%u%u%$", ""), "%$N", "你"), "%$n", carryon.weapon.name)
 end
 
 function get_repository()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_repository ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_repository ］")
     trigger.enable("get_repository_list")
     trigger.enable("get_repository_end")
     carryon.repository = {}
 end
 
 function get_repository_list(index, name, count)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_repository_list ］参数：index = "..tostring(index)..", name = "..tostring(name)..", count = "..tostring(count))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_repository_list ］参数：index = "..tostring(index)..", name = "..tostring(name)..", count = "..tostring(count))
     carryon.repository[name] = carryon.repository[name] or {index = {}, count = 0}
     set.append(carryon.repository[name].index, index)
     carryon.repository[name].count = carryon.repository[name].count + tonumber(count)
 end
 
 function get_repository_end()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_repository_end ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_repository_end ］")
     trigger.disable("get_repository_list")
     trigger.disable("get_repository_end")
     if carryon.repository["《玄门内功心法》"] ~= nil then
@@ -971,7 +1028,8 @@ end
 skills = {theory = {}, knowledge = {}, method = {}, basic = {}, special = {}, enable = {}, prepare = {}, id = {}}
 
 function get_skills()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_skills ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_skills ］")
     trigger.enable("get_knowledge")
     trigger.enable("get_theory")
     trigger.enable("get_basic")
@@ -986,7 +1044,8 @@ function get_skills()
 end
 
 function get_knowledge()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_knowledge ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_knowledge ］")
     trigger.enable("get_knowledge_skills")
     trigger.disable("get_theory_skills")
     trigger.disable("get_method_skills")
@@ -995,7 +1054,8 @@ function get_knowledge()
 end
 
 function get_theory()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_theory ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_theory ］")
     trigger.enable("get_theory_skills")
     trigger.disable("get_knowledge_skills")
     trigger.disable("get_method_skills")
@@ -1004,7 +1064,8 @@ function get_theory()
 end
 
 function get_method()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_method ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_method ］")
     trigger.enable("get_method_skills")
     trigger.disable("get_theory_skills")
     trigger.disable("get_knowledge_skills")
@@ -1013,7 +1074,8 @@ function get_method()
 end
 
 function get_basic()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_basic ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_basic ］")
     trigger.enable("get_basic_skills")
     trigger.disable("get_knowledge_skills")
     trigger.disable("get_method_skills")
@@ -1022,7 +1084,8 @@ function get_basic()
 end
 
 function get_special()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_special ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_special ］")
     trigger.enable("get_special_skills")
     trigger.disable("get_knowledge_skills")
     trigger.disable("get_method_skills")
@@ -1031,7 +1094,8 @@ function get_special()
 end
 
 function get_knowledge_skills(name, id, desc, level, prof)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_knowledge_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_knowledge_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
     skills.knowledge[id] = {
         name = name,
         desc = desc,
@@ -1042,7 +1106,8 @@ function get_knowledge_skills(name, id, desc, level, prof)
 end
 
 function get_theory_skills(name, id, desc, level, prof)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_theory_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_theory_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
     skills.theory[id] = {
         name = name,
         desc = desc,
@@ -1058,7 +1123,8 @@ function get_theory_skills(name, id, desc, level, prof)
 end
 
 function get_method_skills(name, id, desc, level, prof)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_method_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_method_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
     skills.method[id] = {
         name = name,
         desc = desc,
@@ -1074,7 +1140,8 @@ function get_method_skills(name, id, desc, level, prof)
 end
 
 function get_basic_skills(name, id, desc, level, prof)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_basic_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_basic_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
     skills.basic[id] = {
         name = name,
         desc = desc,
@@ -1091,7 +1158,8 @@ function get_basic_skills(name, id, desc, level, prof)
 end
 
 function get_special_skills(name, id, desc, level, prof)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_special_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_special_skills ］参数：name = "..tostring(name)..", id = "..tostring(id)..", desc = "..tostring(desc)..", level = "..tostring(level)..", prof = "..tostring(prof))
     skills.special[id] = {
         name = name,
         desc = desc,
@@ -1099,8 +1167,10 @@ function get_special_skills(name, id, desc, level, prof)
         prof = tonumber(prof)
     }
     skills.id[name] = id
-    if skills.special["murong-shenfa"] ~= nil and skills.special["murong-shenfa"].level >= 120 and
-       skills.special["douzhuan-xingyi"] ~= nil and skills.special["douzhuan-xingyi"].level >= 120 then
+    if skills.special["murong-shenfa"] ~= nil and 
+       skills.special["murong-shenfa"].level >= 120 and 
+       skills.special["douzhuan-xingyi"] ~= nil and 
+       skills.special["douzhuan-xingyi"].level >= 120 then
         map_adjust("燕子坞", "轻功")
     else
         map_adjust("燕子坞", "客船")
@@ -1113,7 +1183,8 @@ function get_special_skills(name, id, desc, level, prof)
 end
 
 function get_skills_end()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_skills_end ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_skills_end ］")
     trigger.disable("get_knowledge")
     trigger.disable("get_theory")
     trigger.disable("get_method")
@@ -1127,14 +1198,16 @@ function get_skills_end()
 end
 
 function get_enables()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_enables ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_enables ］")
     trigger.enable("get_enable_skills")
     trigger.add(nil, "trigger.disable('get_enable_skills')", "信息采集", {Enable=true, OneShot=true}, 6, "^> $")
     skills.enable = {}
 end
 
 function get_enable_skills(id, name, level)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_enable_skills ］参数：id = "..tostring(id)..", name = "..tostring(name)..", level = "..tostring(level))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_enable_skills ］参数：id = "..tostring(id)..", name = "..tostring(name)..", level = "..tostring(level))
     skills.enable[id] = {
         name = name,
         level = tonumber(level)
@@ -1162,19 +1235,22 @@ function get_enable_skills(id, name, level)
 end
 
 function get_prepares()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_prepares ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_prepares ］")
     trigger.enable("get_prepare_skills")
     trigger.add(nil, "trigger.disable('get_prepare_skills')", "信息采集", {Enable=true, OneShot=true}, 6, "^> $")
     skills.prepare = {}
 end
 
 function get_prepare_skills(basic, special)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_prepare_skills ］参数：basic = "..tostring(basic)..", special = "..tostring(special))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_prepare_skills ］参数：basic = "..tostring(basic)..", special = "..tostring(special))
     skills.prepare[basic] = special
 end
 
 function change_enable(special, basic)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ change_enable ］参数：special = "..tostring(special)..", basic = "..tostring(basic))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ change_enable ］参数：special = "..tostring(special)..", basic = "..tostring(basic))
     basic = skills.id["基本"..basic]
     local special_id = skills.id[special]
     if basic ~= nil and special_id ~= nil then
@@ -1196,7 +1272,8 @@ function change_enable(special, basic)
 end
 
 function skill_upgrade(skill)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ skill_upgrade ］参数：skill = "..tostring(skill))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ skill_upgrade ］参数：skill = "..tostring(skill))
     if string.match(skill, "基本") then
         local skill_id = skills.id[skill]
         if skill_id ~= nil then
@@ -1231,12 +1308,16 @@ function skill_upgrade(skill)
                     end
                 end
             end 
-            if skill == "慕容身法" and skills.special["douzhuan-xingyi"] ~= nil and skills.special["douzhuan-xingyi"].level >= 120 then
+            if skill == "慕容身法" and 
+               skills.special["douzhuan-xingyi"] ~= nil and 
+               skills.special["douzhuan-xingyi"].level >= 120 then
                 if skills.special["murong-shenfa"].level >= 120 then
                     map_adjust("燕子坞", "轻功")
                 end
             end
-            if skill == "斗转星移" and skills.special["murong-shenfa"] ~= nil and skills.special["murong-shenfa"].level >= 120 then
+            if skill == "斗转星移" and 
+               skills.special["murong-shenfa"] ~= nil and 
+               skills.special["murong-shenfa"].level >= 120 then
                 if skills.special["douzhuan-xingyi"].level >= 120 then
                     map_adjust("燕子坞", "轻功")
                 end
@@ -1299,18 +1380,38 @@ function valid_ask_yuluwan()
         set.insert(items["九花玉露丸:yulu wan"].get, 1, "ask lu chengfeng about 九花玉露丸")
     end
 end
--- 信息刷新
---trigger.add("update_i", "^你(?:捡起|丢下)\\S+。$|"..
---                        "^你将\\S+保存了起来。$|"..
---                        "^你(?:取(?:光|出)|卖掉|从\\S+那里买下)了\\S+$", "if get_last_cmd() ~= 'quit' then run('i') end", nil, "信息采集",
---            bit.bor(trigger_flag.KeepEvaluating, trigger_flag.Temporary, trigger_flag.OmitFromOutput), 30)
---trigger.add("update_hp", "^你深深吸了几口气，(?:精神|脸色)看起来好多了|"..
---                         "^你伸了伸腰，长长地吸了口气|现在(?:(?:精|气)力充沛|精神饱满)。$|"..
---                         "^你运功完毕，深深吸了口气，站了起来。$|"..
---                         "^你把正在运行的真气强行压回丹田，站了起来。$|"..
---                         "^你改用另一种内功，内力必须重新锻练。$|"..
---                         "^你吃下大力丸之后，顿时感觉百病全消。$|"..
---                         "^你已经精疲力尽，动弹不得。$", "run('hp')", nil, "信息采集",
---            bit.bor(trigger_flag.KeepEvaluating, trigger_flag.Temporary, trigger_flag.OmitFromOutput), 30)
+
+function invalid_fu_qixuedanyao()
+    state.buff["气血丹药:qixue danyao"] = false
+end
+
+function invalid_fu_jingshendanyao()
+    state.buff["精神丹药:jingshen danyao"] = false
+end
+
+function invalid_fu_yuluwan()
+    state.buff["九花玉露丸:yulu wan"] = false
+    timer.add("invalid_fu_yuluwan", 1800, "state.buff['九花玉露丸:yulu wan'] = true", "state", {Enable=true, OneShot=true})
+end
+
+function invalid_fu_sanhuangwan()
+    state.buff["三黄宝蜡丸:sanhuang wan"] = false
+    timer.add("invalid_fu_sanhuangwan", 1800, "state.buff['三黄宝蜡丸:sanhuang wan'] = true", "state", {Enable=true, OneShot=true})
+end
+
+function invalid_fu_daxueteng()
+    state.buff["大血藤:da xueteng"] = false
+    timer.add("invalid_fu_daxueteng", 1800, "state.buff['大血藤:da xueteng'] = true", "state", {Enable=true, OneShot=true})
+end
+
+function invalid_fu_renshenguo()
+    state.buff["人参果:renshen guo"] = false
+    timer.add("invalid_fu_renshenguo", 1800, "state.buff['人参果:renshen guo'] = true", "state", {Enable=true, OneShot=true})
+end
+
+function invalid_fu_xuelian()
+    state.buff["雪莲:xuelian"] = false
+    timer.add("invalid_fu_xuelian", 1800, "state.buff['雪莲:xuelian'] = true", "state", {Enable=true, OneShot=true})
+end
 
 show(string.format("%-.40s%-1s", "加载 "..string.match(debug.getinfo(1).source, "script/(.*lua)$").." ..............................", " 成功"), "chartreuse")

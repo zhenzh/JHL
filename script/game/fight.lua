@@ -2,10 +2,11 @@ trigger.add("fight_snake", "fight_stop(1)", "fight", {Enable=false}, nil, "^忽�
 trigger.add("fight_danger", "fight_stop()", "fight", {Enable=false}, nil, "^\\( 你(?:已经一副头重脚轻的模样，正在勉力支撑著不倒下去|已经陷入半昏迷状态，随时都可能摔倒晕去|受伤过重，已经有如风中残烛，随时都可能断气)。 \\)$")
 trigger.add("fight_faint", "fight_stop(2)", "fight", {Enable=false}, nil, "^你的眼前一黑，接著什么也不知道了....$")
 trigger.add("fight_idle", "fight_idle()", "fight", {Enable=false}, nil, "^\\S+只能对战斗中的对手使用。$|^\\S+只有在战斗中才能使用。$")
-trigger.add("fight_lost_weapon", "fight_lost_weapon()", "fight", {Enable=false}, 99, "^你只觉得手中\\S+把持不定，脱手飞出！$|^只听见「啪」地一声，你手中的\\S+已经断为两截！$")
+trigger.add("fight_lost_weapon", "fight_lost_weapon(get_matches(1) or get_matches(2))", "fight", {Enable=false}, 99, "^你只觉得手中(\\S+)把持不定，脱手飞出！$|^只听见「啪」地一声，你手中的(\\S+)已经断为两截！$")
 
 function unwield()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ unwield ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ unwield ］")
     if wait_line("unwield all;set 卸除武器", 30, {Gag=true}, nil, "^你目前还没有任何为 卸除武器 的变量设定。$", "^> $") == false then
         return -1
     end
@@ -14,7 +15,8 @@ function unwield()
 end
 
 function wield(weapon)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ wield ］参数：weapon = "..table.tostring(weapon))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ wield ］参数：weapon = "..table.tostring(weapon))
     var.wield = var.wield or { weapon = weapon, lun_num = 5, personal_weapon = "" }
     if carryon.wield[1] ~= weapon[1] and 
        carryon.wield[1] ~= "" then
@@ -43,7 +45,8 @@ function wield(weapon)
 end
 
 function wield_return(rc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ wield_return ］参数：rc = "..tostring(rc))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ wield_return ］参数：rc = "..tostring(rc))
     if var.wield == nil then
         return rc
     end
@@ -52,7 +55,8 @@ function wield_return(rc)
 end
 
 function wield_position(pos)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ wield_position ］参数：pos = "..tostring(pos))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ wield_position ］参数：pos = "..tostring(pos))
     if var.wield.weapon[1] == "" then
         return
     end
@@ -101,13 +105,15 @@ function wield_position(pos)
             end
         end
     end
-    local l = wait_line("wield "..wid..";set 装备武器", 30, nil, 10, "^你正忙着呢。$|"..
-                                                                    "^你身上没有这样东西。$|"..
-                                                                    "^你使不了那么多法轮。$|"..
-                                                                    "^你已经装备著了。$|"..
-                                                                    "^你必须空出一只手来使用武器。$|"..
-                                                                    "^你必须先放下你目前装备的武器。$|"..
-                                                                    "^你目前还没有任何为 装备武器 的变量设定。$")
+    local l = wait_line("wield "..wid..";set 装备武器",
+                        30, nil, 10,
+                        "^你正忙着呢。$|"..
+                        "^你身上没有这样东西。$|"..
+                        "^你使不了那么多法轮。$|"..
+                        "^你已经装备著了。$|"..
+                        "^你必须空出一只手来使用武器。$|"..
+                        "^你必须先放下你目前装备的武器。$|"..
+                        "^你目前还没有任何为 装备武器 的变量设定。$")
     if l == false then
         return -1
     elseif l[0] == "你正忙着呢。" then
@@ -149,7 +155,8 @@ function process_killer()
 end
 
 function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ fight ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ fight ］")
     var.fight = var.fight or { idle = 0, refresh = false }
     trigger.enable_group("fight")
     if run_hp() < 0 then
@@ -215,15 +222,18 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
         trigger.enable("fight_idle")
         run(set.concat((config.fight[config.jobs[global.jid]].yuns or config.fight["通用"].yuns), ";")..";"..set.concat((config.fight[config.jobs[global.jid]].performs or config.fight["通用"].performs), ";"))
     end
-    wait_line(nil, 2, nil, 100, "^"..(var.job.enemy_name or "\\S+").."倒在地上，挣扎了几下就死了。$|"..
-                                "^你只觉得手中\\S+把持不定，脱手飞出！$|"..
-                                "^只听见「啪」地一声，你手中的\\S+已经断为两截！$|"..
-                                "^你目前还没有任何为 中断事件 的变量设定。$")
+    wait_line(nil,
+              2, nil, 100,
+              "^"..(var.job.enemy_name or "\\S+").."倒在地上，挣扎了几下就死了。$|"..
+              "^你只觉得手中\\S+把持不定，脱手飞出！$|"..
+              "^只听见「啪」地一声，你手中的\\S+已经断为两截！$|"..
+              "^你目前还没有任何为 中断事件 的变量设定。$")
     return fight()
 end
 
 function fight_return(rc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ fight_return ］参数：rc = "..tostring(rc))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ fight_return ］参数：rc = "..tostring(rc))
     if var.fight == nil then
         return rc
     end
@@ -232,22 +242,31 @@ function fight_return(rc)
     return rc
 end
 
-function fight_lost_weapon()
-    if carryon.inventory[carryon.wield[1]] == nil then
+function fight_lost_weapon(weapon)
+    for k,v in ipairs(carryon.wield) do
+        if items[v].name == weapon then
+            weapon = v
+            carryon.wield[k] = ""
+            break
+        end
+    end
+    if items[weapon] == nil then
         fight_stop(2)
         return
     end
-    carryon.inventory[carryon.wield[1]].count = carryon.inventory[carryon.wield[1]].count - 1
-    if carryon.wield[1] == "金轮:jin lun" or 
-       carryon.wield[1] == "法轮:fa lun" or 
-       carryon.wield[1] == "铜轮:fa lun" then
-        carryon.inventory[carryon.wield[1]].count = 0
+    if carryon.inventory[weapon] == nil then
+        fight_stop(2)
+        return
     end
-    if carryon.inventory[carryon.wield[1]].count == 0 then
-        carryon.inventory[carryon.wield[1]] = nil
+    carryon.inventory[weapon].count = carryon.inventory[weapon].count - 1
+    if weapon == "金轮:jin lun" or 
+       weapon == "法轮:fa lun" or 
+       weapon == "铜轮:fa lun" then
+        carryon.inventory[weapon].count = 0
     end
-    set.remove(carryon.wield, 1)
-    set.append(carryon.wield, "")
+    if carryon.inventory[weapon].count == 0 then
+        carryon.inventory[weapon] = nil
+    end
 end
 
 function fight_stop(rc)

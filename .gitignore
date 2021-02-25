@@ -1,0 +1,25 @@
+/.vscode/
+/edbee/
+/fonts/
+/moduleBackups/
+/irc_nick
+/irc_port
+/mudlet_updated_at
+/mudlet_updated_from
+/autolog
+/mudlet.aff
+/mudlet.dic
+/profiles/JHL/current/
+/profiles/JHL/tmp/
+/profiles/JHL/log/
+/profiles/JHL/map\ downloads/
+/profiles/JHL/login
+/profiles/JHL/password
+/profiles/JHL/port
+/profiles/JHL/autoreconnect
+/profiles/JHL/description
+/profiles/JHL/irc_nick
+/profiles/JHL/irc_port
+/profiles/JHL/profile.*
+/profiles/JHL/notes_utf8.txt
+/profiles/JHL/*.cfg

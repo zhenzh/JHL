@@ -220,7 +220,8 @@ function regular_dir(dir)
 end
 
 function locate(ids)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ locate ］参数：ids = "..table.tostring(ids))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ locate ］参数：ids = "..table.tostring(ids))
     if #env.current.id == 1 then
         return locate_return(0)
     end
@@ -299,7 +300,8 @@ function locate(ids)
 end
 
 function locate_return(rc)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ locate_return ］参数：rc = "..tostring(rc))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ locate_return ］参数：rc = "..tostring(rc))
     if rc == 0 then
         env.current.zone = {map[env.current.id[1]].zone}
         if (var.goto or {}).thread == nil then
@@ -331,8 +333,12 @@ local locate_port = {
 }
 
 function locate_navigation()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ locate_navigation ］")
-    local l = wait_line("locate", 30, nil, nil, "^你现在在((?:舟山|塘沽口|永宁港|安海港))\\S*。$|^船还没开呢。$")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ locate_navigation ］")
+    local l = wait_line("locate",
+                        30, nil, nil,
+                        "^你现在在((?:舟山|塘沽口|永宁港|安海港))\\S*。$|"..
+                        "^船还没开呢。$")
     if l == false then
         return -1
     else
@@ -351,7 +357,8 @@ function locate_navigation()
 end
 
 function locate_nextto()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ locate_nextto ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ locate_nextto ］")
     if env.nextto.name ~= "" then
         env.nextto.id = get_room_id_by_name(env.nextto.name)
         if #env.nextto.id > 1 then
@@ -390,7 +397,8 @@ function locate_nextto()
 end
 
 function get_room_id_by_name(name, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_name ］参数：name = "..tostring(name)..", rooms = "..table.tostring(rooms))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_name ］参数：name = "..tostring(name)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -404,7 +412,8 @@ function get_room_id_by_name(name, rooms)
 end
 
 function get_room_id_by_desc(desc, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_desc ］参数：desc = "..tostring(desc)..", rooms = "..table.tostring(rooms))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_desc ］参数：desc = "..tostring(desc)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     for _,v in ipairs(rooms) do
         if map[v].desc == desc then
@@ -415,7 +424,8 @@ function get_room_id_by_desc(desc, rooms)
 end
 
 function get_room_id_by_zones(zones, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_zones ］参数：zones = "..table.tostring(zones)..", rooms = "..table.tostring(rooms))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_zones ］参数：zones = "..table.tostring(zones)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -431,7 +441,8 @@ function get_room_id_by_zones(zones, rooms)
 end
 
 function get_room_id_by_exits(exits, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_exits ］参数：exits = "..table.tostring(exits)..", rooms = "..table.tostring(rooms))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_exits ］参数：exits = "..table.tostring(exits)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     for _,v in ipairs(rooms) do
         for _,i in ipairs((map[v].exits or {})) do
@@ -445,7 +456,8 @@ function get_room_id_by_exits(exits, rooms)
 end
 
 function get_room_id_by_npc(npc, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_npc ］参数：npc = "..tostring(npc)..", rooms = "..table.tostring(rooms))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_npc ］参数：npc = "..tostring(npc)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -461,7 +473,8 @@ function get_room_id_by_npc(npc, rooms)
 end
 
 function get_room_id_by_item(item, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_item ］参数：item = "..tostring(item)..", rooms = "..table.tostring(rooms))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_item ］参数：item = "..tostring(item)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -477,7 +490,8 @@ function get_room_id_by_item(item, rooms)
 end
 
 function get_room_id_by_tag(tag, rooms, mode)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_tag ］参数：tag = "..tostring(tag)..", rooms = "..table.tostring(rooms)..", mode = "..tostring(mode))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_tag ］参数：tag = "..tostring(tag)..", rooms = "..table.tostring(rooms)..", mode = "..tostring(mode))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -501,7 +515,8 @@ function get_room_id_by_tag(tag, rooms, mode)
 end
 
 function get_room_id_by_roomsfrom(roomsfrom, rooms, dir)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_roomsfrom ］参数：roomsfrom = "..table.tostring(roomsfrom)..", rooms = "..table.tostring(rooms)..", dir = "..tostring(dir))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_roomsfrom ］参数：roomsfrom = "..table.tostring(roomsfrom)..", rooms = "..table.tostring(rooms)..", dir = "..tostring(dir))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -525,7 +540,8 @@ function get_room_id_by_roomsfrom(roomsfrom, rooms, dir)
 end
 
 function get_room_id_by_roomsto(roomsto, rooms, dir)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_roomsto ］参数：roomsto = "..table.tostring(roomsto)..", rooms = "..table.tostring(rooms)..", dir = "..tostring(dir))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_roomsto ］参数：roomsto = "..table.tostring(roomsto)..", rooms = "..table.tostring(rooms)..", dir = "..tostring(dir))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -547,7 +563,8 @@ function get_room_id_by_roomsto(roomsto, rooms, dir)
 end
 
 function get_room_id_by_around(around, rooms)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_around ］参数：around = "..table.tostring(around)..", rooms = "..table.tostring(rooms))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_around ］参数：around = "..table.tostring(around)..", rooms = "..table.tostring(rooms))
     local room_ids = {}
     if rooms == nil then
         rooms = table.index(map)
@@ -567,7 +584,8 @@ function get_room_id_by_around(around, rooms)
 end
 
 function get_room_id_by_range(range, origin)
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_by_range ］参数：range = "..tostring(range)..", origin = "..tostring(origin))
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_by_range ］参数：range = "..tostring(range)..", origin = "..tostring(origin))
     if origin == nil then
         return {}
     end
@@ -638,7 +656,8 @@ function get_room_id_by_range(range, origin)
 end
 
 function get_room_id_around()
-    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ get_room_id_around ］")
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ get_room_id_around ］")
     local room_ids = {}
     if #env.current.id ~= 1 then
         return room_ids

@@ -14,7 +14,7 @@ drinks = {"饱腹玉:baofu yu", "汽锅鸡:qiguo ji", "香茶:tea", "酥油茶:t
 
 drugs = {
             js = {"养精丹:yangjing dan", "首乌精:shouwu jing", "九花玉露丸:yulu wan", "续命八丹:xuming badan", "精神丹药:jingshen danyao"},
-            qx = {"百草丹:baicao dan", "九花玉露丸:yulu wan", "续命八丹:xuming badan", "气血丹药:qixue danyao"},
+            qx = {"百草丹:baicao dan", "九花玉露丸:yulu wan", "三黄宝蜡丸:sanhuang wan", "续命八丹:xuming badan", "气血丹药:qixue danyao"},
         }
 
 items = {
@@ -177,6 +177,7 @@ items = {
     ["黄金:gold"]                  = {name = "黄金",         id = "gold",                   group = "misc",   type = "money",   stack = true,   reserve = true},
     ["续命八丹:xuming badan"]      = {name = "续命八丹",     id = "xuming badan",           group = "misc",   type = "drug",    price = {},     place = {},       get = {},      reserve = true},
     ["九花玉露丸:yulu wan"]        = {name = "九花玉露丸",   id = "yulu wan",            group = "misc",   type = "drug",    price = {},     place = {},       get = {},      reserve = true},
+    ["三黄宝蜡丸:sanhuang wan"]       = {name = "三黄宝蜡丸",   id = "sanhuang wan",        group = "misc",   type = "drug",    price = {},     place = {},       get = {},      reserve = true},
     ["百草丹:baicao dan"]          = {name = "百草丹",       id = "baicao dan",              group = "misc",   type = "drug",    price = {},     place = {},       get = {},      reserve = true},
     ["首乌精:shouwu jing"]         = {name = "首乌精",       id = "shouwu jing",            group = "misc",   type = "drug",    price = {},     place = {},       get = {},      reserve = true},
     ["养精丹:yangjing dan"]         = {name = "养精丹",       id = "yangjing dan",          group = "misc",   type = "drug",    price = {1000},  place = {1024},   get = {"buy"}, reserve = true},

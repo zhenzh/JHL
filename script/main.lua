@@ -74,7 +74,7 @@ end
 global.debug.level = automation.debug or global.debug.level
 
 automation.statistics = automation.statistics or {}
-automation.statistics.date = automation.statistics.date or time.date("%Y%m%d")
+automation.statistics.date = automation.statistics.date or time.date("%Y%m%d%H")
 automation.statistics.death = automation.statistics.death or {}
 automation.statistics.idle = automation.statistics.idle or {}
 automation.statistics.reset = automation.statistics.reset or {}
@@ -119,7 +119,15 @@ end
 
 function load_jobs()
     if automation.config_jobs ~= nil then
-        config.jobs = automation.config_jobs
+        for k,v in pairs(automation.config_jobs) do
+            if type(config.jobs[k]) == "table" then
+                for i,j in pairs(v) do
+                    if i ~= "enable" then
+                        config.jobs[k].i = j
+                    end
+                end
+            end
+        end
         automation.config_jobs = nil
     end
     for _,v in ipairs(config.jobs) do

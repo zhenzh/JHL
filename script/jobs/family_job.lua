@@ -94,7 +94,8 @@ function disable_family_job()
 end
 
 function family_job()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job ］")
     automation.idle = false
     var.job = var.job or { name = "门派任务" }
     var.job.enemy_name = var.job.enemy_name or family_info[profile.family].enemy_name
@@ -130,7 +131,8 @@ function family_job()
 end
 
 function family_job_return(rc)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_return ］参数：rc = "..tostring(rc))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_return ］参数：rc = "..tostring(rc))
     if var.job == nil then
         return rc
     end
@@ -146,7 +148,8 @@ function family_job_return(rc)
 end
 
 function family_job_p1()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p1 ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_p1 ］")
     local rc = family_job_goto_master()
     if rc ~= nil then
         return rc
@@ -185,7 +188,8 @@ function family_job_p1()
 end
 
 function family_job_p2()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p2 ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_p2 ］")
     timer.delete("family_job_inactive")
     if config.jobs["门派任务"].phase == phase["任务执行"] then
         jia_min()
@@ -205,7 +209,8 @@ function family_job_p2()
 end
 
 function family_job_p3()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p3 ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_p3 ］")
     local rc = family_job_goto_master()
     if rc ~= nil then
         return rc
@@ -232,7 +237,8 @@ function family_job_p3()
 end
 
 function family_job_p4()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p4 ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_p4 ］")
     if config.jobs["门派任务"].contribution ~= nil then
         local rc = family_job_goto_master()
         if rc ~= nil then
@@ -259,7 +265,8 @@ function family_job_p4()
 end
 
 function family_job_p5()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_p5 ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_p5 ］")
     config.jobs["门派任务"].dest = nil
     if var.job.statistics ~= nil then
         var.job.statistics.result = "失败"
@@ -293,7 +300,8 @@ function family_job_p5()
 end
 
 function family_job_goto_master()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_goto_master ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_goto_master ］")
     if env.current.id[1] ~= family_info[profile.family].master_place then
         var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
         local rc = goto(family_info[profile.family].master_place)
@@ -308,13 +316,16 @@ function family_job_goto_master()
 end
 
 function family_job_close_job()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_close_job ］")
-    local l = wait_line("ask "..family_info[profile.family].master_id.." about 要事在身", 30, nil, nil, "^\\S+对你说道：你不已经对我讲过此事吗？$|"..
-                                                                                                       "^\\S+对你说道：你太令\\S+失望了，目前我\\S+正值用人之际，我看你还是以\\S+兴衰为重吧。$|"..
-                                                                                                       "^\\S+对你说道：既然你有要事在身，我也不便强求，唉！靠你振兴我\\S+看来是没指望了。$|"..
-                                                                                                       "^这里没有 \\S+ 这个人$|"..
-                                                                                                       "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                                                       "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_close_job ］")
+    local l = wait_line("ask "..family_info[profile.family].master_id.." about 要事在身",
+                        30, nil, nil,
+                        "^\\S+对你说道：你不已经对我讲过此事吗？$|"..
+                        "^\\S+对你说道：你太令\\S+失望了，目前我\\S+正值用人之际，我看你还是以\\S+兴衰为重吧。$|"..
+                        "^\\S+对你说道：既然你有要事在身，我也不便强求，唉！靠你振兴我\\S+看来是没指望了。$|"..
+                        "^这里没有 \\S+ 这个人$|"..
+                        "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
+                        "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
     elseif string.match(l[0], "没有") then
@@ -335,12 +346,15 @@ function family_job_close_job()
 end
 
 function family_job_open_job()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_open_job ］")
-    local l = wait_line("ask "..family_info[profile.family].master_id.." about 门派任务", 30, nil, nil, "^\\S+对你点了点头，说道：好，望你能为振兴我\\S+多做贡献，我有任务时自然会派人去通知你。$|"..
-                                                                                                       "^\\S+拍了拍你的肩膀，说道：好，我有任务时自然会派人去通知你。$|"..
-                                                                                                       "^这里没有 \\S+ 这个人$|"..
-                                                                                                       "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                                                       "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_open_job ］")
+    local l = wait_line("ask "..family_info[profile.family].master_id.." about 门派任务",
+                        30, nil, nil,
+                        "^\\S+对你点了点头，说道：好，望你能为振兴我\\S+多做贡献，我有任务时自然会派人去通知你。$|"..
+                        "^\\S+拍了拍你的肩膀，说道：好，我有任务时自然会派人去通知你。$|"..
+                        "^这里没有 \\S+ 这个人$|"..
+                        "^(\\S+)(?:正|)忙着呢，你等会儿在问话吧。$|"..
+                        "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
     elseif string.match(l[0], "没有") then
@@ -356,7 +370,8 @@ function family_job_open_job()
 end
 
 function family_job_wait_info()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_wait_info ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_wait_info ］")
     automation.skill = true
     local rc = zuanyan()
     if rc < 0 then
@@ -390,7 +405,8 @@ function family_job_wait_info()
 end
 
 function family_job_wait_enemy(timeout, fstate)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_wait_enemy ］参数：timeout = "..tostring(timeout)..", fstate = "..tostring(fstate))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_wait_enemy ］参数：timeout = "..tostring(timeout)..", fstate = "..tostring(fstate))
     timer.add("family_job_wait_enemy", timeout, "", "family_job", {Enable=true, OneShot=true})
     while (var.job.fight == nil or var.job.fight == fstate) and timer.is_exist("family_job_wait_enemy") ~= false do
         if config.jobs["门派任务"].phase > phase["任务执行"] then
@@ -408,7 +424,8 @@ function family_job_wait_enemy(timeout, fstate)
 end
 
 function family_job_goto_dest()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_goto_dest ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_goto_dest ］")
     if #config.jobs["门派任务"].dest > 0 then
         local current = set.pop(config.jobs["门派任务"].dest)
         if env.current.id[1] ~= current then
@@ -443,18 +460,23 @@ function family_job_goto_dest()
 end
 
 function family_job_select_enemy()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_select_enemy ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_select_enemy ］")
     if enemy_choose["全杀"] == true then
         return family_job_confirm_enemy()
     end
-    local l = wait_line("look "..family_info[profile.family].enemy_id, 30, nil, nil, "你要看什么？$|"..
-                                                                                     "^(\\S+)弟子 "..family_info[profile.family].enemy_name.."\\(\\w+ \\w+\\)$")
+    local l = wait_line("look "..family_info[profile.family].enemy_id,
+                        30, nil, nil,
+                        "你要看什么？$|"..
+                        "^(\\S+)弟子 "..family_info[profile.family].enemy_name.."\\(\\w+ \\w+\\)$")
     local safe
     if l == false then
         return -1
     elseif l[0] ~= "你要看什么？" then
         safe = enemy_choose[l[1]]
-        l = wait_line(nil, 10, nil, nil, "^  □(?:\\S+只|)(\\S+)\\(\\w+ \\w+\\)$")
+        l = wait_line(nil,
+                      10, nil, nil,
+                      "^  □(?:\\S+只|)(\\S+)\\(\\w+ \\w+\\)$")
         if l == false then
             return -1
         end
@@ -477,10 +499,13 @@ function family_job_select_enemy()
 end
 
 function family_job_confirm_enemy()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_confirm_enemy ］")
-    local l = wait_line("kill "..family_info[profile.family].enemy_id, 30, nil, nil, "^你对著"..family_info[profile.family].enemy_name.."喝道：「.*」$|"..
-                                                                                     "^这里没有这个人。$|"..
-                                                                                     "^你现在正忙着呢。$")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_confirm_enemy ］")
+    local l = wait_line("kill "..family_info[profile.family].enemy_id,
+                        30, nil, nil,
+                        "^你对著"..family_info[profile.family].enemy_name.."喝道：「.*」$|"..
+                        "^这里没有这个人。$|"..
+                        "^你现在正忙着呢。$")
     if l == false then
         return -1
     elseif l[0] == "这里没有这个人。" then
@@ -495,9 +520,11 @@ function family_job_confirm_enemy()
         wait(0.1)
         return family_job_confirm_enemy()
     else
-        l = wait_line(nil, 30, nil, nil, "^"..family_info[profile.family].enemy_name.."说道：既然你自己找死，也怨不得我。$|"..
-                                         "^"..family_info[profile.family].enemy_name.."说道：今天点子不对，不能陪你玩了。$|"..
-                                         "^看起来"..family_info[profile.family].enemy_name.."想杀死你！")
+        l = wait_line(nil,
+                      30, nil, nil,
+                      "^"..family_info[profile.family].enemy_name.."说道：既然你自己找死，也怨不得我。$|"..
+                      "^"..family_info[profile.family].enemy_name.."说道：今天点子不对，不能陪你玩了。$|"..
+                      "^看起来"..family_info[profile.family].enemy_name.."想杀死你！")
         if l == false then
             return -1
         elseif string.match(l[0], "想杀死你") then
@@ -515,7 +542,8 @@ function family_job_confirm_enemy()
 end
 
 function family_job_one_step()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_one_step ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_one_step ］")
     run("halt")
     local rc,ldir = one_step()
     if rc ~= 0 then
@@ -523,8 +551,10 @@ function family_job_one_step()
     else
         local current = map[config.jobs["门派任务"].dest[1]].links[ldir]
         if env.current.name == "九十九道拐" then
-            local l = wait_line("eat busy", 30, nil, nil, "^你身上没有 busy 这样食物。$|"..
-                                                          "^你正忙着呢，先忍忍吧。$")
+            local l = wait_line("eat busy",
+                                30, nil, nil,
+                                "^你身上没有 busy 这样食物。$|"..
+                                "^你正忙着呢，先忍忍吧。$")
             if l == false then
                 return -1
             elseif l[0] == "你正忙着呢，先忍忍吧。" then
@@ -571,7 +601,8 @@ function family_job_one_step()
 end
 
 function family_job_get_dir(ldir)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_get_dir ］参数：ldir = "..tostring(ldir))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_get_dir ］参数：ldir = "..tostring(ldir))
     local dir
     if config.jobs["门派任务"].dest[1] == 1433 then
         if type(env.current.exits) == "string" then
@@ -621,7 +652,8 @@ function family_job_get_dir(ldir)
 end
 
 function family_job_reset_enemy(dir)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_reset_enemy ］参数：dir = "..tostring(dir))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_reset_enemy ］参数：dir = "..tostring(dir))
     if dir == nil then
         wait(3)
         return family_job()
@@ -665,7 +697,8 @@ function family_job_reset_enemy(dir)
 end
 
 function family_job_confirm_kill()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_confirm_kill ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_confirm_kill ］")
     local rc = is_fighting()
     if rc < 0 then
         return -1
@@ -726,7 +759,8 @@ function family_job_confirm_kill()
 end
 
 function family_job_post_kill()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_post_kill ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_post_kill ］")
     jia_min()
     if wait_no_fight() < 0 then
         return -1
@@ -754,12 +788,15 @@ function family_job_post_kill()
 end
 
 function family_job_kill_enemy()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_kill_enemy ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_kill_enemy ］")
     if enemy_choose["全杀"] == false then
         trigger.add("family_job_enemy_change", "family_job_enemy_change()", "family_job_active", {Enable=true, OneShot=true, StopEval=true}, 100, "^"..family_info[profile.family].enemy_name.."只觉得手中\\S+把持不定，脱手飞出！$")
     end
+    timer.add("family_job_fight_timeout", 60, "var.fight.stop = 2", "family_job", {Enable=true, OneShot=true})
     local rc = fight()
     trigger.delete("family_job_enemy_change")
+    timer.delete("family_job_fight_timeout")
     if rc < 0 then
         return -1
     elseif rc == 2 then
@@ -794,7 +831,8 @@ function family_job_kill_enemy()
 end
 
 function family_job_exec()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_exec ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_exec ］")
     automation.idle = false
     local rc = family_job_goto_dest()
     if rc ~= nil then
@@ -828,7 +866,8 @@ function family_job_exec()
 end
 
 function family_job_post_recover()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_post_recover ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_post_recover ］")
     var.move = false -- 避免恢复时移动位置
     if heal_regenerate(70) < 0  then
         return -1
@@ -895,7 +934,8 @@ function family_job_post_recover()
 end
 
 function family_job_wait_settle()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_wait_settle ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_wait_settle ］")
     automation.skill = true
     local rc = zuanyan()
     if rc < 0 then
@@ -926,14 +966,17 @@ function family_job_wait_settle()
 end
 
 function family_job_query_contribution()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_query_contribution ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_query_contribution ］")
     if global.flood > config.flood then
         wait(1)
     end
-    local l = wait_line("ask "..family_info[profile.family].master_id.." about 贡献度", 30, nil, nil, "^\\S+对你说道：你为\\S+所做的贡献为(\\S+)点。|"..
-                                                                                                     "^这里没有 \\S+ 这个人$|"..
-                                                                                                     "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
-                                                                                                     "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
+    local l = wait_line("ask "..family_info[profile.family].master_id.." about 贡献度",
+                        30, nil, nil,
+                        "^\\S+对你说道：你为\\S+所做的贡献为(\\S+)点。|"..
+                        "^这里没有 \\S+ 这个人$|"..
+                        "^\\S+(?:正|)忙着呢，你等会儿在问话吧。$|"..
+                        "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$")
     if l == false then
         return -1
     elseif l[0] == "你忙着呢，你等会儿在问话吧。" then
@@ -948,7 +991,8 @@ function family_job_query_contribution()
 end
 
 function family_job_clear_contribution()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ family_job_clear_contribution ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ family_job_clear_contribution ］")
     local rc,contribution = family_job_query_contribution()
     if rc < 0 then
         return -1

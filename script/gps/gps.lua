@@ -226,7 +226,8 @@ function get_multipath(src, dst)
 end
 
 function gonext(mode)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ gonext ］参数："..tostring(mode))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ gonext ］参数："..tostring(mode))
     if var.goto == nil then
         show("未知目的地", "red")
         return -1
@@ -256,7 +257,8 @@ function gonext(mode)
 end
 
 function goto(dst, mode)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto ］参数：dst = "..tostring(dst)..", mode = "..tostring(mode))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto ］参数：dst = "..tostring(dst)..", mode = "..tostring(mode))
     var.goto = var.goto or {}
     var.goto.multipath = nil
     if mode == "walk" then
@@ -296,7 +298,8 @@ function goto(dst, mode)
 end
 
 function goto_return(rc, msg)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
     if var.goto == nil then
         return rc,msg
     end
@@ -322,7 +325,8 @@ function goto_return(rc, msg)
 end
 
 function goto_relocate()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto_relocate ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto_relocate ］")
     if #set.inter(env.current.id, {3003, 3244}) > 0 then
         env.current.id = { 3244 }
         return
@@ -377,7 +381,8 @@ function goto_relocate()
 end
 
 function goto_move()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto_move ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto_move ］")
     local rc
     while var.goto.pause ~= nil do
         if var.goto.pause() ~= 0 then
@@ -475,7 +480,8 @@ function goto_move()
 end
 
 function goto_exec(current_id)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto_exec ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto_exec ］")
     if current_id == nil or var.goto.path[current_id] == nil then
         return goto_move()
     end
@@ -518,7 +524,9 @@ function goto_exec(current_id)
         current_id = overflow_id
     end
     run(set.concat(path, ";"))
-    local l = wait_line("set "..pause_msg, 30, {StopEval=true}, 20, "^你目前还没有任何为 ((?:移动完成|稍事休息|地图事件)) 的变量设定。$")
+    local l = wait_line("set "..pause_msg,
+                        30, {StopEval=true}, 20,
+                        "^你目前还没有任何为 ((?:移动完成|稍事休息|地图事件)) 的变量设定。$")
     if l == false then
         return -1
     end
@@ -569,10 +577,12 @@ function goto_exec(current_id)
             return goto_move()
         end
         var.goto.pause = true
-        l = wait_line(nil, 1, {StopEval=true}, 20, "^你目前还没有任何为 移动暂停 的变量设定。$|"..
-                                                   "^你的眼前一黑，接著什么也不知道了....$|"..
-                                                   "^鬼门关 - $|"..
-                                                   "^一道闪电从天降下，直朝你劈去……结果没打中！$")
+        l = wait_line(nil,
+                      1, {StopEval=true}, 20,
+                      "^你目前还没有任何为 移动暂停 的变量设定。$|"..
+                      "^你的眼前一黑，接著什么也不知道了....$|"..
+                      "^鬼门关 - $|"..
+                      "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if var.goto.pause == true then
             var.goto.pause = nil
         end
@@ -602,7 +612,8 @@ function goto_exec(current_id)
 end
 
 function parse(dst)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ parse ］参数：dst = "..tostring(dst))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ parse ］参数：dst = "..tostring(dst))
     if type(dst) == "table" then
         return dst
     elseif type(dst) == "number" or string.find(dst, "^%d+$") then

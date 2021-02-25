@@ -11,13 +11,15 @@
   table.copy(t)                 复制表 t 仅包括第一层键值对，不包括子表和元表，生成新的表
   table.deepcopy(t)             复制表 t 所有键值对，生成新的表
   table.eq(a, b)                比较表 a 与表 b 内的所有元素是否相等
-  table.inter(...)              获取并返回若干个表的交集
-  table.union(...)              获取并返回若干个表的并集
-  table.compl(...)              返回从第一个表 t 中去除后续若干个表所包含的元素后得到的新表
+  table.inter(a, b)             返回表 a 与表 b 的交集
+  table.union(a, b)             返回表 a 与表 b 的并集
+  table.compl(a, b)             返回从表 a 中去除表 b 所包含的元素后得到的新表
+  table.plus(a, b)              返回表 a 的值与表 b 的值相加后得到的新表
+  table.minus(a, b)             返回表 a 的值与表 b 的值相减后得到的新表
   table.tostring(t)             将表 t 转换成字符串
   table.save(f, t)              将表 t 写入文件 f
   table.load(f)                 返回从文件 f 读入的表
-  table.fmtstring(t)            将表 t 转换成 JSON 格式
+  table.fmtstring(t)            将表 t 转换成格式化的字符串
 --]]
 
 table = table or {}
@@ -133,67 +135,69 @@ function table.eq(a, b)
     end
 end
 
-function table.inter(...)
-    local t,r = {...},{}
-    for k,v in pairs(t[1]) do
-        for i=2,#t do
-            if type(t[i][k]) ~= type(v) then
-                v = nil
-                break
-            elseif type(v) ~= "table" then
-                if t[i][k] ~= v then
-                    v = nil
-                    break
-                end
-            end
-        end
-        if type(v) == "table" then
-            for i=2,#t do
-                if table.eq(v, t[i][k]) ~= true then
-                    v = nil
-                    break
-                end
-            end
-            r[k] = table.deepcopy(v)
-            v = nil
-        end
-        if v ~= nil then
+function table.inter(a, b)
+    local r = {}
+    for k,v in pairs(a) do
+        if b[k] ~= nil then
             r[k] = v
         end
     end
     return r
 end
 
-function table.union(...)
-    local t = {...}
-    local r = table.deepcopy(t[1])
-    for i=2,#t do
-        for k,v in pairs(t[i]) do
-            if r[k] == nil then
-                if type(v) == "table" then
-                    r[k] = table.deepcopy(v)
-                else
-                    r[k] = v
-                end
-            end
+function table.union(a, b)
+    local r = table.deepcopy(a)
+    for k,v in pairs(b) do
+        if r[k] == nil then
+            r[k] = v
         end
     end
     return r
 end
 
-function table.compl(...)
-    local t,r = {...},{}
-    for k,v in pairs(t[1]) do
-        for i=2,#t do
-            if t[i][k] ~= nil then
-                v = nil
-                break
-            end
+function table.compl(a, b)
+    local r = {}
+    for k,v in pairs(a) do
+        if b[k] == nil then
+            r[k] = v
         end
-        if type(v) == "table" then
-            r[k] = table.deepcopy(v)
+    end
+    return r
+end
+
+function table.plus(a, b)
+    local r = {}
+    for k,v in pairs(a) do
+        if b[k] == nil then
+            r[k] = v
         else
+            if type(v) == "number" and type(b[k]) == "number" then
+                r[k] = v + b[k]
+            else
+                r[k] = tostring(v)..tostring(b[k])
+            end
+        end
+    end
+    for k,v in pairs(b) do
+        if r[k] == nil then
             r[k] = v
+        end
+    end
+    return r
+end
+
+function table.minus(a, b)
+    local r = {}
+    for k,v in pairs(a) do
+        if b[k] == nil then
+            r[k] = v
+        else
+            if type(v) == "number" and type(b[k]) == "number" then
+                r[k] = v - b[k]
+                if r[k] == 0 then
+                    r[k] = nil
+                end
+            end
         end
     end
     return r

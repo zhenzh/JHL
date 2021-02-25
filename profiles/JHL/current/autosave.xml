@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<HostPackage>
+		<Host autoClearCommandLineAfterSend="no" HighlightHistory="yes" printCommand="yes" USE_IRE_DRIVER_BUGFIX="yes" mUSE_FORCE_LF_AFTER_PROMPT="no" mUSE_UNIX_EOL="yes" mNoAntiAlias="no" mEchoLuaErrors="yes" runAllKeyMatches="no" AmbigousWidthGlyphsToBeWide="auto" mRawStreamDump="no" mIsLoggingTimestamps="yes" logDirectory="" logFileName="" logFileNameFormat="yyyy-MM-dd#HH-mm-ss" mAlertOnNewData="yes" mFORCE_NO_COMPRESSION="no" mFORCE_GA_OFF="no" mFORCE_SAVE_ON_EXIT="no" mEnableGMCP="yes" mEnableMSSP="yes" mEnableMSP="no" mEnableMSDP="no" mMapStrongHighlight="no" mLogStatus="no" mEnableSpellCheck="yes" mEnableUserDictionary="yes" mUseSharedDictionary="yes" mShowInfo="yes" mAcceptServerGUI="yes" mAcceptServerMedia="yes" mMapperUseAntiAlias="yes" mFORCE_MXP_NEGOTIATION_OFF="no" mFORCE_CHARSET_NEGOTIATION_OFF="no" enableTextAnalyzer="no" mRoomSize="0.5" mLineSize="10.0" mBubbleMode="no" mShowRoomIDs="no" mShowPanel="no" mHaveMapperScript="yes" mEditorAutoComplete="yes" mEditorTheme="Mudlet" mEditorThemeFile="Mudlet.tmTheme" mThemePreviewItemID="207106" mThemePreviewType="trigger" mSearchEngineName="Bing" mTimerSupressionInterval="00:00:00.000" mUseProxy="no" mProxyAddress="" mProxyPort="0" mProxyUsername="" mProxyPassword="" mAutoReconnect="yes" mSslTsl="no" mSslIgnoreExpired="yes" mSslIgnoreSelfSigned="yes" mSslIgnoreAll="yes" mDiscordAccessFlags="2439" mRequiredDiscordUserName="" mRequiredDiscordUserDiscriminator="" mSGRCodeHasColSpaceId="no" mServerMayRedefineColors="yes" playerRoomPrimaryColor="#ffff0000" playerRoomSecondaryColor="#ffffffff" playerRoomStyle="0" playerRoomOuterDiameter="120" playerRoomInnerDiameter="70" CompactInputLine="no" mDoubleClickIgnore="'&quot;" EditorSearchOptions="0" DebugShowAllProblemCodepoints="no">
+			<name>JHL</name>
+			<mInstalledPackages />
+			<mInstalledModules>
+				<key>江湖路全自动机器人</key>
+				<filepath>C:/Users/Administrator/.config/mudlet/script/江湖路全自动机器人.xml</filepath>
+				<globalSave>0</globalSave>
+				<priority>0</priority>
+			</mInstalledModules>
+			<url>118.25.151.226</url>
+			<serverPackageName>nothing</serverPackageName>
+			<serverPackageVersion>-1</serverPackageVersion>
+			<port>8888</port>
+			<borderTopHeight>0</borderTopHeight>
+			<borderBottomHeight>0</borderBottomHeight>
+			<borderLeftWidth>0</borderLeftWidth>
+			<borderRightWidth>0</borderRightWidth>
+			<wrapAt>100</wrapAt>
+			<wrapIndentCount>0</wrapIndentCount>
+			<mFgColor>#00aa00</mFgColor>
+			<mBgColor>#000000</mBgColor>
+			<mCommandFgColor>#717100</mCommandFgColor>
+			<mCommandBgColor>#000000</mCommandBgColor>
+			<mCommandLineFgColor>#808080</mCommandLineFgColor>
+			<mCommandLineBgColor>#000000</mCommandLineBgColor>
+			<mBlack>#000000</mBlack>
+			<mLightBlack>#808080</mLightBlack>
+			<mRed>#800000</mRed>
+			<mLightRed>#ff0000</mLightRed>
+			<mBlue>#000080</mBlue>
+			<mLightBlue>#0000ff</mLightBlue>
+			<mGreen>#008000</mGreen>
+			<mLightGreen>#00ff00</mLightGreen>
+			<mYellow>#808000</mYellow>
+			<mLightYellow>#ffff00</mLightYellow>
+			<mCyan>#008080</mCyan>
+			<mLightCyan>#00ffff</mLightCyan>
+			<mMagenta>#800080</mMagenta>
+			<mLightMagenta>#ff00ff</mLightMagenta>
+			<mWhite>#c0c0c0</mWhite>
+			<mLightWhite>#ffffff</mLightWhite>
+			<mDisplayFont>Ubuntu Mono,15,-1,5,50,0,0,0,1,0</mDisplayFont>
+			<mCommandLineFont>Bitstream Vera Sans Mono,14,-1,5,50,0,0,0,0,0</mCommandLineFont>
+			<mCommandSeparator>;</mCommandSeparator>
+			<commandLineMinimumHeight>30</commandLineMinimumHeight>
+			<mFgColor2>#c0c0c0</mFgColor2>
+			<mBgColor2>#000000</mBgColor2>
+			<mBlack2>#000000</mBlack2>
+			<mLightBlack2>#808080</mLightBlack2>
+			<mRed2>#800000</mRed2>
+			<mLightRed2>#ff0000</mLightRed2>
+			<mBlue2>#000080</mBlue2>
+			<mLightBlue2>#0000ff</mLightBlue2>
+			<mGreen2>#008000</mGreen2>
+			<mLightGreen2>#00ff00</mLightGreen2>
+			<mYellow2>#808000</mYellow2>
+			<mLightYellow2>#ffff00</mLightYellow2>
+			<mCyan2>#008080</mCyan2>
+			<mLightCyan2>#00ffff</mLightCyan2>
+			<mMagenta2>#800080</mMagenta2>
+			<mLightMagenta2>#ff00ff</mLightMagenta2>
+			<mWhite2>#c0c0c0</mWhite2>
+			<mLightWhite2>#ffffff</mLightWhite2>
+			<mSpellDic>en_US</mSpellDic>
+			<mLineSize>10.0</mLineSize>
+			<mRoomSize>0.5</mRoomSize>
+			<stopwatches />
+		</Host>
+	</HostPackage>
+	<TriggerPackage />
+	<TimerPackage />
+	<AliasPackage />
+	<ActionPackage />
+	<ScriptPackage />
+	<KeyPackage />
+	<VariablePackage>
+		<HiddenVariables />
+	</VariablePackage>
+</MudletPackage>
