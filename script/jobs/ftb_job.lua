@@ -89,10 +89,7 @@ function ftb_job_p1()
     if rc ~= nil then
         return rc
     end
-    rc = ftb_job_refresh()
-    if rc ~= nil then
-        return rc
-    end
+    return ftb_job_refresh()
 end
 
 function ftb_job_p2()

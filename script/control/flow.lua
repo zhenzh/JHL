@@ -363,8 +363,10 @@ function flow_do_job()
         return 0
     else
         if config.jobs[global.jid] == "嵩山任务" then
-            if statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
-                global.jid = global.jid - 1
+            if config.jobs[global.jid].enable == true and config.jobs[global.jid].active == true then
+                if statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+                    global.jid = global.jid - 1
+                end
             end
         end
         if global.jid == #config.jobs then
@@ -653,7 +655,7 @@ function plan_fight_weapon()
                     show("未定义 "..v.weapon[1], "orange")
                     return -1
                 end
-                if v.weapon[2] ~= "" then
+                if (v.weapon[2] or "") ~= "" then
                     if fight_weapon[v.weapon[2]] ~= nil then
                         if v.weapon[2] ~= "金轮:jin lun" and 
                            v.weapon[2] ~= "铜轮:fa lun" and 
