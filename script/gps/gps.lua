@@ -31,7 +31,7 @@ local map_events = {
     ["kill nv lang;northdown"] = kill_npc,  ["kill jiading;westup"] = kill_npc,     ["kill yideng shiwei;north"] = kill_npc,
     ["kill shuo bude;up"] = kill_npc,       ["kill jiaozhong;north"] = kill_npc,    ["kill wugen daoren;northup"] = kill_npc,
     ["kill jian zhanglao;east"] = kill_npc, ["kill xiao lan;east"] = kill_npc,      ["kill zhang zhiguang;westup"] = kill_npc,
-    ["kill wang furen;up"] = kill_npc,      ["kill lao denuo;south"] = kill_npc,    ["kill xuming;kill xutong;eastup"] = kill_npc,
+    ["kill wang furen;up"] = kill_npc,      ["kill lao denuo;south"] = kill_npc,    ["kill xu ming;kill xu tong;eastup"] = kill_npc,
     ["kill yue lingshan;west"] = kill_npc,  ["kill xihua zi;south"] = kill_npc,     ["kill ning zhongze;west"] = kill_npc,
     ["kill zhang songxi;west"] = kill_npc,  ["kill du dajin;enter"] = kill_npc,     ["kill huangshan nuzi;west"] = kill_npc,
     ["kill lu dayou;south"] = kill_npc,     ["kill lao denuo;west"] = kill_npc,     ["kill gao genming;northup"] = kill_npc,
@@ -107,7 +107,7 @@ local maze = {
 
 function get_path(src, dst)
     local trace = {}
-    trace[dst] = {cost = 100000}
+    trace[dst] = {cost = 10000}
     trace[src] = {step = "", cost = 0}
     local analyzing = {src}
     while #analyzing > 0 do
@@ -141,8 +141,8 @@ end
 function get_multipath(src, dst)
     local trace,cost = {},{}
     for _,v in ipairs(dst) do
-        trace[v] = {cost = 100000}
-        cost[v] = 100000
+        trace[v] = {cost = 10000}
+        cost[v] = 10000
     end
     cost[src] = nil
     trace[src] = {step = "", cost = 0}
@@ -174,7 +174,7 @@ function get_multipath(src, dst)
     local path = var.goto.multipath or {}
     local crt,nxt
     for k,_ in pairs(cost) do
-        if trace[k].cost >= 100000 then
+        if trace[k].cost >= 10000 then
             cost[k] = nil
             trace[k] = nil
             set.delete(dst, k)
@@ -226,7 +226,8 @@ function get_multipath(src, dst)
 end
 
 function gonext(mode)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ gonext ］参数："..tostring(mode))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ gonext ］参数："..tostring(mode))
     if var.goto == nil then
         show("未知目的地", "red")
         return -1
@@ -246,16 +247,18 @@ function gonext(mode)
             var.goto.next = true
             trigger.add(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
             trigger.add(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
+            trigger.add(nil, "hinder()", "goto", {Enable=true}, 19, "^你的动作还没有完成，不能移动。$")
             trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
             trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
             trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
-            goto_move()
+            return goto_return(goto_move())
         end
     end
 end
 
 function goto(dst, mode)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto ］参数：dst = "..tostring(dst)..", mode = "..tostring(mode))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto ］参数：dst = "..tostring(dst)..", mode = "..tostring(mode))
     var.goto = var.goto or {}
     var.goto.multipath = nil
     if mode == "walk" then
@@ -269,6 +272,7 @@ function goto(dst, mode)
         var.goto.thread = coroutine.running()
         trigger.add(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
         trigger.add(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
+        trigger.add(nil, "hinder()", "goto", {Enable=true}, 19, "^你的动作还没有完成，不能移动。$")
         trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
         trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
         trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
@@ -294,7 +298,8 @@ function goto(dst, mode)
 end
 
 function goto_return(rc, msg)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
     if var.goto == nil then
         return rc,msg
     end
@@ -302,8 +307,6 @@ function goto_return(rc, msg)
     if rc < 0 then
         if #var.goto.room_ids == 0 then
             show("未知目的地", "orange")
-        elseif var.goto.path[var.goto.room_id].cost == 100000 then
-            show("未连通目的地", "orange")
         end
         show("移动失败", "red")
         var.goto = nil
@@ -322,16 +325,17 @@ function goto_return(rc, msg)
 end
 
 function goto_relocate()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto_relocate ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto_relocate ］")
     if #set.inter(env.current.id, {3003, 3244}) > 0 then
         env.current.id = { 3244 }
         return
     end
     if #set.inter(env.current.id, {1827, 2988, 2989, 2990}) > 0 then
         if map[var.goto.room_ids[var.goto.index]].zone == "西域白驼山" then
-            var.goto.path[2990] = {next = 1826}
+            var.goto.adjust = 1826
         else
-            var.goto.path[2990] = {next = 1327}
+            var.goto.adjust = 1327
         end
         env.current.id = { 2990 }
         local rc = xiyu_desert()
@@ -377,7 +381,8 @@ function goto_relocate()
 end
 
 function goto_move()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto_move ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto_move ］")
     local rc
     while var.goto.pause ~= nil do
         if var.goto.pause() ~= 0 then
@@ -421,6 +426,7 @@ function goto_move()
         if rc ~= nil then
             return rc
         end
+        var.goto.adjust = nil
     end
     -- local room_id    全路径规划方案
     -- if false and #var.goto.room_ids > 1 then
@@ -437,12 +443,12 @@ function goto_move()
     --                 local sub_cost = (var.goto.multipath[to] or {})[from] or {}
     --                 sub_cost = ((sub_cost[to] or {}).cost or 0) - ((sub_cost[from] or {}).cost or 0)
     --                 all_cost[#all_cost] = set.last(all_cost) + sub_cost
-    --                 if set.last(all_cost) >= (all_cost[#all_cost-1] or 100000) then
+    --                 if set.last(all_cost) >= (all_cost[#all_cost-1] or 10000) then
     --                     all_cost[#all_cost] = all_cost[#all_cost-1]
     --                     break
     --                 end
     --             end
-    --             if all_cost[#all_cost] < (all_cost[#all_cost-1] or 100000) then
+    --             if all_cost[#all_cost] < (all_cost[#all_cost-1] or 10000) then
     --                 var.goto.room_ids = v
     --             end
     --         end
@@ -467,14 +473,15 @@ function goto_move()
         show("准备前往："..tostring(var.goto.room_id).."（"..tostring(var.goto.index).." / "..tostring(#var.goto.room_ids).."）", "white")
         var.goto.report = true
     end
-    if var.goto.path[var.goto.room_id].cost == 100000 then
+    if var.goto.path[var.goto.room_id].cost >= 10000 then
         return -1
     end
     return goto_exec(env.current.id[1])
 end
 
 function goto_exec(current_id)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ goto_exec ］")
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ goto_exec ］")
     if current_id == nil or var.goto.path[current_id] == nil then
         return goto_move()
     end
@@ -489,7 +496,7 @@ function goto_exec(current_id)
             pause_msg = "地图事件"
             break
         end
-        if flood > config.flood_control then
+        if flood > config.flood then
             if #path_overflow == 0 and (var.goto.path[next_id].last == 3039 or
                set.has(maze, next_id) == true and set.has(maze, var.goto.path[next_id].last) == true) then
                 set.append(path, var.goto.path[next_id].step)
@@ -498,7 +505,7 @@ function goto_exec(current_id)
             else
                 set.append(path_overflow, var.goto.path[next_id].step)
                 overflow_id = next_id
-                if flood > config.flood_control + 10 then
+                if flood > config.flood + 10 then
                     path_overflow = {}
                     pause_msg = "稍事休息"
                     break
@@ -517,7 +524,9 @@ function goto_exec(current_id)
         current_id = overflow_id
     end
     run(set.concat(path, ";"))
-    local l = wait_line("set "..pause_msg, 30, {StopEval=true}, 20, "^你目前还没有任何为 ((?:移动完成|稍事休息|地图事件)) 的变量设定。$")
+    local l = wait_line("set "..pause_msg,
+                        30, {StopEval=true}, 20,
+                        "^你目前还没有任何为 ((?:移动完成|稍事休息|地图事件)) 的变量设定。$")
     if l == false then
         return -1
     end
@@ -568,10 +577,12 @@ function goto_exec(current_id)
             return goto_move()
         end
         var.goto.pause = true
-        l = wait_line(nil, 1, {StopEval=true}, 20, "^你目前还没有任何为 移动暂停 的变量设定。$|"..
-                                                   "^你的眼前一黑，接著什么也不知道了....$|"..
-                                                   "^鬼门关 - $|"..
-                                                   "^一道闪电从天降下，直朝你劈去……结果没打中！$")
+        l = wait_line(nil,
+                      1, {StopEval=true}, 20,
+                      "^你目前还没有任何为 移动暂停 的变量设定。$|"..
+                      "^你的眼前一黑，接著什么也不知道了....$|"..
+                      "^鬼门关 - $|"..
+                      "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if var.goto.pause == true then
             var.goto.pause = nil
         end
@@ -601,7 +612,8 @@ function goto_exec(current_id)
 end
 
 function parse(dst)
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ parse ］参数：dst = "..tostring(dst))
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ parse ］参数：dst = "..tostring(dst))
     if type(dst) == "table" then
         return dst
     elseif type(dst) == "number" or string.find(dst, "^%d+$") then

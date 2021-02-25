@@ -1,17 +1,14 @@
 global = global or { flood = 0, uid = {}, buffer = {}, regex = {} }
 global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
-statics = statics or {}
-config = config or {}
 var = var or {}
 
-local HOME = string.gsub(debug.getinfo(1).source:gsub("^@", ""), "script/main.lua", "")
 function get_work_path()
-    return HOME.."profiles/JHL/"
+    return HOME
 end
 
 function get_script_path()
-    return HOME.."script/"
+    return SCRIPT
 end
 
 package.path = package.path..";"..
@@ -22,14 +19,24 @@ get_script_path().."gps/?.lua;"..
 get_script_path().."control/?.lua;"..
 get_script_path().."jobs/?.lua"
 
+require "config"
 require "client"
 require "common"
 require "gps"
 require "info"
 require "action"
+<<<<<<< HEAD
 require "update"
+=======
+require "admin"
+require "statistics"
+>>>>>>> main
 
 timer.add("decline", 1, "global.flood = math.max(0, (global.flood or 0) - 20)", nil, {Enable=true})
+
+if io.exists(get_work_path().."char.cfg") then
+    loadfile(get_work_path().."char.cfg")()
+end
 
 if io.exists(get_work_path().."log/global.tmp") then
     global.buffer = table.load(get_work_path().."log/global.tmp")
@@ -41,16 +48,23 @@ if io.exists(get_work_path().."log/automation.tmp") then
     os.remove(get_work_path().."log/automation.tmp")
 end
 
+automation.timer = automation.timer or {}
 automation.items = automation.items or {}
 automation.killer = automation.killer or {}
 automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
 
-automation.skill = nil
-config = automation.config
-automation.config = nil
-if config == nil or table.is_empty(config) then
-    require "config"
+if automation.timer["invalid_ask_ping"] ~= nil then
+    local seconds = math.max(0.001, automation.timer["invalid_ask_ping"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["invalid_ask_ping"], seconds)
+    automation.timer["invalid_ask_ping"] = nil
 end
+if automation.timer["invalid_ask_yuluwan"] ~= nil then
+    local seconds = math.max(0.001, automation.timer["invalid_ask_yuluwan"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["invalid_ask_yuluwan"], seconds)
+    automation.timer["invalid_ask_yuluwan"] = nil
+end
+
+automation.skill = nil
 
 for k,v in pairs(automation.items) do
     items[k] = v
@@ -61,16 +75,28 @@ if automation.repository ~= nil then
     automation.repository = nil
 end
 
+<<<<<<< HEAD
 statics.date = time.date("%Y%m%d")
 if io.exists(get_work_path().."log/statics."..statics.date) then
     statics = table.load(get_work_path().."log/statics."..statics.date)
 end
+=======
+global.debug.level = automation.debug or global.debug.level
+
+automation.statistics = automation.statistics or {}
+automation.statistics.date = automation.statistics.date or time.date("%Y%m%d%H")
+automation.statistics.death = automation.statistics.death or {}
+automation.statistics.idle = automation.statistics.idle or {}
+automation.statistics.reset = automation.statistics.reset or {}
+automation.statistics.connect = automation.statistics.connect or {}
+automation.statistics.processing = automation.statistics.processing or {}
+>>>>>>> main
 
 collectgarbage("collect")
 
 function init()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ init ］")
-    map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "泉州新门", "开放")
+    map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "泉州新门", "开放", "古墓水道", "禁用")
     trigger.add("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
     if wait_line("jiali max;jiajin max;score;hp;skills;enable;prepare;set;jiajin 1;jiali none", 30, nil, 10, "^从现在起你用零点内力伤敌。$", "^> $") ~= false then
         if run_i() < 0 then
@@ -103,11 +129,24 @@ function login()
 end
 
 function load_jobs()
-    require "family_job"
-    require "feima_job"
+    if automation.config_jobs ~= nil then
+        for k,v in pairs(automation.config_jobs) do
+            if type(config.jobs[k]) == "table" then
+                for i,j in pairs(v) do
+                    if i ~= "enable" then
+                        config.jobs[k].i = j
+                    end
+                end
+            end
+        end
+        automation.config_jobs = nil
+    end
     for _,v in ipairs(config.jobs) do
         if config.jobs[v].enable == true then
-            config.jobs[v].efunc()
+            loadstring("require '"..config.jobs[v].name.."'")()
+            if config.jobs[v].efunc ~= nil then
+                config.jobs[v].efunc() 
+            end
         else
             if config.jobs[v].dfunc ~= nil then
                 config.jobs[v].dfunc()
