@@ -96,12 +96,12 @@
 
 * 修改客户端环境配置文件 .config/mudlet/profiles/current/autosave.xml
 
-将 <filepath> 中 .config/mudlet/script/全门派全自动.xml 文件所在路径改为当前用户配置目录
+将 <filepath> 中 .config/mudlet/script/江湖路全自动机器人.xml 文件所在路径改为当前用户配置目录
 
   ```xml
   <mInstalledModules>
-      <key>全门派全自动</key>
-          <filepath>C:/Users/Administrator/.config/mudlet/script/全门派全自动.xml</filepath>
+      <key>江湖路全自动机器人</key>
+          <filepath>C:/Users/Administrator/.config/mudlet/script/江湖路全自动机器人.xml</filepath>
           <globalSave>0</globalSave>
       <priority>0</priority>
   </mInstalledModules>
