@@ -14,7 +14,7 @@
     - [机器人配置](#机器人配置)
   - [Mushclient](#Mushclient)
   - [LordStar](#LordStar)
-  - [Tintin++](#Tintin++)
+  - [Tintin++](#Tintin)
   - [GoMud](#GoMud)
 - [游戏角色配置](#游戏角色配置)
 - [开始游戏](#开始游戏)
@@ -57,9 +57,11 @@
 
 ### [Mudlet](https://www.mudlet.org)
 
-[下载地址](https://www.mudlet.org/download/)
-[论坛](https://forums.mudlet.org/index.php)
-[使用手册](https://wiki.mudlet.org/w/Manual:Contents)
+<p align="left">
+    <a href="https://www.mudlet.org/download/">下载地址</a> •
+    <a href="https://forums.mudlet.org/index.php">论坛</a> •
+    <a href="https://wiki.mudlet.org/w/Manual:Contents">使用手册</a>
+</p>
 
   #### Windows
 
@@ -107,9 +109,11 @@
 
 ### [Mushclient](http://www.gammon.com.au/mushclient/mushclient.htm)
 
-[下载地址](http://www.gammon.com.au/downloads/dlmushclient.htm)
-[论坛](http://www.gammon.com.au/scripts/forum.php?bbsection_id=1)
-[使用手册](http://www.gammon.com.au/scripts/doc.php?general=contents)
+<p align="left">
+    <a href="http://www.gammon.com.au/downloads/dlmushclient.htm">下载地址</a> •
+    <a href="http://www.gammon.com.au/scripts/forum.php?bbsection_id=1">论坛</a> •
+    <a href="http://www.gammon.com.au/scripts/doc.php?general=contents">使用手册</a>
+</p>
 
 待更新
 
@@ -119,9 +123,11 @@
 
 ### [Tintin++](https://tintin.mudhalla.net/)
 
-[下载地址](https://tintin.mudhalla.net/download.php)
-[论坛](https://github.com/scandum/tintin/discussions)
-[使用手册](https://tintin.mudhalla.net/manual/)
+<p align="left">
+    <a href="https://tintin.mudhalla.net/download.php">下载地址</a> •
+    <a href="https://github.com/scandum/tintin/discussions">论坛</a> •
+    <a href="https://tintin.mudhalla.net/manual/">使用手册</a>
+</p>
 
 待更新
 
