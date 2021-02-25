@@ -1,4 +1,10 @@
 <h2 align="center">江湖路 MUD 全自动机器人</h2>
+<a href="https://github.com/zhenzh/JHL/releases/tag/v0.1">
+<img alt="最新版本" src="https://img.shields.io/github/v/release/mudclient/go-mud.svg?logo=github&style=flat-square">
+</a>
+<a href="https://github.com/mudclient/go-mud/actions?workflow=Release">
+<img alt="Release workflow" src="https://github.com/mudclient/go-mud/workflows/Release/badge.svg">
+</a>
 
 ## 目录
 - [简介](#简介)
@@ -65,28 +71,28 @@
 
   #### Windows
 
-  双击执行 Mudlet-<version>-windows-installer.exe，将会打开 Mudlet 主界面，首次执行后安装即已自动完成。
-  用户无需额外操作，可直接关闭主界面退出。后续用户可改从本地已安装的应用程序 Mudlet.exe 处启动，Mudlet-<version>-windows-installer.exe 文件无需保留。
+  双击执行 `Mudlet-<version>-windows-installer.exe`，将会打开 Mudlet 主界面，首次执行后安装即已自动完成。
+  用户无需额外操作，可直接关闭主界面退出。后续用户可改从本地已安装的应用程序 Mudlet.exe 处启动，`Mudlet-<version>-windows-installer.exe` 文件无需保留。
 
-  * 本地安装路径在用户目录 AppData 下，以 Administrator 用户为例：
-    应用程序和相关库文件将被自动安装到 C:\Users\Administrator\AppData\Local\Mudlet
-    用户配置文件将被放置在 C:\Users\Administrator\.config\mudlet
+  * 本地安装路径在用户目录 `AppData` 下，以 Administrator 用户为例：
+    应用程序和相关库文件将被自动安装到 `C:\Users\Administrator\AppData\Local\Mudlet`
+    用户配置文件将被放置在 `C:\Users\Administrator\.config\mudlet`
 
   #### MacOS
 
-  直接安装 Mudlet-<version>.dmg 文件。
-  安装完成后，用户配置文件将被放置在 $HOME/.config/mudlet 目录下。
+  直接安装 `Mudlet-<version>.dmg` 文件。
+  安装完成后，用户配置文件将被放置在 `$HOME/.config/mudlet` 目录下。
 
   #### Linux
 
-  解压 Mudlet-<version>-linux-x64.AppImage.tar
+  解压 `Mudlet-<version>-linux-x64.AppImage.tar`
 
   ```sh
   tar xf Mudlet-<version>-linux-x64.AppImage.tar
   ```
 
   在图形终端内直接运行解压后的 .AppImage 文件，使其自动完成配置文件目录的初始化。
-  首次运行后，用户配置文件将被放置在 $HOME/.config/mudlet 目录下。
+  首次运行后，用户配置文件将被放置在 `$HOME/.config/mudlet` 目录下。
 
 #### 机器人配置
 
@@ -94,9 +100,9 @@
 
 * 解压至用户配置目录 .config 下，与原 mudlet 目录合并。
 
-* 修改客户端环境配置文件 .config/mudlet/profiles/current/autosave.xml
+* 修改客户端环境配置文件 `.config/mudlet/profiles/current/autosave.xml`
 
-将 <filepath> 中 .config/mudlet/script/江湖路全自动机器人.xml 文件所在路径改为当前用户配置目录
+将 <filepath> 中 `.config/mudlet/script/江湖路全自动机器人.xml` 文件所在路径改为当前用户配置目录
 
   ```xml
   <mInstalledModules>
@@ -137,9 +143,9 @@
 
 ## 游戏角色配置
 
-* 从用户配置目录中整体复制 profiles/JHL 并更名为 profiles/<角色 ID>。注意 profiles/JHL 目录为默认模板，不可删除。
+* 从用户配置目录中整体复制 `profiles/JHL` 并更名为 `profiles/<角色 ID>`。注意 `profiles/JHL` 目录为默认模板，不可删除。
 
-* 修改 profiles/<角色 ID>/char.cfg 文件，根据游戏角色自身情况调整相关配置
+* 修改 `profiles/<角色 ID>/char.cfg` 文件，根据游戏角色自身情况调整相关配置
 
 ## 开始游戏
 

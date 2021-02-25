@@ -764,6 +764,8 @@ function ask_ping()
         var.ask_ping.layer = var.ask_ping.layer + 1
     end
     if state.buff.ask_ping == false then
+        show("dbg ask_ping", "red")
+        printf(state.buff)
         return ask_ping_return(1, "治疗失败")
     end
     if profile.family ~= "日月神教" and 
@@ -771,6 +773,8 @@ function ask_ping()
         return ask_ping_return(1, "治疗失败")
     end
     if var.move == false then
+        show("dbg ask_ping", "red")
+        printf(var.move)
         return ask_ping_return(1, "治疗失败")
     end
     local rc = goto(1024)

@@ -634,13 +634,14 @@ function get_longxiang_status(progress, need)
             trigger.delete("get_longxiang_level")
         end
     end
-    if profile.longxiang.progress == profile.longxiang.target then
+    if profile.longxiang.progress >= profile.longxiang.target then
         trigger.delete("get_longxiang_progress")
         trigger.delete("get_longxiang_pozhang")
-        if trigger.is_exist("longxiang_pozhang_cd") == false then
+        if timer.is_exist("longxiang_pozhang_cd") == false then
             config.jobs["龙象破障"].active = true
         end
     else
+        timer.delete("longxiang_pozhang_cd")
         config.jobs["龙象破障"].active = false
     end
 end

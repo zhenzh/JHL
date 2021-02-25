@@ -76,36 +76,7 @@ function gag()
     return --deleteLine()
 end
 
-function reset()
-    automation.config = nil
-    if automation.thread ~= nil then
-        automation.thread = nil
-        automation.jid = (var or {}).jid
-        automation.config_jobs = config.jobs
-        automation.repository = (carryon or {}).repository
-        local timer_record = {
-            "invalid_ask_ping",
-            "invalid_ask_yuluwan",
-            "invalid_fu_yuluwan",
-            "invalid_fu_sanhuangwan",
-            "invalid_fu_daxueteng",
-            "invalid_fu_renshenguo",
-            "invalid_fu_xuelian",
-            "ftb_job_cd",
-            "songshan_job_cd",
-            "hengshan_job_cd",
-            "longxiang_pozhang_cd"
-        }
-        automation.timer = {}
-        for _,v in ipairs(timer_record) do
-            automation.timer[v] = timer.get(v)
-        end
-    end
-    automation.debug = global.debug.level
-    automation.ui = ui
-    automation.epoch = time.epoch()
-    table.save(get_work_path().."log/automation.tmp", automation)
-    table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
+function reset_env()
     resetProfile()
 end
 

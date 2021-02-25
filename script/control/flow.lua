@@ -31,6 +31,39 @@ function reduce_exp(exp)
     end
 end
 
+function reset()
+    automation.config = nil
+    if automation.thread ~= nil then
+        automation.thread = nil
+        automation.jid = (var or {}).jid
+        automation.config_jobs = config.jobs
+        automation.repository = (carryon or {}).repository
+        local timer_record = {
+            "invalid_ask_ping",
+            "invalid_ask_yuluwan",
+            "invalid_fu_yuluwan",
+            "invalid_fu_sanhuangwan",
+            "invalid_fu_daxueteng",
+            "invalid_fu_renshenguo",
+            "invalid_fu_xuelian",
+            "ftb_job_cd",
+            "songshan_job_cd",
+            "hengshan_job_cd",
+            "longxiang_pozhang_cd"
+        }
+        automation.timer = {}
+        for _,v in ipairs(timer_record) do
+            automation.timer[v] = timer.get(v)
+        end
+    end
+    automation.debug = global.debug.level
+    automation.ui = ui
+    automation.epoch = time.epoch()
+    table.save(get_work_path().."log/automation.tmp", automation)
+    table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
+    reset_env()
+end
+
 function automation_reset(func)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ automation_reset ］参数："..tostring(func))
@@ -219,7 +252,7 @@ function start()
         trigger.add("get_longxiang_status", "get_longxiang_status(get_matches(1), get_matches(2))", nil, {Enable=true, Multi=true, OneShot=true}, 5, "^你向鸠摩智打听有关「熟练度」的消息。\\n鸠摩智说道：你现在的熟练度是(\\d+)点，还需要精研龙象神功((?:-|)\\d+)次方可精进。$")
         trigger.add("get_longxiang_progress", "get_longxiang_progress()", nil, {Enable=true}, 5, "^你的龙象之力运行完毕，将内力收回丹田。$")
         trigger.add("get_longxiang_pozhang", "get_longxiang_pozhang()", nil, {Enable=true, OneShot=true}, 5, "^汝须破除我他迷障，才能精进无碍！$")
-        if trigger.is_exist("longxiang_pozhang_cd") == true then
+        if timer.is_exist("longxiang_pozhang_cd") == true then
             config.jobs["龙象破障"].active = false
         else
             config.jobs["龙象破障"].active = true
