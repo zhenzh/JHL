@@ -1,10 +1,4 @@
 <h2 align="center">江湖路 MUD 全自动机器人</h2>
-<a href="https://github.com/zhenzh/JHL/releases/tag/v0.1">
-<img alt="最新版本" src="https://img.shields.io/github/v/release/mudclient/go-mud.svg?logo=github&style=flat-square">
-</a>
-<a href="https://github.com/mudclient/go-mud/actions?workflow=Release">
-<img alt="Release workflow" src="https://github.com/mudclient/go-mud/workflows/Release/badge.svg">
-</a>
 
 ## 目录
 - [简介](#简介)
@@ -146,6 +140,9 @@
 * 从用户配置目录中整体复制 `profiles/JHL` 并更名为 `profiles/<角色 ID>`。注意 `profiles/JHL` 目录为默认模板，不可删除。
 
 * 修改 `profiles/<角色 ID>/char.cfg` 文件，根据游戏角色自身情况调整相关配置
+
+注意：修改配置文件请使用支持 UTF-8 格式的文本编辑器，Windows 自带的记事本和写字板编辑可能出现乱码及添加隐藏字符等问题，造成机器人加载失败。
+Windows 上可使用 notepad++, notpad2, ultraedit 等编辑工具
 
 ## 开始游戏
 
