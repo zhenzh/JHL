@@ -129,7 +129,6 @@ function songshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p3 ］")
     automation.idle = false
-    --local rc = songshan_job_goto_zuolengchan("walk")
     local rc = songshan_job_goto_zuolengchan()
     if rc ~= nil then
         return rc
@@ -168,11 +167,11 @@ function songshan_job_p5()
     return 1
 end
 
-function songshan_job_goto_zuolengchan(mode)
+function songshan_job_goto_zuolengchan()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ songshan_job_goto_zuolengchan ］参数：mode = "..tostring(mode))
+            "函数［ songshan_job_goto_zuolengchan ］")
     if env.current.id[1] ~= 2478 then
-        local rc = goto(2478, mode)
+        local rc = goto(2478)
         if rc ~= 0 then
             return rc
         end
