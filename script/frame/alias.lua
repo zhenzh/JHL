@@ -18,10 +18,14 @@ function alias.delete(name)
     return rc
 end
 
-alias.add("reset", [[^\s*reset\s*$]], [[
+alias.add("reset", [[^\s*reset\s*(.*)\s*$]], [[
     automation = automation or {}   
     automation.reconnect = nil
-    reset()
+    if matches[2] == "-f" then
+        reset(true)
+    else
+        reset()
+    end
 ]])
 
 alias.add("lua", [[^/\s*(.*)\s*$]], [[

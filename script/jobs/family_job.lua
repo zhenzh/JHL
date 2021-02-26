@@ -261,6 +261,33 @@ function family_job_p4()
         return -1
     end
     var.job.statistics.result = "成功"
+    if profile.family == "雪山派" or profile.family == "血刀门" then
+        if run_i() < 0 then
+            return -1
+        end
+        if is_own("酥油罐:suyou guan") == true then
+            local rc = goto("度母殿")
+            if rc < 0 then
+                return -1
+            elseif rc == 0 then
+                repeat
+                    local l = wait_line("give suyou guan to zhiri lama",
+                                        30, nil, nil,
+                                        "^你给值日喇嘛一个酥油罐。$|"..
+                                        "^这里没有这个人。$|"..
+                                        "^你身上没有这样东西$")
+                    if l == false then
+                        return -1
+                    elseif l[0] == "你给值日喇嘛一个酥油罐。" then
+                        carryon.inventory["酥油罐:suyou guan"].count = carryon.inventory["酥油罐:suyou guan"].count - 1
+                    else
+                        break
+                    end
+                until carryon.inventory["酥油罐:suyou guan"].count <= 0
+                carryon.inventory["酥油罐:suyou guan"] = nil
+            end
+        end
+    end
     return 0
 end
 

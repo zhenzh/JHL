@@ -630,7 +630,7 @@ calibration = {
             map[665].links["kill zhang songxi;south"] = nil
             map[665].links["kill zhang songxi;east"] = nil
             map[665].links["west"] = 666
-            map[665].links["south"] = 667
+            map[665].links["south"] = 672
             map[665].links["east"] = 679
             set.append(items["《九阳神功残篇》:jiuyang canpian"].place, 677)
             set.append(items["《九阳神功残篇》:jiuyang canpian"].get, "ask zhang sanfeng about 九阳神功")
