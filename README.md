@@ -1,10 +1,4 @@
 <h2 align="center">江湖路 MUD 全自动机器人</h2>
-<a href="https://github.com/zhenzh/JHL/releases/tag/v0.1">
-<img alt="最新版本" src="https://img.shields.io/github/v/release/mudclient/go-mud.svg?logo=github&style=flat-square">
-</a>
-<a href="https://github.com/mudclient/go-mud/actions?workflow=Release">
-<img alt="Release workflow" src="https://github.com/mudclient/go-mud/workflows/Release/badge.svg">
-</a>
 
 ## 目录
 - [简介](#简介)
