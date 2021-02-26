@@ -129,7 +129,8 @@ function songshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p3 ］")
     automation.idle = false
-    local rc = songshan_job_goto_zuolengchan("walk")
+    --local rc = songshan_job_goto_zuolengchan("walk")
+    local rc = songshan_job_goto_zuolengchan()
     if rc ~= nil then
         return rc
     end
