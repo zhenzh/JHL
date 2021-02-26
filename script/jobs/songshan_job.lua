@@ -76,6 +76,15 @@ function songshan_job_return(rc)
         var.job.weapon_ori[2] = var.job.weapon[2]
     end
     var.job = nil
+    if rc == 1 then
+        config.jobs["嵩山任务"].failure = (config.jobs["嵩山任务"].failure or 0) + 1
+        if config.jobs["嵩山任务"].failure >= 3 then
+            config.jobs["嵩山任务"].active = false
+            timer.add("songshan_job_cd", 300, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})
+        end
+    else
+        config.jobs["嵩山任务"].failure = 0
+    end
     return rc
 end
 

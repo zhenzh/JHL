@@ -136,6 +136,7 @@ calibration = {
             calibration["性别"][1] = "女"
         end,
         ["无"] = function()
+            map_attr.cost["south1245"] = 10000
             map_attr.cost["east1246"] = nil
             map_attr.cost["east803"] = nil
             map_attr.cost["open door;south2037"] = nil
@@ -144,7 +145,6 @@ calibration = {
             map_attr.cost["west561"] = nil
             map_attr.cost["north2822"] = nil
             map_attr.cost["west2687"] = nil
-            map_attr.cost["south1245"] = nil
             map_attr.cost["north800"] = nil
             map_attr.cost["open door;south2038"] = nil
             map_attr.cost["open west;west"] = 3

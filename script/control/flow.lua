@@ -31,39 +31,6 @@ function reduce_exp(exp)
     end
 end
 
-function reset()
-    automation.config = nil
-    if automation.thread ~= nil then
-        automation.thread = nil
-        automation.jid = (var or {}).jid
-        automation.config_jobs = config.jobs
-        automation.repository = (carryon or {}).repository
-        local timer_record = {
-            "invalid_ask_ping",
-            "invalid_ask_yuluwan",
-            "invalid_fu_yuluwan",
-            "invalid_fu_sanhuangwan",
-            "invalid_fu_daxueteng",
-            "invalid_fu_renshenguo",
-            "invalid_fu_xuelian",
-            "ftb_job_cd",
-            "songshan_job_cd",
-            "hengshan_job_cd",
-            "longxiang_pozhang_cd"
-        }
-        automation.timer = {}
-        for _,v in ipairs(timer_record) do
-            automation.timer[v] = timer.get(v)
-        end
-    end
-    automation.debug = global.debug.level
-    automation.ui = ui
-    automation.epoch = time.epoch()
-    table.save(get_work_path().."log/automation.tmp", automation)
-    table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
-    reset_env()
-end
-
 function automation_reset(func)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ automation_reset ］参数："..tostring(func))
@@ -396,8 +363,10 @@ function flow_do_job()
         return 0
     else
         if config.jobs[global.jid] == "嵩山任务" then
-            if statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
-                global.jid = global.jid - 1
+            if config.jobs[global.jid].enable == true and config.jobs[global.jid].active == true then
+                if statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+                    global.jid = global.jid - 1
+                end
             end
         end
         if global.jid == #config.jobs then
@@ -686,7 +655,7 @@ function plan_fight_weapon()
                     show("未定义 "..v.weapon[1], "orange")
                     return -1
                 end
-                if v.weapon[2] ~= "" then
+                if (v.weapon[2] or "") ~= "" then
                     if fight_weapon[v.weapon[2]] ~= nil then
                         if v.weapon[2] ~= "金轮:jin lun" and 
                            v.weapon[2] ~= "铜轮:fa lun" and 
