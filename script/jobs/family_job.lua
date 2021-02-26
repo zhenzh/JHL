@@ -7,7 +7,7 @@ family_info = {
     ["万兽山庄"] =   {master_name = "史伯威",   master_id = "shi bowei",      master_place = 2734, enemy_name = "蒙古哒子", enemy_id = "menggu dazi"},
     ["姑苏慕容"] =   {master_name = "慕容复",   master_id = "murong fu",      master_place = 2067, enemy_name = "朝廷武官", enemy_id = "chaoting wuguan"},
     ["明教"]     =   {master_name = "杨逍",     master_id = "yang xiao",      master_place = 573,  enemy_name = "江湖侠士", enemy_id = "jianghu xiashi"},
-    ["昆仑派"]   =   {master_name = "何太冲",   master_id = "he taichong",    master_place = 2895, enemy_name = "蒙古哒子", enemy_id = "menggu dazi"},
+    ["昆仑派"]   =   {master_name = "何太冲",   master_id = "he taichong",    master_place = 2895, enemy_name = "魔教弟子", enemy_id = "mojiao dizi"},
     ["少林派"]   =   {master_name = "玄慈大师", master_id = "xuanci dashi",   master_place = 1651, enemy_name = "强盗",     enemy_id = "qiang dao"},
     ["峨嵋派"]   =   {master_name = "灭绝师太", master_id = "miejue shitai",  master_place = 372,  enemy_name = "魔教弟子", enemy_id = "mojiao dizi"},
     ["桃花岛"]   =   {master_name = "陆乘风",   master_id = "lu chengfeng",   master_place = 1470, enemy_name = "强盗",     enemy_id = "qiang dao"},
