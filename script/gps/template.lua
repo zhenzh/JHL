@@ -102,6 +102,7 @@ calibration = {
             map_attr.cost["west561"] = nil
             map_attr.cost["north2822"] = nil
             map_attr.cost["west2687"] = nil
+            map_attr.cost["west405"] = nil
             map_attr.cost["south1245"] = 10000
             map_attr.cost["north800"] = 10000
             map_attr.cost["open door;south2038"] = 10000
@@ -123,6 +124,7 @@ calibration = {
             map_attr.cost["west561"] = 10000
             map_attr.cost["north2822"] = 10000
             map_attr.cost["west2687"] = 10000
+            map_attr.cost["west405"] = 10000
             map_attr.cost["south1245"] = nil
             map_attr.cost["north800"] = nil
             map_attr.cost["open door;south2038"] = 3
@@ -154,6 +156,7 @@ calibration = {
             map_attr.cost["open door;south3099"] = nil
             map_attr.cost["south2821"] = nil
             map_attr.cost["east2686"] = nil
+            map_attr.cost["west405"] = nil
             calibration["性别"][1] = "无"
         end,
     },

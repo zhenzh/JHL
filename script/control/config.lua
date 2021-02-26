@@ -65,17 +65,7 @@ config = {
         "sword",    ["sword"]   = { "", "" },
         "club",     ["club"]    = { "", "" },
         "hand",     ["hand"]    = { "", "" },
-        "kick",     ["kick"]    = { "", "" },
-        weapon = {  -- 配合武器
-            force   = "",
-            dodge   = "",
-            strike  = "",
-            cuff    = "",
-            hand    = "",
-            finger  = "",
-            claw    = "",
-            kick    = ""
-        }
+        "kick",     ["kick"]    = { "", "" }
     },
     fight = {       -- 战斗配置
         armor = "党卫军衣:nasos uniforms",   -- 装备护甲
