@@ -8,6 +8,17 @@ global.phase = {
     ["练功"] = 4,
 }
 
+config.lian.weapon = {
+    force   = "",
+    dodge   = "",
+    strike  = "",
+    cuff    = "",
+    hand    = "",
+    finger  = "",
+    claw    = "",
+    kick    = ""
+}
+
 local noisy_rooms = {
     ["德陵"] = 1591,
     ["西夏王陵"] = 1591,
@@ -20,6 +31,20 @@ local noisy_rooms = {
     ["碎石沙路"] = 1347,
     ["楼兰废墟"] = 1347,
     ["星宿海"] = 1356,
+}
+
+local lian_weapon = {
+    sword  = "钢剑:gangjian",
+    blade  = "钢刀:blade",
+    hammer = "铁锤:hammer",
+    staff  = "禅杖:chan zhang",
+    club   = "铁棍:tiegun",
+    stick  = "铜棒:tong bang",
+    whip   = "长鞭:changbian",
+    axe    = "大斧头:da futou",
+    pike   = "长枪:chang qiang",
+    stroke = "判官笔:panguan bi",
+    hook   = "双钩:shuang gou"
 }
 
 trigger.add("reduce_exp", "reduce_exp(tonumber(get_matches(1)))", "automation", {Enable=true}, 100, "^你的经验下降了(\\d+)点。$")
@@ -713,23 +738,10 @@ end
 function plan_lian_weapon(list)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ plan_lian_weapon ］")
-    local default = {
-        sword  = "钢剑:gangjian",
-        blade  = "钢刀:blade",
-        hammer = "铁锤:hammer",
-        staff  = "禅杖:chan zhang",
-        club   = "铁棍:tiegun",
-        stick  = "铜棒:tong bang",
-        whip   = "长鞭:changbian",
-        axe    = "大斧头:da futou",
-        pike   = "长枪:chang qiang",
-        stroke = "判官笔:panguan bi",
-        hook   = "双钩:shuang gou"
-    }
     for _,v in ipairs(config.lian) do
         if set.has({"sword", "blade", "hammer", "stick", "club", "axe", "whip", "pike", "staff", "hook", "stroke"}, v) then
             if config.lian.weapon[v] == nil then
-                config.lian.weapon[v] = default[v]
+                config.lian.weapon[v] = lian_weapon[v]
             end
             list[config.lian.weapon[v]] = math.max(1, (list[config.lian.weapon[v]] or 0))
         end
