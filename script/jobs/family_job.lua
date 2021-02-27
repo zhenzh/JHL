@@ -72,7 +72,7 @@ function enable_family_job()
     trigger.add("family_job_cancel", "family_job_cancel()", "family_job", {Enable=true}, 100, "^唉！你耽误的时间太久了，这次任务取消了。$")
     trigger.add("family_job_received", "family_job_received()", "family_job", {Enable=true}, 100, "^\\S+已派你去(\\S+)附近完成重要任务，赶快去执行吧。$")
     trigger.add("family_job_info", "family_job_info()", "family_job_active", {Enable=false, Multi=true}, 100, "^\\S+你\\S+说道：“"..profile.name.."，\\S+。”\\n\\S+说道:“近日在(\\S+)附近(?:经常|)有人杀我\\S+，你(?:速|)去\\S+。”$")
-    trigger.add("family_job_settle", "family_job_settle()", "family_job_active", {Enable=false}, 100, "^\\S+说道:“辛苦你了，"..profile.name.."，\\S+。”$")
+    trigger.add("family_job_settle", "family_job_settle()", "family_job_active", {Enable=false}, 100, "^\\S+说道:“(?:辛苦你了|干得好)，"..profile.name.."，\\S+。”$")
     trigger.add("family_job_enemy_found", "family_job_enemy_found()", "family_job_active", {Enable=false}, 100, "^你察觉四周好像有些不对劲......$")
     trigger.add("family_job_enemy", "var.job.fight = true", "family_job_active", {Enable=false}, 100, "^“受死吧，"..profile.name.."！”\\S+大声吼道。$")
     trigger.add("family_job_kill", "var.job.fight = true", "family_job_active", {Enable=false, Multi=true}, 100, "^"..family_info[profile.family].enemy_name.."(?:喝道：「你，我们的帐还没算完，看招！」|一眼瞥见你，「哼」的一声冲了过来！|喝道：「你，看招！」|和你仇人相见份外眼红，立刻打了起来！|一见到你，愣了一愣，大叫：「我宰了你！」|和你一碰面，二话不说就打了起来！|对著你大喝：「可恶，又是你！」)\\n看起来"..family_info[profile.family].enemy_name.."想杀死你！$")
@@ -1094,27 +1094,32 @@ function family_job_cancel()
 end
 
 function family_job_received()
-    config.jobs["门派任务"].info = get_matches(1)
-    config.jobs["门派任务"].phase = phase["任务执行"]
-    config.jobs["门派任务"].active = true
     if automation.skill ~= nil then
         if var.job == nil then
-            run("set 中断事件")
+            if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
+                return -1
+            end
         else
             if var.job.name == "门派任务" then
-                run("set 中断事件")
+                if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
+                    return -1
+                end
             end
         end
     end
+    config.jobs["门派任务"].info = get_matches(1)
+    config.jobs["门派任务"].phase = phase["任务执行"]
+    config.jobs["门派任务"].active = true
 end
 
 function family_job_inactive()
+    if automation.skill ~= nil then
+        if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
+            return -1
+        end
+    end
     var.job.statistics = nil
     config.jobs["门派任务"].phase = phase["任务失败"]
-    var.job.statistics = nil
-    if automation.skill ~= nil then
-        run("set 中断事件")
-    end
 end
 
 function family_job_info()
@@ -1123,16 +1128,21 @@ function family_job_info()
 end
 
 function family_job_settle()
-    config.jobs["门派任务"].phase = phase["任务完成"]
     if automation.skill ~= nil then
-        run("set 中断事件")
+        if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
+            return -1
+        end
+        config.jobs["门派任务"].phase = phase["任务完成"]
         return
     end
     if var.yun_heal ~= nil then
         if state.qx_pct < 80 then
-            run("set 中断事件")
+            if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
+                return -1
+            end
         end
     end
+    config.jobs["门派任务"].phase = phase["任务完成"]
 end
 
 function family_job_enemy_found()

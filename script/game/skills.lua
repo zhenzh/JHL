@@ -248,12 +248,20 @@ function lian(times)
             "函数［ lian ］")
     var.lian = var.lian or { times = math.max(30, times or 100) }
     _,var.lian.income = dazuo_analysis()
-    return lian_num_i(1)
+    return lian_return(lian_num_i(1))
 end
 
 function lian_return(rc)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ lian_return ］参数：rc = "..tostring(rc))
+    if var.lian == nil then
+        return rc
+    end
+    if var.lian.refresh == true then
+        if run_hp() < 0 then
+            return -1
+        end
+    end
     var.lian = nil
     _ = nil
     return rc
@@ -270,7 +278,7 @@ function lian_refresh_hp(rc)
             return -1
         end
     end
-    return lian_return(rc)
+    return rc
 end
 
 function lian_num_i(i, j)
@@ -281,7 +289,7 @@ function lian_num_i(i, j)
             var.lian.limit = true
             return lian_num_i(1)
         end
-        return lian_refresh_hp(0)
+        return 0
     end
     if #config.lian[config.lian[i]] == 0 then
         config.lian[config.lian[i]] = nil
@@ -298,7 +306,7 @@ function lian_num_i(i, j)
     end
     local rc = lian_num_ij(i, j or 1)
     if rc ~= nil then
-        return lian_refresh_hp(rc)
+        return rc
     end
     return lian_num_i(i+1)
 end
@@ -348,29 +356,29 @@ function lian_num_ij(i, j)
         else
             rc = lian_prepare_state(0.6, 0.8)
             if rc ~= nil then
-                return lian_return(rc)
+                return rc
             end
         end
         _,var.lian.income = dazuo_analysis()
         rc = skills_dazuo()
         if rc ~= nil then
-            return lian_refresh_hp(rc)
+            return rc
         end
         if global.flood > config.flood then
             wait(1)
         end
         if break_event() == true then
-            return lian_refresh_hp(1)
+            return 1
         end
         rc = wield({config.lian.weapon[config.lian[i]] or "", ""})
         if rc < 0 then
-            return lian_return(-1)
+            return -1
         elseif rc == 1 then
             return
         end
         rc = lian_exec(i, j)
         if rc ~= nil then
-            return lian_refresh_hp(rc)
+            return rc
         end
     until false
 end
