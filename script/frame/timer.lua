@@ -62,6 +62,7 @@ function timer.delete(name)
             timers.group[timers[name].group] = nil
         end
     end
+    loadstring("Timer"..timers[name].id.." = nil")()
     timers[name] = nil
     return rc
 end

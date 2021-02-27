@@ -1094,32 +1094,26 @@ function family_job_cancel()
 end
 
 function family_job_received()
-    if automation.skill ~= nil then
-        if var.job == nil then
-            if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
-                return -1
-            end
-        else
-            if var.job.name == "门派任务" then
-                if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
-                    return -1
-                end
-            end
-        end
-    end
     config.jobs["门派任务"].info = get_matches(1)
     config.jobs["门派任务"].phase = phase["任务执行"]
     config.jobs["门派任务"].active = true
+    if automation.skill ~= nil then
+        if var.job == nil then
+            run("set 中断事件")
+        else
+            if var.job.name == "门派任务" then
+                run("set 中断事件")
+            end
+        end
+    end
 end
 
 function family_job_inactive()
-    if automation.skill ~= nil then
-        if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
-            return -1
-        end
-    end
     var.job.statistics = nil
     config.jobs["门派任务"].phase = phase["任务失败"]
+    if automation.skill ~= nil then
+        run("set 中断事件")
+    end
 end
 
 function family_job_info()
@@ -1129,17 +1123,15 @@ end
 
 function family_job_settle()
     if automation.skill ~= nil then
-        if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
-            return -1
-        end
-        config.jobs["门派任务"].phase = phase["任务完成"]
+        trigger.add(nil, "config.jobs['门派任务'].phase = 4", "family_job", {Enable=true, OneShot=true}, 9, "^你目前还没有任何为 中断事件 的变量设定。$")
+        run("set 中断事件")
         return
     end
     if var.yun_heal ~= nil then
         if state.qx_pct < 80 then
-            if wait_line("set 中断事件", 30, nil, 9, "^你目前还没有任何为 中断事件 的变量设定。$") == false then
-                return -1
-            end
+            trigger.add(nil, "config.jobs['门派任务'].phase = 4", "family_job", {Enable=true, OneShot=true}, 9, "^你目前还没有任何为 中断事件 的变量设定。$")
+            run("set 中断事件")
+            return
         end
     end
     config.jobs["门派任务"].phase = phase["任务完成"]
