@@ -387,6 +387,10 @@ function flow_do_job()
         end
         return 0
     else
+        if privilege_job(config.jobs[global.jid]) == true then
+            global.jid = 1
+            return flow_do_job()
+        end
         if config.jobs[global.jid] == "嵩山任务" then
             if config.jobs[global.jid].enable == true and config.jobs[global.jid].active == true then
                 if statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then

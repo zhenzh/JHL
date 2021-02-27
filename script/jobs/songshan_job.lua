@@ -96,6 +96,10 @@ function songshan_job_p1()
         if rc ~= 0 then
             return rc
         end
+        if privilege_job("嵩山任务") == true then
+            var.job.statistics = nil
+            return 1
+        end
     end
     local rc = songshan_job_goto_zuolengchan()
     if rc ~= nil then
