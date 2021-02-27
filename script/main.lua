@@ -146,7 +146,7 @@ end
 
 function reset(fresh)
     automation.config = nil
-    if fresh ~= true then
+    if fresh == true then
         automation = {}
     else
         if automation.thread ~= nil then
