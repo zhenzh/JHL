@@ -269,91 +269,92 @@ end
 function weather_before_dawn()
     trigger.disable("get_room_desc")
     env.weather_time = "凌晨"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "关闭")
+    map_adjust("北京城门", "开放", "泉州新门", "关闭")
 end
 
 function time_before_dawn()
     env.weather_time = "凌晨"
     map_adjust("泉州新门", "关闭")
-    timer.add(nil, 10, "map_adjust('北京城门', '开放', '北京城墙', '关闭')", nil, {Enable=true, OneShot=true})
+    timer.add(nil, 10, "map_adjust('北京城门', '开放')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_early_morning()
     trigger.disable("get_room_desc")
     env.weather_time = "早晨"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function time_early_morning()
     env.weather_time = "早晨"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭")
+    map_adjust("北京城门", "开放")
     timer.add(nil, 10, "map_adjust('泉州新门', '开放')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_morning()
     trigger.disable("get_room_desc")
     env.weather_time = "上午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function time_morning()
     env.weather_time = "上午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function weather_noon()
     trigger.disable("get_room_desc")
     env.weather_time = "正午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function time_noon()
     env.weather_time = "正午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function weather_afternoon()
     trigger.disable("get_room_desc")
     env.weather_time = "下午"
-    map_adjust("北京城门", "开放", "北京城墙", "开放", "泉州新门", "关闭")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function time_afternoon()
     env.weather_time = "下午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function weather_evening()
     trigger.disable("get_room_desc")
     env.weather_time = "傍晚"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
+    map_attr.cost["west53"] = 10000
 end
 
 function time_evening()
     env.weather_time = "傍晚"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function weather_night()
     trigger.disable("get_room_desc")
     env.weather_time = "夜晚"
-    map_adjust("北京城门", "关闭", "泉州新门", "关闭", "北京城墙", "开放")
+    map_adjust("北京城门", "关闭", "泉州新门", "关闭")
 end
 
 function time_night()
     env.weather_time = "夜晚"
-    timer.add(nil, 10, "map_adjust('北京城门', '关闭', '泉州新门', '关闭', '北京城墙', '开放')", nil, {Enable=true, OneShot=true})
+    timer.add(nil, 10, "map_adjust('北京城门', '关闭', '泉州新门', '关闭')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_mid_night()
     trigger.disable("get_room_desc")
     env.weather_time = "午夜"
-    map_adjust("北京城门", "关闭", "泉州新门", "关闭", "北京城墙", "开放")
+    map_adjust("北京城门", "关闭", "泉州新门", "关闭")
 end
 
 function time_mid_night()
     env.weather_time = "午夜"
-    map_adjust("北京城门", "关闭", "泉州新门", "关闭", "北京城墙", "开放")
+    map_adjust("北京城门", "关闭", "泉州新门", "关闭")
 end
 
 function get_port(port)
