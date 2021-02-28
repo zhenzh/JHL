@@ -19,6 +19,13 @@ config.lian.weapon = {
     kick    = ""
 }
 
+local jobcd = {
+    "ftb_job_cd",
+    "songshan_job_cd",
+    "hengshan_job_cd",
+    "longxiang_pozhang_cd"
+}
+
 local noisy_rooms = {
     ["德陵"] = 1591,
     ["西夏王陵"] = 1591,
@@ -216,6 +223,14 @@ function start()
                                                                                                                              "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
     if config.jobs["斧头帮任务"].phase == 2 then
         config.jobs["斧头帮任务"].phase = 1
+    end
+
+    for _,v in ipairs(jobcd) do
+        if automation.timer[v] ~= nil then
+            local seconds = math.max(0.001, automation.timer[v].remain - (time.epoch() - automation.epoch) / 1000 )
+            timer.add(automation.timer[v], seconds)
+            automation.timer[v] = nil
+        end
     end
 
     if profile.family == "雪山派" and profile.master == "金轮法王" then

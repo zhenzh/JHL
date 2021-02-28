@@ -6,6 +6,8 @@ local songshan_job_area = {
     79,75,74,49,50,51,52,51,59,51,50,60,61,60,50,49,70,71,70,69,72,73,72,69,62,63,64,68,64,65,64,67,66
 }
 
+config.jobs["嵩山任务"].limit = config.jobs["嵩山任务"].limit or 5000
+
 function enable_songshan_job()
     trigger.delete_group("songshan_job")
     trigger.add("songshan_job_npc_come", "songshan_job_npc_come()", "songshan_job", {Enable=false}, 100, "^(?:秦娟|郑鄂|仪文|仪和|仪琳|仪质|仪清)\\S*走了过来。$")

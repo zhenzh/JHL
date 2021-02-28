@@ -8,10 +8,10 @@ config = {
     mole_limit  = 0,            -- 控制神上限
     job_nl      = "double",     -- 任务所需内力, 可添写 具体数字(如: 10000) 或 "double"(表示最大内力值的双倍)
     jobs = {
-        "门派任务",     ["门派任务"]     = { name = "family_job", active = false, enable = true, echoose = {}, contribution = 150 },
+        "门派任务",     ["门派任务"]     = { name = "family_job", active = false, enable = true },
         "寻访任务",     ["寻访任务"]     = { name = "visit_job", active = false, enable = false },
-        "斧头帮任务",   ["斧头帮任务"]    = { name = "ftb_job", active = true, enable = false, enemy = 0, confirm = {}, exclude = {} },
-        "嵩山任务",     ["嵩山任务"]     = { name = "songshan_job", active = true, enable = false, limit = 5000 },
+        "斧头帮任务",   ["斧头帮任务"]    = { name = "ftb_job", active = true, enable = false },
+        "嵩山任务",     ["嵩山任务"]     = { name = "songshan_job", active = true, enable = false },
         "飞马镖局",     ["飞马镖局"]     = { name = "feima_job", active = true, enable = false },
     },
     zuanyan = {     -- 钻研技能
