@@ -1497,13 +1497,21 @@ function recover(nl)
     if rc < 0 then
         return -1
     elseif rc == 1 then
-        return ask_ping()
+        if msg == "中断事件" then
+            return rc,msg
+        else
+            return ask_ping()
+        end
     end
     rc,msg = yun_forceheal()
     if rc < 0 then
         return -1
     elseif rc == 1 then
-        return ask_ping()
+        if msg == "中断事件" then
+            return rc,msg
+        else
+            return ask_ping()
+        end
     end
     rc,msg = heal_regenerate(70)
     if rc ~= 0  then

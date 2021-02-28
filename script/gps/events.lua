@@ -1348,6 +1348,7 @@ function hit_npc_exec()
                       "^你想攻击谁？$|"..
                       "^你必须等此人醒来才能进行切磋比试。$|"..
                       "^(?:武将|官兵|明苦|明难|衙役|傅思归|平阿四|宋兵|凌退思|一等侍卫|店小二)脚下一个不稳，跌在地上昏了过去。$|"..
+                      "^(?:武将|官兵|明苦|明难|衙役|傅思归|平阿四|宋兵|凌退思|一等侍卫|店小二)倒在地上，挣扎了几下就死了。$|"..
                       "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                       "^你的眼前一黑，接著什么也不知道了....$|"..
                       "^鬼门关 - $|"..
@@ -1364,6 +1365,8 @@ function hit_npc_exec()
         end
         if l[0] == "你想攻击谁？" then
             return hit_npc_exec()
+        elseif string.match(l[0], "几下就死了") then
+            return 0
         else
             local npc = string.gsub(var.goto.hit_npc.hit, "hit ", "")
             rc,msg = hit_npc_carry_block(npc)

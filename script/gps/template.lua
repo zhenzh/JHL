@@ -102,6 +102,7 @@ calibration = {
             map_attr.cost["west561"] = nil
             map_attr.cost["north2822"] = nil
             map_attr.cost["west2687"] = nil
+            map_attr.cost["west405"] = nil
             map_attr.cost["south1245"] = 10000
             map_attr.cost["north800"] = 10000
             map_attr.cost["open door;south2038"] = 10000
@@ -123,6 +124,7 @@ calibration = {
             map_attr.cost["west561"] = 10000
             map_attr.cost["north2822"] = 10000
             map_attr.cost["west2687"] = 10000
+            map_attr.cost["west405"] = 10000
             map_attr.cost["south1245"] = nil
             map_attr.cost["north800"] = nil
             map_attr.cost["open door;south2038"] = 3
@@ -154,6 +156,7 @@ calibration = {
             map_attr.cost["open door;south3099"] = nil
             map_attr.cost["south2821"] = nil
             map_attr.cost["east2686"] = nil
+            map_attr.cost["west405"] = nil
             calibration["性别"][1] = "无"
         end,
     },
@@ -630,7 +633,7 @@ calibration = {
             map[665].links["kill zhang songxi;south"] = nil
             map[665].links["kill zhang songxi;east"] = nil
             map[665].links["west"] = 666
-            map[665].links["south"] = 667
+            map[665].links["south"] = 672
             map[665].links["east"] = 679
             set.append(items["《九阳神功残篇》:jiuyang canpian"].place, 677)
             set.append(items["《九阳神功残篇》:jiuyang canpian"].get, "ask zhang sanfeng about 九阳神功")

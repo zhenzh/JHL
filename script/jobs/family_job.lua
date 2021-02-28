@@ -7,7 +7,7 @@ family_info = {
     ["万兽山庄"] =   {master_name = "史伯威",   master_id = "shi bowei",      master_place = 2734, enemy_name = "蒙古哒子", enemy_id = "menggu dazi"},
     ["姑苏慕容"] =   {master_name = "慕容复",   master_id = "murong fu",      master_place = 2067, enemy_name = "朝廷武官", enemy_id = "chaoting wuguan"},
     ["明教"]     =   {master_name = "杨逍",     master_id = "yang xiao",      master_place = 573,  enemy_name = "江湖侠士", enemy_id = "jianghu xiashi"},
-    ["昆仑派"]   =   {master_name = "何太冲",   master_id = "he taichong",    master_place = 2895, enemy_name = "蒙古哒子", enemy_id = "menggu dazi"},
+    ["昆仑派"]   =   {master_name = "何太冲",   master_id = "he taichong",    master_place = 2895, enemy_name = "魔教弟子", enemy_id = "mojiao dizi"},
     ["少林派"]   =   {master_name = "玄慈大师", master_id = "xuanci dashi",   master_place = 1651, enemy_name = "强盗",     enemy_id = "qiang dao"},
     ["峨嵋派"]   =   {master_name = "灭绝师太", master_id = "miejue shitai",  master_place = 372,  enemy_name = "魔教弟子", enemy_id = "mojiao dizi"},
     ["桃花岛"]   =   {master_name = "陆乘风",   master_id = "lu chengfeng",   master_place = 1470, enemy_name = "强盗",     enemy_id = "qiang dao"},
@@ -72,7 +72,7 @@ function enable_family_job()
     trigger.add("family_job_cancel", "family_job_cancel()", "family_job", {Enable=true}, 100, "^唉！你耽误的时间太久了，这次任务取消了。$")
     trigger.add("family_job_received", "family_job_received()", "family_job", {Enable=true}, 100, "^\\S+已派你去(\\S+)附近完成重要任务，赶快去执行吧。$")
     trigger.add("family_job_info", "family_job_info()", "family_job_active", {Enable=false, Multi=true}, 100, "^\\S+你\\S+说道：“"..profile.name.."，\\S+。”\\n\\S+说道:“近日在(\\S+)附近(?:经常|)有人杀我\\S+，你(?:速|)去\\S+。”$")
-    trigger.add("family_job_settle", "family_job_settle()", "family_job_active", {Enable=false}, 100, "^\\S+说道:“辛苦你了，"..profile.name.."，\\S+。”$")
+    trigger.add("family_job_settle", "family_job_settle()", "family_job_active", {Enable=false}, 100, "^\\S+说道:“(?:辛苦你了|干得好)，"..profile.name.."，\\S+。”$")
     trigger.add("family_job_enemy_found", "family_job_enemy_found()", "family_job_active", {Enable=false}, 100, "^你察觉四周好像有些不对劲......$")
     trigger.add("family_job_enemy", "var.job.fight = true", "family_job_active", {Enable=false}, 100, "^“受死吧，"..profile.name.."！”\\S+大声吼道。$")
     trigger.add("family_job_kill", "var.job.fight = true", "family_job_active", {Enable=false, Multi=true}, 100, "^"..family_info[profile.family].enemy_name.."(?:喝道：「你，我们的帐还没算完，看招！」|一眼瞥见你，「哼」的一声冲了过来！|喝道：「你，看招！」|和你仇人相见份外眼红，立刻打了起来！|一见到你，愣了一愣，大叫：「我宰了你！」|和你一碰面，二话不说就打了起来！|对著你大喝：「可恶，又是你！」)\\n看起来"..family_info[profile.family].enemy_name.."想杀死你！$")
@@ -261,6 +261,33 @@ function family_job_p4()
         return -1
     end
     var.job.statistics.result = "成功"
+    if profile.family == "雪山派" or profile.family == "血刀门" then
+        if run_i() < 0 then
+            return -1
+        end
+        if is_own("酥油罐:suyou guan") == true then
+            local rc = goto("度母殿")
+            if rc < 0 then
+                return -1
+            elseif rc == 0 then
+                repeat
+                    local l = wait_line("give suyou guan to zhiri lama",
+                                        30, nil, nil,
+                                        "^你给值日喇嘛一个酥油罐。$|"..
+                                        "^这里没有这个人。$|"..
+                                        "^你身上没有这样东西$")
+                    if l == false then
+                        return -1
+                    elseif l[0] == "你给值日喇嘛一个酥油罐。" then
+                        carryon.inventory["酥油罐:suyou guan"].count = carryon.inventory["酥油罐:suyou guan"].count - 1
+                    else
+                        break
+                    end
+                until carryon.inventory["酥油罐:suyou guan"].count <= 0
+                carryon.inventory["酥油罐:suyou guan"] = nil
+            end
+        end
+    end
     return 0
 end
 
@@ -1084,7 +1111,6 @@ end
 function family_job_inactive()
     var.job.statistics = nil
     config.jobs["门派任务"].phase = phase["任务失败"]
-    var.job.statistics = nil
     if automation.skill ~= nil then
         run("set 中断事件")
     end
@@ -1096,16 +1122,19 @@ function family_job_info()
 end
 
 function family_job_settle()
-    config.jobs["门派任务"].phase = phase["任务完成"]
     if automation.skill ~= nil then
+        trigger.add(nil, "config.jobs['门派任务'].phase = 4", "family_job", {Enable=true, OneShot=true}, 9, "^你目前还没有任何为 中断事件 的变量设定。$")
         run("set 中断事件")
         return
     end
     if var.yun_heal ~= nil then
         if state.qx_pct < 80 then
+            trigger.add(nil, "config.jobs['门派任务'].phase = 4", "family_job", {Enable=true, OneShot=true}, 9, "^你目前还没有任何为 中断事件 的变量设定。$")
             run("set 中断事件")
+            return
         end
     end
+    config.jobs["门派任务"].phase = phase["任务完成"]
 end
 
 function family_job_enemy_found()

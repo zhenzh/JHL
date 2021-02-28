@@ -49,15 +49,42 @@ automation.items = automation.items or {}
 automation.killer = automation.killer or {}
 automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
 
-if automation.timer["invalid_ask_ping"] ~= nil then
-    local seconds = math.max(0.001, automation.timer["invalid_ask_ping"].remain - (time.epoch() - automation.epoch) / 1000 )
-    timer.add(automation.timer["invalid_ask_ping"], seconds)
-    automation.timer["invalid_ask_ping"] = nil
+local buff = {
+    "invalid_ask_ping",
+    "invalid_ask_yuluwan",
+    "invalid_fu_yuluwan",
+    "invalid_fu_sanhuangwan",
+    "invalid_fu_daxueteng",
+    "invalid_fu_renshenguo",
+    "invalid_fu_xuelian"
+}
+
+local debuff = {
+}
+
+state.buff = automation.buff or state.buff
+state.debuff = automation.debuff or state.debuff
+automation.buff = nil
+automation.debuff = nil
+
+for _,v in ipairs(buff) do
+    if automation.timer[v] == nil then
+        state.buff[v] = nil
+    else
+        local seconds = math.max(0.001, automation.timer[v].remain - (time.epoch() - automation.epoch) / 1000 )
+        timer.add(automation.timer[v], seconds)
+        automation.timer[v] = nil
+    end
 end
-if automation.timer["invalid_ask_yuluwan"] ~= nil then
-    local seconds = math.max(0.001, automation.timer["invalid_ask_yuluwan"].remain - (time.epoch() - automation.epoch) / 1000 )
-    timer.add(automation.timer["invalid_ask_yuluwan"], seconds)
-    automation.timer["invalid_ask_yuluwan"] = nil
+
+for _,v in ipairs(debuff) do
+    if automation.timer[v] == nil then
+        state.debuff[v] = nil
+    else
+        local seconds = math.max(0.001, automation.timer[v].remain - (time.epoch() - automation.epoch) / 1000 )
+        timer.add(automation.timer[v], seconds)
+        automation.timer[v] = nil
+    end
 end
 
 automation.skill = nil
@@ -85,7 +112,7 @@ collectgarbage("collect")
 
 function init()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ init ］")
-    map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "泉州新门", "开放", "古墓水道", "禁用")
+    map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "北京城墙", "开放", "泉州新门", "开放", "古墓水道", "禁用")
     trigger.add("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
     if wait_line("jiali max;jiajin max;score;hp;skills;enable;prepare;set;jiajin 1;jiali none", 30, nil, 10, "^从现在起你用零点内力伤敌。$", "^> $") ~= false then
         if run_i() < 0 then
@@ -144,30 +171,24 @@ function load_jobs()
     end
 end
 
-function reset()
+function reset(fresh)
     automation.config = nil
-    if automation.thread ~= nil then
+    if fresh == true then
+        automation = {}
+    elseif automation.thread ~= nil then
         automation.thread = nil
         automation.jid = (var or {}).jid
         automation.config_jobs = config.jobs
         automation.repository = (carryon or {}).repository
-        local timer_record = {
-            "invalid_ask_ping",
-            "invalid_ask_yuluwan",
-            "invalid_fu_yuluwan",
-            "invalid_fu_sanhuangwan",
-            "invalid_fu_daxueteng",
-            "invalid_fu_renshenguo",
-            "invalid_fu_xuelian",
-            "ftb_job_cd",
-            "songshan_job_cd",
-            "hengshan_job_cd",
-            "longxiang_pozhang_cd"
-        }
-        automation.timer = {}
-        for _,v in ipairs(timer_record) do
-            automation.timer[v] = timer.get(v)
-        end
+    end
+    automation.buff = state.buff
+    automation.debuff = state.debuff
+    automation.timer = {}
+    for _,v in ipairs(buff) do
+        automation.timer[v] = timer.get(v)
+    end
+    for _,v in ipairs(debuff) do
+        automation.timer[v] = timer.get(v)
     end
     automation.debug = global.debug.level
     automation.ui = ui

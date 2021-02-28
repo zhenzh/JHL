@@ -6,6 +6,8 @@ local songshan_job_area = {
     79,75,74,49,50,51,52,51,59,51,50,60,61,60,50,49,70,71,70,69,72,73,72,69,62,63,64,68,64,65,64,67,66
 }
 
+config.jobs["嵩山任务"].limit = config.jobs["嵩山任务"].limit or 5000
+
 function enable_songshan_job()
     trigger.delete_group("songshan_job")
     trigger.add("songshan_job_npc_come", "songshan_job_npc_come()", "songshan_job", {Enable=false}, 100, "^(?:秦娟|郑鄂|仪文|仪和|仪琳|仪质|仪清)\\S*走了过来。$")
@@ -96,6 +98,10 @@ function songshan_job_p1()
         if rc ~= 0 then
             return rc
         end
+        if privilege_job("嵩山任务") == true then
+            var.job.statistics = nil
+            return 1
+        end
     end
     local rc = songshan_job_goto_zuolengchan()
     if rc ~= nil then
@@ -129,7 +135,7 @@ function songshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p3 ］")
     automation.idle = false
-    local rc = songshan_job_goto_zuolengchan("walk")
+    local rc = songshan_job_goto_zuolengchan()
     if rc ~= nil then
         return rc
     end
@@ -167,11 +173,11 @@ function songshan_job_p5()
     return 1
 end
 
-function songshan_job_goto_zuolengchan(mode)
+function songshan_job_goto_zuolengchan()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ songshan_job_goto_zuolengchan ］参数：mode = "..tostring(mode))
+            "函数［ songshan_job_goto_zuolengchan ］")
     if env.current.id[1] ~= 2478 then
-        local rc = goto(2478, mode)
+        local rc = goto(2478)
         if rc ~= 0 then
             return rc
         end

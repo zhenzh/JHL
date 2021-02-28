@@ -16,6 +16,10 @@ local ftb_job_nick2 = {"剑", "刀", "手", "脚", "掌", "拳", "门", "客", "
                        "柔情", "无痕", "无法", "无天", "无云", "天王","一剑", "一刀", "杀手", "之神", "之子", "少爷", "阎王", "侯爷", "土地",
                        "判官","无常", "魔", "印", "公子"}
 
+config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy or 0
+config.jobs["斧头帮任务"].confirm = config.jobs["斧头帮任务"].confirm or {}
+config.jobs["斧头帮任务"].exclude = config.jobs["斧头帮任务"].exclude or {}
+
 function enable_ftb_job()
     trigger.delete_group("ftb_job")
     trigger.add("ftb_job_wait_info", "ftb_job_wait_info()", "ftb_job", {Enable=false, Multi=true}, 99, "^程金斧说道：听说有(\\S+)个家伙想对本帮不利.\\n程金斧说道：据说他们已经到了(\\S+)(?:\\(该处靠近([\\S, ]+)\\)|)方圆(\\S+)里之内.$")
