@@ -233,7 +233,7 @@ function start()
         end
     end
 
-    if profile.family == "雪山派" and profile.master == "金轮法王" then
+    if profile.master == "金轮法王" then
         require "longxiang_pozhang"
         if config.jobs["龙象破障"] == nil then
             config.jobs["龙象破障"] = { active = true }
@@ -858,6 +858,8 @@ function privilege_job(job)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ privilege_job ］参数：job = "..tostring(job))
     for k,v in ipairs(config.jobs) do
+        show("dbg privilege")
+        printf(config.jobs[config.jobs[global.jid]])
         if k >= set.index_of(config.jobs, job) then
             return false
         end

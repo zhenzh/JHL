@@ -160,7 +160,7 @@ trigger.add("get_profile_l9", "get_profile_l9(get_matches(1), get_matches(2), ge
 trigger.add("get_profile_l10", "get_profile_l10(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│江湖贡献：(\\d+)\\s+江湖潜力：\\s+(\\d+)\\s+\\(\\+存\\s+(\\d+(?:|万))\\s*\\)\\s*│$")
 trigger.add("get_profile_l11", "get_profile_l11(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│江湖伴侣：(\\S+)\\s+含恨入土：\\s+(\\d+)\\s+\\(\\+真\\s+\\d+\\s*\\)\\s*│$")
 trigger.add("get_profile_l12", "get_profile_l12(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│江湖门派：(\\S+)\\s+手下冤魂：\\s+(\\d+)\\s+\\(\\+敌\\s+\\d+\\s*\\)\\s*│$")
-trigger.add("get_profile_l13", "get_profile_l13(get_matches(1))", "信息采集", {Enable=true}, 5, "^│授业师父：(\\S+)\\s+前生仇敌：(?:|\\S+\\(\\w+ \\w+\\))\\s*│$")
+trigger.add("get_profile_l13", "get_profile_l13(get_matches(1))", "信息采集", {Enable=true}, 5, "^│授业师父：(\\S+)\\s+前生仇敌：(?:|\\S+\\([ \\w]+\\))\\s*│$")
 trigger.add("get_carryon_empty", "get_carryon_empty()", "信息采集", {Enable=true}, 5, "^目前你身上没有任何东西。$")
 trigger.add("get_carryon_summary", "get_carryon_summary(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^你身上带着(\\S+)件物品\\(负重\\s*(\\d+)%\\)：$")
 trigger.add("get_carryon_item", "get_carryon_item(get_matches(1))", "信息采集", {Enable=false}, 5, "^(?:\\s+|□|\\s+\\S+ )(\\S+\\([ \\w]+\\))")
