@@ -336,7 +336,7 @@ function feima_job_ganche()
     if dir == nil then
         var.job.bevent = true
         feima_job_wait_sub_thread_break()
-        rc = one_step()
+        local rc = one_step()
         if rc ~= 0 then
             config.jobs["飞马镖局"].phase = phase["任务放弃"]
             return feima_job_p4()
