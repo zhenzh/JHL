@@ -561,12 +561,16 @@ function plan()
     end
     local trash = {}
     for k,v in pairs(carryon.inventory) do
+        show(k,"green")
         if list[k] == nil then
+            printf(items[k])
             if items[k] == nil or items[k].reserve ~= true then
                 trash[k] = v.count
             end
         end
     end
+    show("dbg")
+    printf(trash)
     local money = 10000
     for k,v in pairs(list) do
         if carryon.inventory[k] ~= nil then

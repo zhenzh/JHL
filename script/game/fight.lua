@@ -273,6 +273,8 @@ function fight_stop(rc)
 end
 
 function fight_idle()
+    show("dbg fight idle")
+    printf(var.fight)
     trigger.disable("fight_idle")
     if var.fight.idle > 3 then
         fight_stop(0)
