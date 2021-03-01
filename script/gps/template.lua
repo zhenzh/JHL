@@ -387,6 +387,11 @@ calibration = {
                 set.pop(items["铁八卦:tie bagua"].place)
                 set.pop(items["铁八卦:tie bagua"].get)
             end
+            if items["《紫霞秘笈》:zixia miji"].place[1] == 885 then
+                set.remove(items["《紫霞秘笈》:zixia miji"].price, 1)
+                set.remove(items["《紫霞秘笈》:zixia miji"].place, 1)
+                set.remove(items["《紫霞秘笈》:zixia miji"].get, 1)
+            end
 
             map[2878].links["south"] = nil
             map[2878].links["kill xihua zi;south"] = 2883
@@ -519,6 +524,9 @@ calibration = {
             map[883].links["east"] = 886
             map[870].links["west"] = 871
             map[893].links["northup"] = 894
+            set.insert(items["《紫霞秘笈》:zixia miji"].price, 1, 0)
+            set.insert(items["《紫霞秘笈》:zixia miji"].place, 1, 885)
+            set.insert(items["《紫霞秘笈》:zixia miji"].get, 1, "search bed")
             calibration["门派"][1] = "华山派"
         end,
         ["丐帮"] = function()

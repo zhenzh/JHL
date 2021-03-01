@@ -200,7 +200,7 @@ items = {
     ["《九阳神功残篇》:jiuyang canpian"]      = {name = "《九阳神功残篇》",       id = "jiuyang canpian",       group = "misc",       type = "book",    price = {},        place = {},             get = {},   reserve = true},
     ["龙象般若经:longxiang jing"]            = {name = "《龙象般若经》",         id = "longxiang jing",        group = "misc",       type = "book",    price = {0},        place = {1853},         get = {"get longxiang jing"},       reserve = true},
     ["《龙象般若经》手抄本:longxiang jing"]   = {name = "《龙象般若经手抄本》",   id = "longxiang jing",        group = "misc",       type = "book",    price = {0},        place = {436},          get = {"ask jiumozhi about 龙象经"},   reserve = true},
-    ["《紫霞秘笈》:zixia miji"]              = {name = "《紫霞秘笈》",           id = "zixia miji",           group = "misc",       type = "book",    price = {0},        place = {885},          get = {"search bed"},   reserve = true},
+    ["《紫霞秘笈》:zixia miji"]              = {name = "《紫霞秘笈》",           id = "zixia miji",           group = "misc",       type = "book",    price = {},        place = {},          get = {},   reserve = true},
     ["《金蛇秘笈》:jinshe miji"]             = {name = "《金蛇秘笈》",           id = "jinshe miji",           group = "misc",       type = "book",    price = {0},        place = {3186},         get = {},                          reserve = true},
     ["易经《杂卦篇》:jing"]                  = {name = "易经《杂卦篇》",         id = "jing",                  group = "misc",       type = "book",    price = {0},        place = {1741},         get = {"get"}},
     ["易经《系辞篇》:jing"]                   = {name = "易经《系辞篇》",         id = "jing",                  group = "misc",       type = "book",    price = {0},        place = {1793},         get = {"get"}},
