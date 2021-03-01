@@ -124,11 +124,14 @@ function feima_job_p2()
     if rc ~= nil then
         return rc
     end
-    map_adjust("门派接引", "禁用", "过河", "渡船", "丐帮密道", "禁用")
+    map_adjust("门派接引", "禁用", "过河", "渡船")
     if calibration["南阳城"][1] == "开放" then
         map_attr.cost["north2401"] = 10000
     end
+    local gb_links = map[3039].links
+    map[3039].links = {}
     config.jobs["飞马镖局"].path = get_path(config.jobs["飞马镖局"].biaoche, config.jobs["飞马镖局"].dest[1])
+    map[3039].links = gb_links
     if calibration["南阳城"][1] == "开放" then
         map_attr.cost["north2401"] = nil
     end
