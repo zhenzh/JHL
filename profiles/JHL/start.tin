@@ -1,0 +1,22 @@
+#local name {JHL};
+#session {$name} {118.25.151.226} {5555};
+#split;
+
+#run {$name-lua} {lua listener.lua};
+#config {charset} {UTF-8};
+#action {^Send (%*)$} {
+    #local cmd {%2};
+    #replace cmd {\\x7B} {\x7B};
+    #replace cmd {\\x7D} {\x7D};
+    #{$name} {#send $cmd};
+} {9.999};
+
+#{$name};
+
+#class lua kill;
+#class lua open;
+
+#alias {^/%s*(%*)%s*$} {#lua {#send {OnSend %1}}} {9.999};
+#event {RECEIVED LINE} {#lua {#send {OnReceive %1}}} {9.999};
+
+#class lua close;
