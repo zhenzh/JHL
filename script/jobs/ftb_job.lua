@@ -447,12 +447,18 @@ function ftb_job_kill_npc(room, npc)
     if wield(config.fight["斧头帮任务"].weapon or config.fight["通用"].weapon) ~= 0 then
         return -1
     end
+    if env.current.name == "迷宫树林" then
+        local rc = ftb_job_drive_npc(npc)
+        timer.delete("ftb_job_timeout")
+        return rc
+    end
     local l = wait_line("kill "..string.lower(npc[2]),
                         30, nil, nil,
                         "^你对著"..npc[1].."喝道：「\\S+」$|"..
                         "^这里没有这个人。$|"..
                         "^你现在正忙着呢。$|"..
-                        "^这里不准战斗。$")
+                        "^这里不准战斗。$|"..
+                        "^你来这是来打麻将而不是打架。$")
     if l == false then
         return -1
     elseif l[0] == "你现在正忙着呢。" then
@@ -461,7 +467,7 @@ function ftb_job_kill_npc(room, npc)
         local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
         return
-    elseif l[0] == "这里不准战斗。" then
+    elseif l[0] == "这里不准战斗。" or l[0] == "你来这是来打麻将而不是打架。" then
         local rc = ftb_job_drive_npc(npc)
         timer.delete("ftb_job_timeout")
         return rc
