@@ -150,7 +150,7 @@ function load_jobs()
             if type(config.jobs[k]) == "table" then
                 for i,j in pairs(v) do
                     if i ~= "enable" then
-                        config.jobs[k].i = j
+                        config.jobs[k][i] = j
                     end
                 end
             end
@@ -161,7 +161,7 @@ function load_jobs()
         if config.jobs[v].enable == true then
             loadstring("require '"..config.jobs[v].name.."'")()
             if config.jobs[v].efunc ~= nil then
-                config.jobs[v].efunc() 
+                config.jobs[v].efunc()
             end
         else
             if config.jobs[v].dfunc ~= nil then

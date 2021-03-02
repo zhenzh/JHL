@@ -233,7 +233,7 @@ function start()
         end
     end
 
-    if profile.family == "雪山派" and profile.master == "金轮法王" then
+    if profile.master == "金轮法王" then
         require "longxiang_pozhang"
         if config.jobs["龙象破障"] == nil then
             config.jobs["龙象破障"] = { active = true }
@@ -864,7 +864,7 @@ function privilege_job(job)
         if config.jobs[v].enable == true and config.jobs[v].active == true then
             if config.jobs[config.jobs[global.jid]].limit == nil then
                 return true
-            elseif statistics("-c", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+            elseif statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
                 return true
             end
         end
