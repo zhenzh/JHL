@@ -4,6 +4,7 @@ function OnReceive(msg)
 end
 
 function OnSend(msg)
+    loadstring(msg)()
 end
 
 while true do

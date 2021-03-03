@@ -8,26 +8,21 @@
 #session {main} {118.25.151.226} {5555};
 #split;
 
-#zap {lua};
-#run {lua} {lua $script_path/listener.lua};
-#config {charset} {UTF-8};
-#action {^Send %1$} {
-    #local cmd {%1};
-    #replace cmd {\\x7B} {\x7B};
-    #replace cmd {\\x7D} {\x7D};
-    #{main} {#send $cmd};
-} {9.999};
-
-#{main};
-
-#class lua kill;
-#class lua open;
+#class {lua} {open};
 
 #alias {^/%*$} {
     #local {cmd} {%0};
     #replace {cmd} {^/%s} {};
+    #replace {cmd} {%s$} {};
     #{lua} {#send {OnSend $cmd}};
 } {9.999};
 #event {RECEIVED LINE} {#{lua} {#send {OnReceive %1}}} {9.999};
 
-#class lua close;
+#class {lua} {close};
+
+#read {$script_path/lua.tin};
+
+#lua {#send {OnSend package.path = package.path..";$script_path"}};
+#lua {#send {OnSend HOME = "$work_path/"}};
+#lua {#send {OnSend SCRIPT = "$script_path/"}};
+#lua {#send {OnSend require "main"}};

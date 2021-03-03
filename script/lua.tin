@@ -1,0 +1,15 @@
+#class {lua} {save};
+#class {lua} {clear};
+
+#zap {lua};
+#run {lua} {lua $script_path/listener.lua};
+#config {charset} {UTF-8};
+#action {^Send %1$} {
+    #local cmd {%1};
+    #replace cmd {\\x7B} {\x7B};
+    #replace cmd {\\x7D} {\x7D};
+    #{main} {#send $cmd};
+} {9.999};
+
+#main;
+#class {lua} {load};
