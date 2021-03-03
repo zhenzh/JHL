@@ -225,13 +225,17 @@ function start()
         config.jobs["斧头帮任务"].phase = 1
     end
 
+    show("dbg ftb_cd")
     for _,v in ipairs(jobcd) do
+        printf(v)
         if automation.timer[v] ~= nil then
+            show("dbg "..v, "green")
             local seconds = math.max(0.001, automation.timer[v].remain - (time.epoch() - automation.epoch) / 1000 )
             timer.add(automation.timer[v], seconds)
             automation.timer[v] = nil
         end
     end
+    printf(timers)
 
     if profile.master == "金轮法王" then
         require "longxiang_pozhang"

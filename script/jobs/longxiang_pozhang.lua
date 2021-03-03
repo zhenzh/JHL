@@ -116,7 +116,7 @@ function longxiang_pozhang_refresh()
                       "^金轮法王说道：龙象般若功修为不易，若不能掌控好反而会走火入魔。$|"..
                       "^金轮法王说道：你\\S+不足，切莫妄图强行修行。$|"..
                       "^金轮法王说道：武学精进固然重要，但是却也不能操之过急，你先好好的休息休息吧。$|"..
-                      "^金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事$|"..
+                      "^金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事。$|"..
                       "^金轮法王说道：不是让你去找能海上师了么，你还留在这里做什么？$|"..
                       "^但是很显然的，金轮法王现在的状况没有办法给你任何答覆。$")
         if l == false then
@@ -130,7 +130,7 @@ function longxiang_pozhang_refresh()
             config.jobs["龙象破障"].active = false
             return longxiang_pozhang_p3()
         elseif l[0] == "金轮法王说道：武学精进固然重要，但是却也不能操之过急，你先好好的休息休息吧。" or 
-               l[0] == "金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事" then
+               l[0] == "金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事。" then
             config.jobs["龙象破障"].active = false
             if trigger.is_exist("longxiang_pozhang_cd") == false then
                 timer.add("longxiang_pozhang_cd", 1800, "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})
