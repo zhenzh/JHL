@@ -1,22 +1,33 @@
-#local name {JHL};
-#session {$name} {118.25.151.226} {5555};
+#info system save;
+
+#variable {work_path} {$info[SYSTEM][CWD]};
+
+#variable {script_path} {$info[SYSTEM][CWD]};
+#replace {script_path} {profiles/%*} {script};
+
+#session {main} {118.25.151.226} {5555};
 #split;
 
-#run {$name-lua} {lua listener.lua};
+#zap {lua};
+#run {lua} {lua $script_path/listener.lua};
 #config {charset} {UTF-8};
-#action {^Send (%*)$} {
-    #local cmd {%2};
+#action {^Send %1$} {
+    #local cmd {%1};
     #replace cmd {\\x7B} {\x7B};
     #replace cmd {\\x7D} {\x7D};
-    #{$name} {#send $cmd};
+    #{main} {#send $cmd};
 } {9.999};
 
-#{$name};
+#{main};
 
 #class lua kill;
 #class lua open;
 
-#alias {^/%s*(%*)%s*$} {#lua {#send {OnSend %1}}} {9.999};
-#event {RECEIVED LINE} {#lua {#send {OnReceive %1}}} {9.999};
+#alias {^/%*$} {
+    #local {cmd} {%0};
+    #replace {cmd} {^/%s} {};
+    #{lua} {#send {OnSend $cmd}};
+} {9.999};
+#event {RECEIVED LINE} {#{lua} {#send {OnReceive %1}}} {9.999};
 
 #class lua close;
