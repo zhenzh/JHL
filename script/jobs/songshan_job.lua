@@ -26,6 +26,15 @@ local phase = {
     ["任务失败"] = 5
 }
 
+if automation.timer["songshan_job_cd"] ~= nil then
+    config.jobs["嵩山任务"].active = false
+    local seconds = math.max(0.001, automation.timer["songshan_job_cd"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["songshan_job_cd"], seconds)
+    automation.timer["songshan_job_cd"] = nil
+else
+    config.jobs["嵩山任务"].active = true
+end
+
 function songshan_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job ］")
@@ -153,6 +162,16 @@ function songshan_job_p4()
     end
     config.jobs["嵩山任务"].phase = phase["任务获取"]
     var.job.statistics.result = "成功"
+    while state.exp - var.job.statistics.exp < 10 do
+        if var.job.settle == true then
+            break
+        end
+        wait(0.1)
+        if run_score() < 0 then
+            return -1
+        end
+    end
+    timer.delete("songshan_job_settle")
     return 0
 end
 
@@ -213,6 +232,7 @@ function songshan_job_refresh()
         if l == false then
             return -1
         elseif l[0] == "左冷禅对着你竖起了右手大拇指，好样的。" then
+            timer.add("songshan_job_settle", 2, "var.job.settle = true", "songshan_job", {Enable=true, OneShot=true})
             return songshan_job_p4()
         elseif l[0] == "左冷禅说道：去了这么久才回来，那些恒山派的女尼早已脱身了！" then
             config.jobs["嵩山任务"].phase = phase["任务获取"]
