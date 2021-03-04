@@ -4,11 +4,29 @@
 #run {lua} {lua $script_path/listener.lua};
 #config {charset} {UTF-8};
 
+#action {^Gag$} {
+    #{main} {#gag};
+} {9.999};
+
 #action {^Send %1$} {
-    #local cmd {%1};
-    #replace cmd {\\x7B} {\x7B};
-    #replace cmd {\\x7D} {\x7D};
-    #{main} {#send $cmd};
+    #local msg {%1};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #{main} {#send $msg};
+} {9.999};
+
+#action {^Echo %1$} {
+    #local msg {%1};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #{main} {#echo $msg};
+} {9.999};
+
+#action {^Regex %1 %2$} {
+    #local msg {%1};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #{main} {#echo $msg};
 } {9.999};
 
 #main;
