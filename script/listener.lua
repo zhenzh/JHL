@@ -16,3 +16,6 @@ while true do
         OnSend(msg)
     end
 end
+
+package.path = package.path..";/Users/ibm/.config/mudlet/script"
+require "main"

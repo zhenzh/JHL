@@ -1,15 +1,26 @@
-#class {lua} {save};
-#class {lua} {clear};
+#class {lua} kill;
 
-#zap {lua};
-#run {lua} {lua $script_path/listener.lua};
-#config {charset} {UTF-8};
-#action {^Send %1$} {
-    #local cmd {%1};
-    #replace cmd {\\x7B} {\x7B};
-    #replace cmd {\\x7D} {\x7D};
-    #{main} {#send $cmd};
-} {9.999};
+#port {zap} {lua};
+#port {init} {lua} {1} {$script_path/listener.lua};
+#lua {#config {charset} {UTF-8}};
+#lua {
+    #action {^Send %1$} {
+        #local cmd {%1};
+        #replace cmd {\\x7B} {\x7B};
+        #replace cmd {\\x7D} {\x7D};
+        #main {#send $cmd};
+    } {9.999};
+};
 
 #main;
-#class {lua} {load};
+#class {lua} {open};
+
+#alias {^/%*$} {
+    #local {cmd} {%0};
+    #replace {cmd} {^/%s} {};
+    #replace {cmd} {%s$} {};
+    #port {send} {lua} {OnSend $cmd};
+} {9.999};
+#event {RECEIVED LINE} {#port {send} {lua} {OnReceive %1}} {9.999};
+
+#class {lua} {close};
