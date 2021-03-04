@@ -171,7 +171,6 @@ function songshan_job_p4()
             return -1
         end
     end
-    trigger.delete("songshan_job_settle")
     timer.delete("songshan_job_settle")
     return 0
 end
@@ -233,7 +232,7 @@ function songshan_job_refresh()
         if l == false then
             return -1
         elseif l[0] == "左冷禅对着你竖起了右手大拇指，好样的。" then
-            trigger.add("songshan_job_settle", "songshan_job_settle()", "songshan_job", {Enable=true, OneShot=true}, 100, "^你感到实战经验增加了！$")
+            timer.add("songshan_job_settle", 2, "var.job.settle = true", "songshan_job", {Enable=true, OneShot=true})
             return songshan_job_p4()
         elseif l[0] == "左冷禅说道：去了这么久才回来，那些恒山派的女尼早已脱身了！" then
             config.jobs["嵩山任务"].phase = phase["任务获取"]
@@ -613,10 +612,6 @@ end
 
 function songshan_job_npc_esc(esc)
     var.job.esc = get_desc_dir(esc)
-end
-
-function songshan_job_settle()
-    timer.add("songshan_job_settle", 2, "var.job.settle = true", "songshan_job", {Enable=true, OneShot=true})
 end
 
 config.jobs["嵩山任务"].func = songshan_job
