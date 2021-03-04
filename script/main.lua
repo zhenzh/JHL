@@ -3,23 +3,23 @@ global.debug = { level = 0, none = 0, info = 1, trace = 2 }
 automation = automation or {}
 var = var or {}
 
--- function get_work_path()
---     return HOME
--- end
+function get_work_path()
+    return HOME
+end
 
--- function get_script_path()
---     return SCRIPT
--- end
+function get_script_path()
+    return SCRIPT
+end
 
--- package.path = package.path..";"..
--- get_script_path().."base/?.lua;"..
--- get_script_path().."frame/?.lua;"..
--- get_script_path().."game/?.lua;"..
--- get_script_path().."gps/?.lua;"..
--- get_script_path().."control/?.lua;"..
--- get_script_path().."jobs/?.lua"
+package.path = package.path..";"..
+get_script_path().."base/?.lua;"..
+get_script_path().."frame/?.lua;"..
+get_script_path().."game/?.lua;"..
+get_script_path().."gps/?.lua;"..
+get_script_path().."control/?.lua;"..
+get_script_path().."jobs/?.lua"
 
--- require "config"
+require "config"
 -- require "client"
 -- require "common"
 -- require "gps"

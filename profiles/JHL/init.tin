@@ -22,7 +22,7 @@
 
 #read {$script_path/lua.tin};
 
-#lua {#send {OnSend package.path = package.path..";$script_path"}};
+#lua {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
 #lua {#send {OnSend HOME = "$work_path/"}};
 #lua {#send {OnSend SCRIPT = "$script_path/"}};
 #lua {#send {OnSend require "main"}};
