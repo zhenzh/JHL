@@ -2,24 +2,32 @@
 
 #zap {lua};
 #run {lua} {lua $script_path/listener.lua};
-#config {charset} {UTF-8};
+#config {charset} {UTF8};
 
-#action {^Gag$} {
-    #{main} {#gag};
+#action {^Reset$} {
+    #main {#read {$script_path/lua.tin}};
+} {1};
+
+#action {^Gag %1$} {
+    #local msg {%0};
+    #replace msg {Gag } {};
+    #main {#gag {$msg}};
 } {9.999};
 
 #action {^Send %1$} {
-    #local msg {%1};
+    #local msg {%0};
+    #replace msg {Send } {};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
-    #{main} {#send $msg};
+    #main {#send {$msg}};
 } {9.999};
 
 #action {^Echo %1$} {
-    #local msg {%1};
+    #local msg {%0};
+    #replace msg {Echo } {};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
-    #{main} {#echo $msg};
+    #main {#echo {$msg}};
 } {9.999};
 
 #action {^Regex %1 %2$} {
@@ -42,3 +50,8 @@
 #event {RECEIVED LINE} {#{lua} {#send {OnReceive %1}}} {9.999};
 
 #class {lua} {close};
+
+#lua {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
+#lua {#send {OnSend HOME = "$work_path/"}};
+#lua {#send {OnSend SCRIPT = "$script_path/"}};
+#lua {#send {OnSend require "main"}};

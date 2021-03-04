@@ -208,12 +208,12 @@ function get_matches(num)
 end
 
 function gag()
-    print("Gag")
+    print("Gag "..get_lines(-1))
 end
 
--- function reset_env()
---     resetProfile()
--- end
+function reset_env()
+    print("Reset")
+end
 
 -- function window_size()
 --     local width,height = getMainWindowSize()
@@ -237,7 +237,11 @@ function simulate(msg)
 end
 
 function send_cmd(...)
-    print("Send "..set.concat({...}, ";"))
+    for _,v in ipairs({...}) do
+        for _,i in ipairs(string.split(v, ";")) do
+            print("Send "..i)
+        end
+    end
 end
 
 function show(msg, fcolor, bcolor)

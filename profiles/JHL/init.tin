@@ -7,10 +7,6 @@
 
 #session {main} {118.25.151.226} {5555};
 #split;
+#config {charset} {GBK1TOUTF8}
 
 #read {$script_path/lua.tin};
-
-#lua {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
-#lua {#send {OnSend HOME = "$work_path/"}};
-#lua {#send {OnSend SCRIPT = "$script_path/"}};
-#lua {#send {OnSend require "main"}};

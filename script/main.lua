@@ -20,7 +20,7 @@ get_script_path().."control/?.lua;"..
 get_script_path().."jobs/?.lua"
 
 require "config"
--- require "client"
+require "client"
 -- require "common"
 -- require "gps"
 -- require "info"
