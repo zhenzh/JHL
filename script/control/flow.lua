@@ -19,13 +19,6 @@ config.lian.weapon = {
     kick    = ""
 }
 
-local jobcd = {
-    "ftb_job_cd",
-    "songshan_job_cd",
-    "hengshan_job_cd",
-    "longxiang_pozhang_cd"
-}
-
 local noisy_rooms = {
     ["德陵"] = 1591,
     ["西夏王陵"] = 1591,
@@ -221,54 +214,9 @@ function start()
     trigger.add("automation_reset_killer", "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|"..
                                                                                                                              "^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$|"..
                                                                                                                              "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
-    if config.jobs["斧头帮任务"].phase == 2 then
-        config.jobs["斧头帮任务"].phase = 1
-    end
-
-    show("dbg ftb_cd")
-    for _,v in ipairs(jobcd) do
-        printf(v)
-        if automation.timer[v] ~= nil then
-            show("dbg "..v, "green")
-            local seconds = math.max(0.001, automation.timer[v].remain - (time.epoch() - automation.epoch) / 1000 )
-            timer.add(automation.timer[v], seconds)
-            automation.timer[v] = nil
-        end
-    end
-    printf(timers)
 
     if profile.master == "金轮法王" then
         require "longxiang_pozhang"
-        if config.jobs["龙象破障"] == nil then
-            config.jobs["龙象破障"] = { active = true }
-        end
-        if config.jobs[2] ~= "龙象破障" then
-            table.insert(config.jobs, 2, "龙象破障")
-        end
-        config.jobs["龙象破障"].enable = true
-        if profile.longxiang == nil then
-            profile.longxiang = { progress = 0, pozhang = 0 }
-        end
-        local l = wait_line("set pozhang",
-                            30, nil, nil,
-                            "^你目前还没有任何为 pozhang 的变量设定。$|"..
-                            "^您目前 pozhang 的变量设定为：\\s+(\\d+)$")
-        if l == false then
-            return -1
-        elseif l[0] == "你目前还没有任何为 pozhang 的变量设定。" then
-            run("set pozhang 0")
-        end
-        profile.longxiang.pozhang = tonumber(l[1] or 0)
-        trigger.add("get_longxiang_level", "get_longxiang_level(get_matches(1))", nil, {Enable=true, OneShot=true}, 5, "^你手结\\S+印，运起的龙象般若功(\\S+)层功法「\\S+」$")
-        trigger.add("get_longxiang_status", "get_longxiang_status(get_matches(1), get_matches(2))", nil, {Enable=true, Multi=true, OneShot=true}, 5, "^你向鸠摩智打听有关「熟练度」的消息。\\n鸠摩智说道：你现在的熟练度是(\\d+)点，还需要精研龙象神功((?:-|)\\d+)次方可精进。$")
-        trigger.add("get_longxiang_progress", "get_longxiang_progress()", nil, {Enable=true}, 5, "^你的龙象之力运行完毕，将内力收回丹田。$")
-        trigger.add("get_longxiang_pozhang", "get_longxiang_pozhang()", nil, {Enable=true, OneShot=true}, 5, "^汝须破除我他迷障，才能精进无碍！$")
-        if timer.is_exist("longxiang_pozhang_cd") == true then
-            config.jobs["龙象破障"].active = false
-        else
-            config.jobs["龙象破障"].active = true
-            config.jobs["龙象破障"].phase = nil
-        end
     elseif config.jobs["龙象破障"] ~= nil then
         config.jobs["龙象破障"] = nil
         table.delete(config.jobs, "龙象破障")

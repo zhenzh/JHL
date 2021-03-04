@@ -39,9 +39,16 @@ local phase = {
 local low_priority = { 2724, 1977, 290, 2399, 2400, 969, 971, 2042, 2043, 2044, 1017, 86, 25, 286 }
 
 if automation.timer["ftb_job_cd"] ~= nil then
+    config.jobs["斧头帮任务"].active = false
     local seconds = math.max(0.001, automation.timer["ftb_job_cd"].remain - (time.epoch() - automation.epoch) / 1000 )
     timer.add(automation.timer["ftb_job_cd"], seconds)
     automation.timer["ftb_job_cd"] = nil
+else
+    config.jobs["斧头帮任务"].active = true
+end
+
+if config.jobs["斧头帮任务"].phase == 2 then
+    config.jobs["斧头帮任务"].phase = 1
 end
 
 function ftb_job()
