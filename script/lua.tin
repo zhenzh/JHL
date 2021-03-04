@@ -1,9 +1,9 @@
-#class {lua} {save};
-#class {lua} {clear};
+#class {lua} {kill};
 
 #zap {lua};
 #run {lua} {lua $script_path/listener.lua};
 #config {charset} {UTF-8};
+
 #action {^Send %1$} {
     #local cmd {%1};
     #replace cmd {\\x7B} {\x7B};
@@ -12,4 +12,15 @@
 } {9.999};
 
 #main;
-#class {lua} {load};
+
+#class {lua} {open};
+
+#alias {^/%*$} {
+    #local {cmd} {%0};
+    #replace {cmd} {^/%s} {};
+    #replace {cmd} {%s$} {};
+    #{lua} {#send {OnSend $cmd}};
+} {9.999};
+#event {RECEIVED LINE} {#{lua} {#send {OnReceive %1}}} {9.999};
+
+#class {lua} {close};
