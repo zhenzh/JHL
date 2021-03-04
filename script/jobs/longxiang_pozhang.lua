@@ -16,15 +16,7 @@ config.jobs["龙象破障"].enable = true
 if profile.longxiang == nil then
     profile.longxiang = { progress = 0, pozhang = 0 }
 end
-local l = wait_line("set pozhang",
-                    30, nil, nil,
-                    "^你目前还没有任何为 pozhang 的变量设定。$|"..
-                    "^您目前 pozhang 的变量设定为：\\s+(\\d+)$")
-if l == false then
-    return -1
-elseif l[0] == "你目前还没有任何为 pozhang 的变量设定。" then
-    run("set pozhang 0")
-end
+
 profile.longxiang.pozhang = tonumber(l[1] or 0)
 trigger.add("get_longxiang_level", "get_longxiang_level(get_matches(1))", nil, {Enable=true, OneShot=true}, 5, "^你手结\\S+印，运起的龙象般若功(\\S+)层功法「\\S+」$")
 trigger.add("get_longxiang_status", "get_longxiang_status(get_matches(1), get_matches(2))", nil, {Enable=true, Multi=true, OneShot=true}, 5, "^你向鸠摩智打听有关「熟练度」的消息。\\n鸠摩智说道：你现在的熟练度是(\\d+)点，还需要精研龙象神功((?:-|)\\d+)次方可精进。$")

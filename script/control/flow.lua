@@ -217,6 +217,15 @@ function start()
 
     if profile.master == "金轮法王" then
         require "longxiang_pozhang"
+        local l = wait_line("set pozhang",
+                            30, nil, nil,
+                            "^你目前还没有任何为 pozhang 的变量设定。$|"..
+                            "^您目前 pozhang 的变量设定为：\\s+(\\d+)$")
+        if l == false then
+            return -1
+        elseif l[0] == "你目前还没有任何为 pozhang 的变量设定。" then
+            run("set pozhang 0")
+        end
     elseif config.jobs["龙象破障"] ~= nil then
         config.jobs["龙象破障"] = nil
         table.delete(config.jobs, "龙象破障")
