@@ -216,7 +216,9 @@ function start()
                                                                                                                              "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
 
     if profile.master == "金轮法王" then
-        require "longxiang_pozhang"
+        if profile.longxiang == nil then
+            profile.longxiang = { progress = 0, pozhang = 0 }
+        end
         local l = wait_line("set pozhang",
                             30, nil, nil,
                             "^你目前还没有任何为 pozhang 的变量设定。$|"..
@@ -226,6 +228,8 @@ function start()
         elseif l[0] == "你目前还没有任何为 pozhang 的变量设定。" then
             run("set pozhang 0")
         end
+        profile.longxiang.pozhang = tonumber(l[1] or 0)
+        require "longxiang_pozhang"
     elseif config.jobs["龙象破障"] ~= nil then
         config.jobs["龙象破障"] = nil
         table.delete(config.jobs, "龙象破障")
