@@ -166,8 +166,7 @@ function automation_reset_heal()
     if l == false then
         return automation_reset()
     elseif l[0] == "纪晓芙正在运功为你疗伤，忽觉自己内息後继乏力，祗得暂缓疗伤，站起身来。" then
-        local rc = one_step()
-        if rc ~= 0 then
+        if one_step() ~= 0 then
             return automation_reset()
         end
     end
@@ -181,8 +180,10 @@ function automation_reset_killer()
     automation.idle = false
     trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
     trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
-    local rc = one_step()
-    if rc ~= 0 then
+    if wait_no_busy("halt") < 0 then
+        return -1
+    end
+    if one_step() ~= 0 then
         return automation_reset()
     end
     return 0
@@ -749,13 +750,14 @@ function prepare_skills()
     end
     local check_enable = false
     for k,v in pairs(skills.enable) do
-        if cfg[k] == nil then
-            check_enable = true
-            run("jifa "..k.." none")
-        else
+        -- if cfg[k] == nil then
+        --     check_enable = true
+        --     run("enable "..k.." none")
+        -- else
+        if cfg[k] ~= nil then
             if cfg[k][2] ~= v.name then
                 check_enable = true
-                run("jifa "..k.." "..cfg[k][1])
+                run("enable "..k.." "..cfg[k][1])
             end
             skill_id[k] = cfg[k][1]
             cfg[k] = nil
@@ -764,7 +766,7 @@ function prepare_skills()
     local prepare = set.pop(cfg)
     for k,v in pairs(cfg) do
         check_enable = true
-        run("jifa "..k.." "..v[1])
+        run("enable "..k.." "..v[1])
         skill_id[k] = cfg[k][1]
     end
     local current_prepare = table.keys(skills.prepare)
