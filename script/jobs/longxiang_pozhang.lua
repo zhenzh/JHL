@@ -6,6 +6,29 @@ local phase = {
     ["任务完成"] = 3
 }
 
+if config.jobs["龙象破障"] == nil then
+    config.jobs["龙象破障"] = { active = true }
+end
+if config.jobs[2] ~= "龙象破障" then
+    table.insert(config.jobs, 2, "龙象破障")
+end
+config.jobs["龙象破障"].enable = true
+
+trigger.add("get_longxiang_level", "get_longxiang_level(get_matches(1))", nil, {Enable=true, OneShot=true}, 5, "^你手结\\S+印，运起的龙象般若功(\\S+)层功法「\\S+」$")
+trigger.add("get_longxiang_status", "get_longxiang_status(get_matches(1), get_matches(2))", nil, {Enable=true, Multi=true, OneShot=true}, 5, "^你向鸠摩智打听有关「熟练度」的消息。\\n鸠摩智说道：你现在的熟练度是(\\d+)点，还需要精研龙象神功((?:-|)\\d+)次方可精进。$")
+trigger.add("get_longxiang_progress", "get_longxiang_progress()", nil, {Enable=true}, 5, "^你的龙象之力运行完毕，将内力收回丹田。$")
+trigger.add("get_longxiang_pozhang", "get_longxiang_pozhang()", nil, {Enable=true, OneShot=true}, 5, "^汝须破除我他迷障，才能精进无碍！$")
+
+if automation.timer["longxiang_pozhang_cd"] ~= nil then
+    config.jobs["龙象破障"].active = false
+    local seconds = math.max(0.001, automation.timer["longxiang_pozhang_cd"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["longxiang_pozhang_cd"], seconds)
+    automation.timer["longxiang_pozhang_cd"] = nil
+else
+    config.jobs["龙象破障"].active = true
+    config.jobs["龙象破障"].phase = nil
+end
+
 function longxiang_pozhang()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ longxiang_pozhang ］")
@@ -116,7 +139,7 @@ function longxiang_pozhang_refresh()
                       "^金轮法王说道：龙象般若功修为不易，若不能掌控好反而会走火入魔。$|"..
                       "^金轮法王说道：你\\S+不足，切莫妄图强行修行。$|"..
                       "^金轮法王说道：武学精进固然重要，但是却也不能操之过急，你先好好的休息休息吧。$|"..
-                      "^金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事$|"..
+                      "^金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事。$|"..
                       "^金轮法王说道：不是让你去找能海上师了么，你还留在这里做什么？$|"..
                       "^但是很显然的，金轮法王现在的状况没有办法给你任何答覆。$")
         if l == false then
@@ -130,7 +153,7 @@ function longxiang_pozhang_refresh()
             config.jobs["龙象破障"].active = false
             return longxiang_pozhang_p3()
         elseif l[0] == "金轮法王说道：武学精进固然重要，但是却也不能操之过急，你先好好的休息休息吧。" or 
-               l[0] == "金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事" then
+               l[0] == "金轮法王说道：你修为不够，还想着破障，快快去修炼才是正事。" then
             config.jobs["龙象破障"].active = false
             if trigger.is_exist("longxiang_pozhang_cd") == false then
                 timer.add("longxiang_pozhang_cd", 1800, "longxiang_pozhang_active()", "longxiang_pozhang", {Enable=true, OneShot=true})

@@ -62,6 +62,13 @@ local buff = {
 local debuff = {
 }
 
+local jobcd = {
+    "ftb_job_cd",
+    "songshan_job_cd",
+    "hengshan_job_cd",
+    "longxiang_pozhang_cd"
+}
+
 state.buff = automation.buff or state.buff
 state.debuff = automation.debuff or state.debuff
 automation.buff = nil
@@ -188,6 +195,9 @@ function reset(fresh)
         automation.timer[v] = timer.get(v)
     end
     for _,v in ipairs(debuff) do
+        automation.timer[v] = timer.get(v)
+    end
+    for _,v in ipairs(jobcd) do
         automation.timer[v] = timer.get(v)
     end
     automation.debug = global.debug.level
