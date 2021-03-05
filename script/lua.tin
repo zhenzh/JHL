@@ -14,27 +14,18 @@
     #main {#gag {$msg}};
 } {9.999};
 
-#action {^Send %1$} {
-    #local msg {%0};
-    #replace msg {Send } {};
-    #replace msg {\\x7B} {\x7B};
-    #replace msg {\\x7D} {\x7D};
-    #main {#send {$msg}};
-} {9.999};
-
-#action {^Echo %1$} {
-    #local msg {%0};
-    #replace msg {Echo } {};
+#action {{^(Echo) (.*)$}} {
+    #local msg {%3};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
     #main {#echo {$msg}};
 } {9.999};
 
-#action {^Regex %1 %2$} {
-    #local msg {%1};
+#action {{^(Send) (.*)$}} {
+    #local msg {%3};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
-    #{main} {#echo $msg};
+    #main {#send {$msg}};
 } {9.999};
 
 #main;
@@ -47,7 +38,7 @@
     #replace {cmd} {%s$} {};
     #{lua} {#send {OnSend $cmd}};
 } {9.999};
-#event {RECEIVED LINE} {#{lua} {#send {OnReceive %1}}} {9.999};
+#event {RECEIVED LINE} {#{lua} {#send {OnReceive RAW %0 TXT %1}}} {9.999};
 
 #class {lua} {close};
 

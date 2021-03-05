@@ -180,6 +180,10 @@ regex = regex or {}
 --     return true
 -- end
 
+function OnReceive(raw, txt)
+    --trigger_process(text)
+end
+
 function get_lines(from, to)
     if from == nil then
         from = -1
@@ -226,10 +230,6 @@ end
 
 -- function minimal_resources()
 --     setConsoleBufferSize(10000, 1000)
--- end
-
--- function get_last_cmd()
---     return command
 -- end
 
 function simulate(msg)
