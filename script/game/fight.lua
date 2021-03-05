@@ -115,13 +115,10 @@ function wield_position(pos)
     if l == false then
         return -1
     elseif l[0] == "你正忙着呢。" then
-        if var.fight == nil then
-            if wait_no_busy("halt") < 0  then
-                return -1
-            end
-        else
-            wait(0.1)
+        if wait_no_busy("halt") < 0  then
+            return -1
         end
+        wait(0.1)
     elseif l[0] == "你身上没有这样东西。" then
         if run_i() < 0 then
             return -1
