@@ -21,6 +21,7 @@ end
 alias.add("reset", [[^\s*reset\s*(.*)\s*$]], [[
     automation = automation or {}   
     automation.reconnect = nil
+    config.jobs["门派任务"].active = true
     if matches[2] == "-f" then
         reset(true)
     else

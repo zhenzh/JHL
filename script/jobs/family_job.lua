@@ -1112,7 +1112,7 @@ end
 function family_job_inactive()
     var.job.statistics = nil
     config.jobs["门派任务"].phase = phase["任务失败"]
-    if var.job == nil and var.lian ~= nil then
+    if var.lian ~= nil then
         run("set 中断事件")
     end
 end
