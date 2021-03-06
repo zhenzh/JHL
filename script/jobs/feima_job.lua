@@ -544,9 +544,6 @@ function feima_job_kill_enemy()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ feima_job_kill_enemy ］")
     if var.job.enemy.count > 0 or var.job.addenemy.count > 0 then
-        if prepare_skills() < 0 then
-            return -1
-        end
         local rc = fight()
         if rc < 0 then
             return -1

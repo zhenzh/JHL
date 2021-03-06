@@ -76,6 +76,9 @@ function songshan_job_return(rc)
     config.jobs["嵩山任务"].discuss = nil
     config.jobs["嵩山任务"].arrest = nil
     statistics_append("嵩山任务")
+    show("dbg songshan")
+    printf(var.job.statistics)
+    printf(var.statistics)
     if var.statistics ~= nil and var.statistics.result == "成功" then
         if var.job.statistics.exp < 10 then
             config.jobs["嵩山任务"].active = false

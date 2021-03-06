@@ -46,8 +46,7 @@ end
 
 automation.timer = automation.timer or {}
 automation.items = automation.items or {}
-automation.killer = automation.killer or {}
-automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
+automation.killer = automation.killer or { "猫也会心碎" }
 
 local buff = {
     "invalid_ask_ping",
@@ -240,6 +239,7 @@ else
         function ()
             automation.thread = coroutine.running()
             loadstring(automation.reconnect)()
+            trigger.delete_group("automation_reset")
             if init() < 0 then
                 return -1
             end
