@@ -49,6 +49,7 @@ end
 
 if config.jobs["斧头帮任务"].phase == 2 then
     config.jobs["斧头帮任务"].phase = 1
+    config.jobs["斧头帮任务"].dest = nil
 end
 
 function ftb_job()
@@ -338,16 +339,16 @@ function ftb_job_search()
         return -1
     elseif rc > 0 then
         if var.job.range >= 7 then
-            if var.job.spare ~= nil then
-                local spare = var.job.spare
-                var.job.spare = nil
-                ftb_job_get_area(spare)
-                return ftb_job_p2()
-            end
             if config.jobs["斧头帮任务"].progress ~= nil then
                 config.jobs["斧头帮任务"].phase = phase["任务完成"]
                 return ftb_job_p1()
             else
+                if var.job.spare ~= nil then
+                    local spare = var.job.spare
+                    var.job.spare = nil
+                    ftb_job_get_area(spare)
+                    return ftb_job_p2()
+                end
                 return ftb_job_p3()
             end
         end

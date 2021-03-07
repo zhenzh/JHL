@@ -75,6 +75,8 @@ function songshan_job_return(rc)
     config.jobs["嵩山任务"].area = nil
     config.jobs["嵩山任务"].discuss = nil
     config.jobs["嵩山任务"].arrest = nil
+    printf(var.job.statistics)
+    printf(var.statistics)
     statistics_append("嵩山任务")
     show("dbg songshan")
     printf(var.job.statistics)
