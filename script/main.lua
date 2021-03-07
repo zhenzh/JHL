@@ -99,9 +99,9 @@ for k,v in pairs(automation.items) do
     items[k] = v
 end
 
-if automation.repository ~= nil then
-    carryon.repository = automation.repository
-    automation.repository = nil
+if automation.carryon ~= nil then
+    carryon = automation.carryon
+    automation.carryon = nil
 end
 
 global.debug.level = automation.debug or global.debug.level
@@ -185,7 +185,7 @@ function reset(fresh)
         automation.thread = nil
         automation.jid = (var or {}).jid
         automation.config_jobs = config.jobs
-        automation.repository = (carryon or {}).repository
+        automation.carryon = carryon
     end
     automation.buff = state.buff
     automation.debuff = state.debuff
@@ -240,9 +240,7 @@ else
             automation.thread = coroutine.running()
             loadstring(automation.reconnect)()
             trigger.delete_group("automation_reset")
-            if init() < 0 then
-                return -1
-            end
+            init()
             load_jobs()
             start()
         end
