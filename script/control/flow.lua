@@ -750,7 +750,7 @@ end
 
 function plan_lian_weapon(list)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ plan_lian_weapon ］")
+            "函数［ plan_lian_weapon ］参数：list = "..table.tostring(list))
     for _,v in ipairs(config.lian) do
         if set.has({"sword", "blade", "hammer", "stick", "club", "axe", "whip", "pike", "staff", "hook", "stroke"}, v) then
             if config.lian.weapon[v] == nil then

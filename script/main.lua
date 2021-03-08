@@ -104,6 +104,11 @@ if automation.carryon ~= nil then
     automation.carryon = nil
 end
 
+if automation.skills ~= nil then
+    skills = automation.skills
+    automation.skills = nil
+end
+
 global.debug.level = automation.debug or global.debug.level
 
 automation.statistics = automation.statistics or {}
@@ -186,6 +191,7 @@ function reset(fresh)
         automation.jid = (var or {}).jid
         automation.config_jobs = config.jobs
         automation.carryon = carryon
+        automation.skills = skills
     end
     automation.buff = state.buff
     automation.debuff = state.debuff
