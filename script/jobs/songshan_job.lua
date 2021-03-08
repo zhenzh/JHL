@@ -76,8 +76,7 @@ function songshan_job_return(rc)
     config.jobs["嵩山任务"].discuss = nil
     config.jobs["嵩山任务"].arrest = nil
     statistics_append("嵩山任务")
-    show("dbg songshan")
-    if (var.statistics or {}).result == "成功" then
+    if automation.statistics.processing["嵩山任务"] == nil and set.last(automation.statistics).result == "成功" then
         if var.job.statistics.exp < 10 then
             config.jobs["嵩山任务"].active = false
             timer.add("songshan_job_cd", 3600, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})

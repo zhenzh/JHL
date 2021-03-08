@@ -162,13 +162,11 @@ function statistics_append(job)
         var.job.statistics.elapsed = var.job.statistics.end_time - var.job.statistics.begin_time
         if automation.statistics.processing[job] == nil then
             if var.job.statistics.result == nil then
-                show("dbg1")
                 automation.statistics.processing[job] = var.job.statistics
             else
                 var.statistics = var.job.statistics
             end
         else
-            show("dbg2")
             automation.statistics.processing[job].exp = var.job.statistics.exp + automation.statistics.processing[job].exp
             automation.statistics.processing[job].pot = var.job.statistics.pot + automation.statistics.processing[job].pot
             automation.statistics.processing[job].end_time = var.job.statistics.end_time
@@ -179,7 +177,6 @@ function statistics_append(job)
                 automation.statistics.processing[job] = nil
             end
         end
-        printf(var.statistics)
         var.job.statistics = nil
     end
     statistics_archive()
