@@ -232,7 +232,7 @@ function get_room_exits(exits)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ get_room_exits ］参数：exits = "..tostring(exits))
     trigger.disable("get_room_desc")
-    if exits == "" then
+    if exits == "" or exits == false then
         exits = {}
     end
     env.room.exits = exits
