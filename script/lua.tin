@@ -2,7 +2,7 @@
 
 #zap {lua};
 #run {lua} {lua $script_path/listener.lua};
-#config {charset} {UTF8};
+#config {charset} {UTF-8};
 
 #action {^Reset$} {
     #main {#read {$script_path/lua.tin}};
@@ -36,7 +36,8 @@
     #local {cmd} {%0};
     #replace {cmd} {^/%s} {};
     #replace {cmd} {%s$} {};
-    #{lua} {#send {OnSend $cmd}};
+    #replace {cmd} {\\} {\\};
+    #lua {#send {OnSend $cmd}};
 } {9.999};
 #event {RECEIVED LINE} {#{lua} {#send {OnReceive RAW %0 TXT %1}}} {9.999};
 

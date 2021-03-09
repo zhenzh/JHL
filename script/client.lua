@@ -4,7 +4,7 @@ require "stringEx"
 require "timeEx"
 require "mathEx"
 --require "alias"
---require "trigger"
+require "trigger"
 --require "timer"
 
 local color_map = {
@@ -150,38 +150,39 @@ local color_map = {
     yellowgreen = "9acd32"
 }
 
+local rex = require("rex_posix")
 regex = regex or {}
 
--- function regex.match(text, pattern)
---     local mch = { rex.match(text, "("..pattern..")") }
---     if #mch == 0 then
---         return nil
---     end
---     mch[0] = mch[1]
---     set.remove(mch, 1)
---     return mch
--- end
+function regex.match(text, pattern)
+    local mch = { rex.match(text, "("..pattern..")") }
+    if #mch == 0 then
+        return nil
+    end
+    mch[0] = mch[1]
+    set.remove(mch, 1)
+    return mch
+end
 
--- function trigger_regex(name)
---     local capture
---     if triggers[name].options.Multi == true then
---         capture = { regex.match(set.concat(get_lines(-triggers[name].multilines), "\n"), "("..triggers[name].pattern..")") }
---     else
---         capture = { regex.match(get_lines(-1)[1], "("..triggers[name].pattern..")") }
---     end
---     message("trace", name, "匹配 "..tostring(triggers[name].pattern), table.tostring(capture))
---     if #capture == 0 then
---         return false
---     end
---     capture[0] = capture[1]
---     set.remove(capture, 1)
---     global.regex = capture
---     message("trace", "触发详情", name, table.tostring(triggers[name]))
---     return true
--- end
+function trigger_regex(name)
+    local capture
+    if triggers[name].options.Multi == true then
+        capture = { regex.match(set.concat(get_lines(-triggers[name].multilines), "\n"), "("..triggers[name].pattern..")") }
+    else
+        capture = { regex.match(get_lines(-1)[1], "("..triggers[name].pattern..")") }
+    end
+    message("trace", name, "匹配 "..tostring(triggers[name].pattern), table.tostring(capture))
+    if #capture == 0 then
+        return false
+    end
+    capture[0] = capture[1]
+    set.remove(capture, 1)
+    global.regex = capture
+    message("trace", "触发详情", name, table.tostring(triggers[name]))
+    return true
+end
 
 function OnReceive(raw, txt)
-    --trigger_process(text)
+    trigger_process(txt)
 end
 
 function get_lines(from, to)
