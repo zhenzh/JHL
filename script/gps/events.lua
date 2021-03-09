@@ -1787,7 +1787,7 @@ function beijing_gate()
     elseif l[1] == false then
         if l[0] == "什么?" or l[0] == "这个方向没有出路。" then
             if beijing_gate_list[msg] ~= nil then
-                map_adjust("北京城门", "关闭", "北京城墙", "开放")
+                map_adjust("北京城门", "关闭")
                 return 1,"移动调整"
             end
         end

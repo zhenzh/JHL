@@ -7,6 +7,7 @@ config = {
     job_zuanyan = false,        -- 任务期间是否消耗潜能钻研
     mole_limit  = 0,            -- 控制神上限
     job_nl      = "double",     -- 任务所需内力, 可添写 具体数字(如: 10000) 或 "double"(表示最大内力值的双倍)
+    beat_killer = false,        -- 遇到 NPC 杀手时是否战斗
     jobs = {
         "门派任务",     ["门派任务"]     = { name = "family_job", active = false, enable = true },
         "寻访任务",     ["寻访任务"]     = { name = "visit_job", active = false, enable = false },
