@@ -182,7 +182,7 @@ function trigger_regex(name)
 end
 
 function OnReceive(raw, txt)
-    trigger_process(txt)
+    assert(trigger_process(txt) or true)
 end
 
 function get_lines(from, to)
@@ -268,14 +268,14 @@ function printf(parameter)
                 return
             end
         end
-        if timer.is_exist(parameter) == true then
-            local switch = {["true"] = "是", ["false"] = "否"}
-            show(" 计时器："..tostring(parameter).."    属组："..tostring((timers[parameter].group or "无")), "gray")
-            show(" 属性：  生效 - "..switch[tostring(timers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(timers[parameter].options.OneShot or false)], "gray")
-            show(" 时长："..tostring(timer.remain(parameter)).." / "..tostring(timers[parameter].seconds).." 秒", "gray")
-            show(" 发送指令："..tostring(timers[parameter].send), "gray")
-            return
-        end
+        -- if timer.is_exist(parameter) == true then
+        --     local switch = {["true"] = "是", ["false"] = "否"}
+        --     show(" 计时器："..tostring(parameter).."    属组："..tostring((timers[parameter].group or "无")), "gray")
+        --     show(" 属性：  生效 - "..switch[tostring(timers[parameter].options.Enable or false)].."， 一次性 - "..switch[tostring(timers[parameter].options.OneShot or false)], "gray")
+        --     show(" 时长："..tostring(timer.remain(parameter)).." / "..tostring(timers[parameter].seconds).." 秒", "gray")
+        --     show(" 发送指令："..tostring(timers[parameter].send), "gray")
+        --     return
+        -- end
         show(" 字符串："..tostring(parameter), "gray")
     elseif type(parameter) == "number" then
         show(" 数值："..tostring(parameter), "gray")

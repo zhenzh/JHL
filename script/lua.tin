@@ -39,7 +39,7 @@
     #replace {cmd} {\\} {\\};
     #lua {#send {OnSend $cmd}};
 } {9.999};
-#event {RECEIVED LINE} {#{lua} {#send {OnReceive RAW %0 TXT %1}}} {9.999};
+#event {RECEIVED LINE} {#lua {#send {OnReceive RAW %0 TXT %1}}} {9.999};
 
 #class {lua} {close};
 
