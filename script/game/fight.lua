@@ -115,13 +115,10 @@ function wield_position(pos)
     if l == false then
         return -1
     elseif l[0] == "你正忙着呢。" then
-        if var.fight == nil then
-            if wait_no_busy("halt") < 0  then
-                return -1
-            end
-        else
-            wait(0.1)
+        if wait_no_busy("halt") < 0  then
+            return -1
         end
+        wait(0.1)
     elseif l[0] == "你身上没有这样东西。" then
         if run_i() < 0 then
             return -1
@@ -156,7 +153,11 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ fight ］")
     var.fight = var.fight or { idle = 0, refresh = false }
+    var.fight.job = var.fight.job or config.jobs[global.jid or 0] or "通用"
     trigger.enable_group("fight")
+    if prepare_skills() < 0 then
+        return -1
+    end
     if run_hp() < 0 then
         return fight_return(-1)
     end
@@ -192,7 +193,7 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
     if (var.fight.stop or 3) < 3 then
         return fight_return(var.fight.stop)
     end
-    local rc = wield((config.fight[config.jobs[global.jid]] or config.fight["通用"]).weapon or config.fight["通用"].weapon)
+    local rc = wield(config.fight[var.fight.job].weapon or config.fight["通用"].weapon)
     if rc < 0 then
         return fight_return(-1)
     elseif rc == 1 then
@@ -205,24 +206,25 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
         if state.nl <= profile.power * 7 and state.power > 0 then
             run("jiali none")
         elseif state.nl > profile.power * 7 and 
-               (config.fight[config.jobs[global.jid]].power or config.fight["通用"].power) ~= "none" then
+               (config.fight[var.fight.job].power or config.fight["通用"].power) ~= "none" then
             if state.power == 0 then
-                run("jiali "..(config.fight[config.jobs[global.jid]].power or config.fight["通用"].power))
+                run("jiali "..(config.fight[var.fight.job].power or config.fight["通用"].power))
             end
         end
         if state.nl <= profile.energy * 7 and state.energy > 1 then
             run("jiajin 1")
-        elseif state.jl > profile.energy * 7 and (config.fight[config.jobs[global.jid]].energy or config.fight["通用"].energy) ~= 1 then
+        elseif state.jl > profile.energy * 7 and 
+               (config.fight[var.fight.job].energy or config.fight["通用"].energy) ~= 1 then
             if state.energy == 1 then
-                run("jiajin "..(config.fight[config.jobs[global.jid]].energy or config.fight["通用"].energy))
+                run("jiajin "..(config.fight[var.fight.job].energy or config.fight["通用"].energy))
             end
         end
         trigger.enable("fight_idle")
-        run(set.concat((config.fight[config.jobs[global.jid]].yuns or config.fight["通用"].yuns), ";")..";"..set.concat((config.fight[config.jobs[global.jid]].performs or config.fight["通用"].performs), ";"))
+        run(set.concat((config.fight[var.fight.job].yuns or config.fight["通用"].yuns), ";")..";"..set.concat((config.fight[var.fight.job].performs or config.fight["通用"].performs), ";"))
     end
     wait_line(nil,
               2, nil, 100,
-              "^"..(var.job.enemy_name or "\\S+").."倒在地上，挣扎了几下就死了。$|"..
+              "^"..((var.job or {}).enemy_name or "\\S+").."倒在地上，挣扎了几下就死了。$|"..
               "^你只觉得手中\\S+把持不定，脱手飞出！$|"..
               "^只听见「啪」地一声，你手中的\\S+已经断为两截！$|"..
               "^你目前还没有任何为 中断事件 的变量设定。$")
@@ -282,5 +284,3 @@ function fight_idle()
         var.fight.idle = var.fight.idle + 1
     end
 end
---日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！
---日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！

@@ -46,8 +46,7 @@ end
 
 automation.timer = automation.timer or {}
 automation.items = automation.items or {}
-automation.killer = automation.killer or {}
-automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
+automation.killer = automation.killer or { "猫也会心碎" }
 
 local buff = {
     "invalid_ask_ping",
@@ -100,9 +99,14 @@ for k,v in pairs(automation.items) do
     items[k] = v
 end
 
-if automation.repository ~= nil then
-    carryon.repository = automation.repository
-    automation.repository = nil
+if automation.carryon ~= nil then
+    carryon = automation.carryon
+    automation.carryon = nil
+end
+
+if automation.skills ~= nil then
+    skills = automation.skills
+    automation.skills = nil
 end
 
 global.debug.level = automation.debug or global.debug.level
@@ -119,7 +123,6 @@ collectgarbage("collect")
 
 function init()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ init ］")
-    map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "北京城墙", "开放", "泉州新门", "开放", "古墓水道", "禁用")
     trigger.add("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
     if wait_line("jiali max;jiajin max;score;hp;skills;enable;prepare;set;jiajin 1;jiali none", 30, nil, 10, "^从现在起你用零点内力伤敌。$", "^> $") ~= false then
         if run_i() < 0 then
@@ -186,7 +189,8 @@ function reset(fresh)
         automation.thread = nil
         automation.jid = (var or {}).jid
         automation.config_jobs = config.jobs
-        automation.repository = (carryon or {}).repository
+        automation.carryon = carryon
+        automation.skills = skills
     end
     automation.buff = state.buff
     automation.debuff = state.debuff
@@ -240,9 +244,8 @@ else
         function ()
             automation.thread = coroutine.running()
             loadstring(automation.reconnect)()
-            if init() < 0 then
-                return -1
-            end
+            trigger.delete_group("automation_reset")
+            init()
             load_jobs()
             start()
         end

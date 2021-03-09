@@ -285,6 +285,9 @@ function family_job_p4()
                     end
                 until carryon.inventory["酥油罐:suyou guan"].count <= 0
                 carryon.inventory["酥油罐:suyou guan"] = nil
+                if one_step() ~= 0 then
+                    return -1
+                end
             end
         end
     end
@@ -1056,7 +1059,8 @@ function family_job_enable_inform()
     if var.job ~= nil then
         return
     end
-    if automation.skill ~= nil then
+    -- if automation.skill ~= nil then 旧方法
+    if var.lian ~= nil then
         run("set 中断事件")
     end
 end
@@ -1068,12 +1072,11 @@ function family_job_enable_complete()
     config.jobs["门派任务"].phase = phase["任务结算"]
     config.jobs["门派任务"].active = true
     if var.job == nil then
-        if automation.skill ~= nil then
+        if var.lian ~= nil then
             run("set 中断事件")
         end
     else
-        if var.job.name == "门派任务" and 
-           var.fight ~= nil then
+        if var.job.name == "门派任务" and var.fight ~= nil then
             run("set 中断事件")
         end
     end
@@ -1084,10 +1087,8 @@ function family_job_cancel()
         var.fight.stop = 2
     end
     config.jobs["门派任务"].phase = phase["任务失败"]
-    if var.job ~= nil and 
-       var.job.name == "门派任务" then
-        if var.fight ~= nil or 
-           automation.skill ~= nil then
+    if var.job ~= nil and var.job.name == "门派任务" then
+        if var.fight ~= nil or var.lian ~= nil then
             run("set 中断事件")
         end
     end
@@ -1097,7 +1098,7 @@ function family_job_received()
     config.jobs["门派任务"].info = get_matches(1)
     config.jobs["门派任务"].phase = phase["任务执行"]
     config.jobs["门派任务"].active = true
-    if automation.skill ~= nil then
+    if var.lian ~= nil then
         if var.job == nil then
             run("set 中断事件")
         else
@@ -1111,7 +1112,7 @@ end
 function family_job_inactive()
     var.job.statistics = nil
     config.jobs["门派任务"].phase = phase["任务失败"]
-    if automation.skill ~= nil then
+    if var.lian ~= nil then
         run("set 中断事件")
     end
 end

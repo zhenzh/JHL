@@ -166,8 +166,7 @@ function automation_reset_heal()
     if l == false then
         return automation_reset()
     elseif l[0] == "纪晓芙正在运功为你疗伤，忽觉自己内息後继乏力，祗得暂缓疗伤，站起身来。" then
-        local rc = one_step()
-        if rc ~= 0 then
+        if one_step() ~= 0 then
             return automation_reset()
         end
     end
@@ -179,10 +178,38 @@ function automation_reset_killer()
             "函数［ automation_reset_killer ］")
     automation.reconnect = nil
     automation.idle = false
-    trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
-    trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
-    local rc = one_step()
-    if rc ~= 0 then
+    trigger.add("automation_reset_killer_win", "automation_reset_killer_win()", "automation_reset", {Enable=true}, 10, "^日月神教使者突然卖一破绽，跳出战圈，逃了！$|"..
+                                                                                                                       "^日月神教使者悻然说道：算你够狠！老子先不奉陪了！咱们走着瞧！$|"..
+                                                                                                                       "^猫也会心碎指着\\S+赞叹道：“\\S+是古往今来绿林第一大强盗！$")
+    trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation_reset", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
+    trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation_reset", {Enable=true}, 10, "^鬼门关 - $")
+    if wait_no_busy("halt") < 0 then
+        return -1
+    end
+    local rc = fight()
+    if rc < 0 then
+        return automation_reset("automation_reset_killer()")
+    end
+    return 0
+end
+
+function automation_reset_killer_win()
+    if var.fight ~= nil then
+        var.fight.stop = 0
+    end
+end
+
+function automation_reset_escape()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ automation_reset_escape ］")
+    automation.reconnect = nil
+    automation.idle = false
+    trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation_reset", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
+    trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation_reset", {Enable=true}, 10, "^鬼门关 - $")
+    if wait_no_busy("halt") < 0 then
+        return -1
+    end
+    if one_step() ~= 0 then
         return automation_reset()
     end
     return 0
@@ -211,9 +238,11 @@ function start()
     trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add("automation_reset_connect", "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
     trigger.add("automation_reset_heal", "automation_reset('automation_reset_heal()')", "automation", {Enable=true}, 10, "^纪晓芙坐了下来运起内功，将手掌贴在你背心，缓缓地将真气输入你的体内....")
-    trigger.add("automation_reset_killer", "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|"..
-                                                                                                                             "^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$|"..
-                                                                                                                             "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
+    trigger.add("automation_reset_killer", "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^看起来(?:"..set.concat(automation.killer, "|")..")想杀死你！$|"..
+                                                                                                                             "^日月神教使者对着你大吼：(?:跟我回去参见教主！|还想跑？快跟大爷回去晋见本神教教主！)$")
+    if config.beat_killer == false then
+        trigger.add("automation_reset_escape", "automation_reset('automation_reset_escape()')", "automation", {Enable=true, StopEval=true}, 9, "^看起来猫也会心碎想杀死你！$")
+    end
 
     if profile.master == "金轮法王" then
         if profile.longxiang == nil then
@@ -721,7 +750,7 @@ end
 
 function plan_lian_weapon(list)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ plan_lian_weapon ］")
+            "函数［ plan_lian_weapon ］参数：list = "..table.tostring(list))
     for _,v in ipairs(config.lian) do
         if set.has({"sword", "blade", "hammer", "stick", "club", "axe", "whip", "pike", "staff", "hook", "stroke"}, v) then
             if config.lian.weapon[v] == nil then
@@ -749,13 +778,14 @@ function prepare_skills()
     end
     local check_enable = false
     for k,v in pairs(skills.enable) do
-        if cfg[k] == nil then
-            check_enable = true
-            run("jifa "..k.." none")
-        else
+        -- if cfg[k] == nil then
+        --     check_enable = true
+        --     run("enable "..k.." none")
+        -- else
+        if cfg[k] ~= nil then
             if cfg[k][2] ~= v.name then
                 check_enable = true
-                run("jifa "..k.." "..cfg[k][1])
+                run("enable "..k.." "..cfg[k][1])
             end
             skill_id[k] = cfg[k][1]
             cfg[k] = nil
@@ -764,7 +794,7 @@ function prepare_skills()
     local prepare = set.pop(cfg)
     for k,v in pairs(cfg) do
         check_enable = true
-        run("jifa "..k.." "..v[1])
+        run("enable "..k.." "..v[1])
         skill_id[k] = cfg[k][1]
     end
     local current_prepare = table.keys(skills.prepare)
