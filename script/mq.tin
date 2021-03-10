@@ -1,0 +1,63 @@
+#class {mq} {kill};
+
+#zap {mq};
+#run {mq} {lua $script_path/listener.lua};
+#config {charset} {UTF-8};
+
+#action {^Reset$} {
+    #main {#read {$script_path/mq.tin}};
+} {1};
+
+#action {^Gag$} {#main {#line gag}} {9.999};
+
+#action {{^Echo (.*)$}} {
+    #local msg {%2};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #main {#echo {$msg}};
+} {9.999};
+
+#action {{^Send (.*)$}} {
+    #local msg {%2};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #main {#send {$msg}};
+} {9.999};
+
+#action {{^Delay ([\w\d_]+) ([\d\.]+) (.*)$}} {
+    #local msg {%4};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #main {#delay {%2} {#mq {#send {OnSend $msg}}} {%3}};
+} {9.999};
+
+#action {{^Ticker ([\w\d_]+) ([\d\.]+) (.*)$}} {
+    #local msg {%4};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #main {#ticker {%2} {#mq {#send {OnSend $msg}}} {%3}};
+} {9.999};
+
+#action {{^Undelay (.*)$}} {#main {#undelay {%2}}} {9.999};
+
+#action {{^Unticker (.*)$}} {#main {#unticker {%2}}} {9.999};
+
+#main;
+
+#class {mq} {open};
+
+#alias {^/%*$} {
+    #local {cmd} {%0};
+    #replace {cmd} {^/%s} {};
+    #replace {cmd} {%s$} {};
+    #replace {cmd} {\\} {\\};
+    #mq {#send {OnSend $cmd}};
+} {9.999};
+#event {RECEIVED LINE} {#mq {#send {OnReceive RAW %0 TXT %1}}} {9.999};
+
+#class {mq} {close};
+
+#mq {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
+#mq {#send {OnSend HOME = "$work_path/"}};
+#mq {#send {OnSend SCRIPT = "$script_path/"}};
+#mq {#send {OnSend require "main"}};

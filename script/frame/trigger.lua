@@ -63,7 +63,7 @@ function trigger_process_exec(name)
         trigger.delete(name)
     end
 
-    loadstring(triggers[name].send)()
+    assert(loadstring(triggers[name].send))()
     return rc
 end
 

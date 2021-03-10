@@ -9,4 +9,4 @@
 #split;
 #config {charset} {GBK1TOUTF8}
 
-#read {$script_path/lua.tin};
+#read {$script_path/mq.tin};

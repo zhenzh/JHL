@@ -31,15 +31,16 @@ function timer.add(...)
         send = send,
         group = group,
         seconds = seconds,
-        options = options
+        options = options,
+        elapsed = 0
     }
 
     if not options.OneShot then
-        timers[name].id = tempTimer(seconds, send, true)
+        timers[name].id = "Ticker"
     else
-        send = send.." timer.delete('"..name.."')"
-        timers[name].id = tempTimer(seconds, send)
+        timers[name].id = "Delay"
     end
+
     if group ~= nil then
         timers.group[group][name] = timers[name].id
     end
@@ -48,58 +49,63 @@ function timer.add(...)
     else
         timer.enable(name)
     end
-    return name
+    return true
 end
 
 function timer.delete(name)
     if not timer.is_exist(name) then
         return false
     end
-    local rc = killTimer(timers[name].id)
+    print("Un"..string.lower(timers[name].id).." "..name)
     if timers[name] ~= nil and timers[name].group ~= nil then
         timers.group[timers[name].group][name] = nil
         if table.is_empty(timers.group[timers[name].group]) then
             timers.group[timers[name].group] = nil
         end
     end
-    loadstring("Timer"..timers[name].id.." = nil")()
     timers[name] = nil
-    return rc
+    return true
 end
 
 function timer.enable(name)
     if not timer.is_exist(name) then
         return false
     end
-    local rc = enableTimer(timers[name].id)
-    if rc == true then
-        timers[name].enable = true
+    if timer.is_enable(name) then
         return true
-    else
-        timers[name].enable = false
-        return false
     end
+    local send = timers[name].send
+    if timers[name].id == "Delay" then
+        send = send.." timer.delete('"..name.."')"
+        timers[name].seconds = math.max(0, timers[name].seconds - timers[name].elapsed)
+    end
+    timers[name].elapsed = 0
+    print("Unticker "..name)
+    print("Undelay "..name)
+    print(timers[name].id.." "..name.." "..tostring(timers[name].seconds).." "..send)
+    timers[name].created = time.epoch()
+    timers[name].enable = true
+    return true
 end
 
 function timer.disable(name)
     if not timer.is_exist(name) then
         return false
     end
-    local rc = disableTimer(timers[name].id)
-    if rc == true then
-        timers[name].enable = false
-        return true
-    else
-        timers[name].enable = true
-        return false
-    end
+    print("Un"..string.lower(timers[name].id).." "..name)
+    timers[name].elapsed = (time.epoch() - (timers[name].created or time.epoch())) / 1000
+    timers[name].enable = false
+    return true
 end
 
 function timer.remain(name)
     if not timer.is_exist(name) then
         return 0
     end
-    return remainingTime(timers[name].id)
+    if timers[name].elapsed > 0 then
+        return timers[name].seconds - (timers[name].elapsed / 1000)
+    end
+    return timers[name].seconds - ((time.epoch() - timers[name].created) / 1000)
 end
 
 function timer.is_exist(name)
@@ -114,10 +120,10 @@ function timer.is_enable(name)
     if timer.is_exist(name) == false then
         return false
     end
-    if isActive(timers[name].id, "timer") == 0 then
-        return false
-    else
+    if timers[name].enable == true then
         return true
+    else
+        return false
     end
 end
 

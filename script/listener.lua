@@ -4,7 +4,7 @@ function OnReceive(raw, txt)
 end
 
 function OnSend(msg)
-    assert(loadstring(msg)() or true)
+    assert(loadstring(msg))()
 end
 
 while true do
@@ -12,8 +12,8 @@ while true do
     local typ,msg = string.match(line, "^(On%w+) (.*)$")
     if typ == "OnReceive" then
         local raw,txt = string.match(msg, "^RAW (.*) TXT (.*)$")
-        assert(OnReceive(raw, txt) or true)
+        OnReceive(raw, txt)
     elseif typ == "OnSend" then
-        assert(OnSend(msg) or true)
+        OnSend(msg)
     end
 end
