@@ -97,11 +97,7 @@ end
 function ftb_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ ftb_job_p1 ］")
-<<<<<<< HEAD
-    local rc = ftb_job_goto_chengjinfu()
-=======
     local rc = ftb_job_go_chengjinfu()
->>>>>>> main
     if rc ~= nil then
         return rc
     end

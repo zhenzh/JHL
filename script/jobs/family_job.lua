@@ -266,11 +266,7 @@ function family_job_p4()
             return -1
         end
         if is_own("酥油罐:suyou guan") == true then
-<<<<<<< HEAD
-            local rc = goto("度母殿")
-=======
             local rc = go("度母殿")
->>>>>>> main
             if rc < 0 then
                 return -1
             elseif rc == 0 then

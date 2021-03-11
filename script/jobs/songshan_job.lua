@@ -144,11 +144,7 @@ function songshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p3 ］")
     automation.idle = false
-<<<<<<< HEAD
-    local rc = songshan_job_goto_zuolengchan()
-=======
     local rc = songshan_job_go_zuolengchan()
->>>>>>> main
     if rc ~= nil then
         return rc
     end
@@ -196,19 +192,11 @@ function songshan_job_p5()
     return 1
 end
 
-<<<<<<< HEAD
-function songshan_job_goto_zuolengchan()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ songshan_job_goto_zuolengchan ］")
-    if env.current.id[1] ~= 2478 then
-        local rc = goto(2478)
-=======
 function songshan_job_go_zuolengchan()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_go_zuolengchan ］")
     if env.current.id[1] ~= 2478 then
         local rc = go(2478)
->>>>>>> main
         if rc ~= 0 then
             return rc
         end
