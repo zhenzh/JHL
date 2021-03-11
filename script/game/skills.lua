@@ -108,7 +108,7 @@ function zuanyan_num_i(i)
                     end
                 end
             end
-            rc = zuanyan_goto_place(config.zuanyan[config.zuanyan[i]].place)
+            rc = zuanyan_go_place(config.zuanyan[config.zuanyan[i]].place)
             if (rc or 0) < 0 then
                 return zuanyan_return(-1)
             elseif rc == 1 then
@@ -144,11 +144,11 @@ function zuanyan_num_i(i)
     until false
 end
 
-function zuanyan_goto_place(place)
+function zuanyan_go_place(place)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ zuanyan_goto_place ］参数：place = "..tostring(place))
+            "函数［ zuanyan_go_place ］参数：place = "..tostring(place))
     if env.current.id[1] ~= place then
-        local rc = goto(place)
+        local rc = go(place)
         if rc ~= 0 then
             return rc
         end

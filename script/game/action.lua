@@ -470,7 +470,7 @@ function qu(list)
     local rc,msg
     local _list = table.copy(list)
     if env.current.name ~= "存物室" then
-        rc = goto(290)
+        rc = go(290)
         if rc ~= 0 then
             return rc
         end
@@ -674,7 +674,7 @@ function draw(money)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ draw ］参数：money = "..tostring(money))
     if env.current.name ~= "钱庄" then
-        local rc = goto(1028)
+        local rc = go(1028)
         if rc ~= 0 then
             return rc
         end
@@ -708,7 +708,7 @@ function deposit(money)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ deposit ］参数：money = "..tostring(money))
     if env.current.name ~= "钱庄" then
-        local rc = goto(1028)
+        local rc = go(1028)
         if rc ~= 0 then
             return rc
         end
@@ -917,7 +917,7 @@ end
 function store_all_pots()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ store_all_pots ］")
-    local rc = goto(2399)
+    local rc = go(2399)
     if rc ~= 0 then
         return rc
     end
@@ -1222,7 +1222,7 @@ function aquire_exec(list)
         aquire_plan(k, v)
     end
     for _,v in pairs(table.index(var.aquire.plan)) do
-        local rc,msg = goto(v)
+        local rc,msg = go(v)
         if rc < 0 then
             return -1
         elseif rc == 1 then
@@ -1404,7 +1404,7 @@ function zero_mole(target)
         return 0
     end
     if env.current.id[1] ~= 1790 then
-        local rc = goto(1790)
+        local rc = go(1790)
         if rc ~= 0 then
             return rc
         end
@@ -1466,7 +1466,7 @@ function search_room(obj)
         var.search.area = set.union(set.compl(var.search.area, env.current.id), env.current.id)
     end
     var.search.dest = set.pop(var.search.area)
-    local rc = goto(var.search.dest)
+    local rc = go(var.search.dest)
     if rc ~= 0 then
         return search_room(obj)
     end

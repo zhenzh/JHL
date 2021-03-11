@@ -89,7 +89,7 @@ function hengshan_job_p1()
             return rc
         end
     end
-    local rc = hengshan_job_goto_dingxian()
+    local rc = hengshan_job_go_dingxian()
     if rc ~= nil then
         return rc
     end
@@ -121,7 +121,7 @@ function hengshan_job_p2()
     end
     for k,v in pairs(var.job.npc) do
         if env.current.id[1] ~= k then
-            rc = goto(k)
+            rc = go(k)
             if rc < 0 then
                 return -1
             end
@@ -158,7 +158,7 @@ function hengshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ hengshan_job_p3 ］")
     automation.idle = false
-    local rc = hengshan_job_goto_dingxian("walk")
+    local rc = hengshan_job_go_dingxian("walk")
     if rc ~= nil then
         return rc
     end
@@ -182,7 +182,7 @@ end
 function hengshan_job_p5()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ hengshan_job_p5 ］")
-    local rc = hengshan_job_goto_dingxian()
+    local rc = hengshan_job_go_dingxian()
     if rc ~= nil then
         return rc
     end
@@ -196,11 +196,11 @@ function hengshan_job_p5()
     return 1
 end
 
-function hengshan_job_goto_dingxian(mode)
+function hengshan_job_go_dingxian(mode)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ hengshan_job_goto_dingxian ］参数：mode = "..tostring(mode))
+            "函数［ hengshan_job_go_dingxian ］参数：mode = "..tostring(mode))
     if env.current.id[1] ~= 2449 then
-        local rc = goto(2449, mode)
+        local rc = go(2449, mode)
         if rc ~= 0 then
             return rc
         end
@@ -376,7 +376,7 @@ function hengshan_job_rescue_npc(room, npc)
             if rc ~= nil then
                 return rc
             end
-            if goto(room) ~= 0 then
+            if go(room) ~= 0 then
                 var.job.pattern = nil
                 var.job.area = nil
                 return hengshan_job_p2()

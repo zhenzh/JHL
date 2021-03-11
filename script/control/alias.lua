@@ -27,7 +27,7 @@ function alias_gps()
 end
 
 function alias_flyto(tgt)
-    coroutine.wrap(function() goto(tgt) end)()
+    coroutine.wrap(function() go(tgt) end)()
 end
 
 function flynext()
@@ -35,7 +35,7 @@ function flynext()
 end
 
 function alias_walkto(tgt)
-    coroutine.wrap(function() goto(tgt, "walk") end)()
+    coroutine.wrap(function() go(tgt, "walk") end)()
 end
 
 function walknext()
