@@ -150,7 +150,7 @@ end
 function family_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ family_job_p1 ］")
-    local rc = family_job_goto_master()
+    local rc = family_job_go_master()
     if rc ~= nil then
         return rc
     end
@@ -211,7 +211,7 @@ end
 function family_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ family_job_p3 ］")
-    local rc = family_job_goto_master()
+    local rc = family_job_go_master()
     if rc ~= nil then
         return rc
     end
@@ -240,7 +240,7 @@ function family_job_p4()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ family_job_p4 ］")
     if config.jobs["门派任务"].contribution ~= nil then
-        local rc = family_job_goto_master()
+        local rc = family_job_go_master()
         if rc ~= nil then
             if rc == 1 then
                 config.jobs["门派任务"].phase = phase["任务失败"]
@@ -266,7 +266,11 @@ function family_job_p4()
             return -1
         end
         if is_own("酥油罐:suyou guan") == true then
+<<<<<<< HEAD
             local rc = goto("度母殿")
+=======
+            local rc = go("度母殿")
+>>>>>>> main
             if rc < 0 then
                 return -1
             elseif rc == 0 then
@@ -302,7 +306,7 @@ function family_job_p5()
         var.job.statistics.result = "失败"
     end
     if config.jobs["门派任务"].phase == phase["任务放弃"] then
-        local rc = family_job_goto_master()
+        local rc = family_job_go_master()
         if rc ~= nil then
             return rc
         end
@@ -329,12 +333,12 @@ function family_job_p5()
     return 1
 end
 
-function family_job_goto_master()
+function family_job_go_master()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ family_job_goto_master ］")
+            "函数［ family_job_go_master ］")
     if env.current.id[1] ~= family_info[profile.family].master_place then
         var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
-        local rc = goto(family_info[profile.family].master_place)
+        local rc = go(family_info[profile.family].master_place)
         if rc == 1 then
             config.jobs["门派任务"].phase = phase["任务失败"]
         end
@@ -453,14 +457,14 @@ function family_job_wait_enemy(timeout, fstate)
     return
 end
 
-function family_job_goto_dest()
+function family_job_go_dest()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ family_job_goto_dest ］")
+            "函数［ family_job_go_dest ］")
     if #config.jobs["门派任务"].dest > 0 then
         local current = set.pop(config.jobs["门派任务"].dest)
         if env.current.id[1] ~= current then
             run("halt")
-            local rc = goto(current)
+            local rc = go(current)
             if rc ~= 0 then
                 return rc
             end
@@ -476,7 +480,7 @@ function family_job_goto_dest()
             end
             return
         end
-        return family_job_goto_dest()
+        return family_job_go_dest()
     end
     if #config.jobs["门派任务"].dest == 0 then
         if var.job.retry == nil then
@@ -592,7 +596,7 @@ function family_job_one_step()
                     return -1
                 end
                 env.current.id = { 1718 }
-                if goto(current) ~= 0 then
+                if go(current) ~= 0 then
                     return -1
                 end
             end
@@ -616,7 +620,7 @@ function family_job_one_step()
             current = 1529
         end
         if env.current.id[1] ~= current then
-            if goto(current) ~= 0 then
+            if go(current) ~= 0 then
                 return -1
             end
         end
@@ -864,7 +868,7 @@ function family_job_exec()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ family_job_exec ］")
     automation.idle = false
-    local rc = family_job_goto_dest()
+    local rc = family_job_go_dest()
     if rc ~= nil then
         return rc
     end
@@ -1139,7 +1143,7 @@ function family_job_settle()
 end
 
 function family_job_enemy_found()
-    if var.goto.thread == nil then
+    if var.go.thread == nil then
         var.job.fight = false
     end
 end

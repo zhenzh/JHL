@@ -304,7 +304,7 @@ function locate_return(rc)
             "函数［ locate_return ］参数：rc = "..tostring(rc))
     if rc == 0 then
         env.current.zone = {map[env.current.id[1]].zone}
-        if (var.goto or {}).thread == nil then
+        if (var.go or {}).thread == nil then
             show("定位成功", "green")
             show("当前位置："..(env.current.zone[1] or '海上').." "..env.current.name.."（ID "..tostring(env.current.id[1]).."）", "white")
         end
@@ -313,7 +313,7 @@ function locate_return(rc)
         for _,v in ipairs(env.current.id) do
             env.current.zone = set.union(env.current.zone, {map[v].zone})
         end
-        if (var.goto or {}).thread == nil then
+        if (var.go or {}).thread == nil then
             show("定位成功", "green")
             show("当前位置："..set.concat(env.current.zone, "|").." "..env.current.name.."（ID "..set.concat(env.current.id, "|").."）", "white")
         end

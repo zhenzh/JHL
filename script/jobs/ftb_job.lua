@@ -97,7 +97,11 @@ end
 function ftb_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ ftb_job_p1 ］")
+<<<<<<< HEAD
     local rc = ftb_job_goto_chengjinfu()
+=======
+    local rc = ftb_job_go_chengjinfu()
+>>>>>>> main
     if rc ~= nil then
         return rc
     end
@@ -139,11 +143,11 @@ function ftb_job_p3()
     return 1
 end
 
-function ftb_job_goto_chengjinfu()
+function ftb_job_go_chengjinfu()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ ftb_job_goto_chengjinfu ］")
+            "函数［ ftb_job_go_chengjinfu ］")
     if env.current.id[1] ~= 1705 then
-        local rc = goto(1705)
+        local rc = go(1705)
         if rc ~= 0 then
             return rc
         end
@@ -300,7 +304,7 @@ function ftb_job_exec()
             else
                 local rc = 0
                 if env.current.id[1] ~= k then
-                    rc = goto(k)
+                    rc = go(k)
                 end
                 if rc == 0 then
                     rc = ftb_job_ask_npc(k, v)
@@ -388,7 +392,7 @@ function ftb_job_ask_npc(room, npc)
         end
     end
     if env.current.id[1] ~= room then
-        if goto(room) ~= 0 then
+        if go(room) ~= 0 then
             return
         end
     end
@@ -445,7 +449,7 @@ function ftb_job_kill_npc(room, npc)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ ftb_job_kill_npc ］参数：room = "..table.tostring(room)..", npc = "..table.tostring(npc))
     if env.current.id[1] ~= room then
-        if goto(room) ~= 0 then
+        if go(room) ~= 0 then
             return
         end
     end

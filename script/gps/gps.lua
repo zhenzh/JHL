@@ -171,7 +171,7 @@ function get_multipath(src, dst)
         end
         analyzing = nxt
     end
-    local path = var.goto.multipath or {}
+    local path = var.go.multipath or {}
     local crt,nxt
     for k,_ in pairs(cost) do
         if trace[k].cost >= 10000 then
@@ -228,14 +228,14 @@ end
 function gonext(mode)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ gonext ］参数："..tostring(mode))
-    if var.goto == nil then
+    if var.go == nil then
         show("未知目的地", "red")
         return -1
     else
-        var.goto.index = var.goto.index + 1
-        if var.goto.index > #var.goto.room_ids then
-            show(tostring(#var.goto.room_ids).." 个目的地已全部访问", "white")
-            var.goto = nil
+        var.go.index = var.go.index + 1
+        if var.go.index > #var.go.room_ids then
+            show(tostring(#var.go.room_ids).." 个目的地已全部访问", "white")
+            var.go = nil
             return 1
         else
             if mode == "walk" then
@@ -243,50 +243,50 @@ function gonext(mode)
             else
                 map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用")
             end
-            var.goto.thread = coroutine.running()
-            var.goto.next = true
-            trigger.add(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
-            trigger.add(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
-            trigger.add(nil, "hinder()", "goto", {Enable=true}, 19, "^你的动作还没有完成，不能移动。$")
-            trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
-            trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
-            trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
-            return goto_return(goto_move())
+            var.go.thread = coroutine.running()
+            var.go.next = true
+            trigger.add(nil, "faint()", "go", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
+            trigger.add(nil, "tired()", "go", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
+            trigger.add(nil, "hinder()", "go", {Enable=true}, 19, "^你的动作还没有完成，不能移动。$")
+            trigger.add(nil, "terminate()", "go", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
+            trigger.add(nil, "lost()", "go", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
+            trigger.add("go_hide_ga", "", "go", {Enable=true, Gag=true}, 1, "^> $")
+            return go_return(go_move())
         end
     end
 end
 
-function goto(dst, mode)
+function go(dst, mode)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ goto ］参数：dst = "..tostring(dst)..", mode = "..tostring(mode))
-    var.goto = var.goto or {}
-    var.goto.multipath = nil
+            "函数［ go ］参数：dst = "..tostring(dst)..", mode = "..tostring(mode))
+    var.go = var.go or {}
+    var.go.multipath = nil
     if mode == "walk" then
         map_adjust("门派接引", "禁用", "过河", "渡船", "丐帮密道", "禁用")
     else
         map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用")
     end
-    if var.goto.thread == nil then
-        var.goto.room_ids = parse(dst)
-        var.goto.index = 1
-        var.goto.thread = coroutine.running()
-        trigger.add(nil, "faint()", "goto", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
-        trigger.add(nil, "tired()", "goto", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
-        trigger.add(nil, "hinder()", "goto", {Enable=true}, 19, "^你的动作还没有完成，不能移动。$")
-        trigger.add(nil, "terminate()", "goto", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        trigger.add(nil, "lost()", "goto", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
-        trigger.add("goto_hide_ga", "", "goto", {Enable=true, Gag=true}, 1, "^> $")
-        return goto_return(goto_move())
+    if var.go.thread == nil then
+        var.go.room_ids = parse(dst)
+        var.go.index = 1
+        var.go.thread = coroutine.running()
+        trigger.add(nil, "faint()", "go", {Enable=true}, 19, "^你的眼前一黑，接著什么也不知道了....$")
+        trigger.add(nil, "tired()", "go", {Enable=true}, 19, "^你已经精疲力尽，动弹不得。$")
+        trigger.add(nil, "hinder()", "go", {Enable=true}, 19, "^你的动作还没有完成，不能移动。$")
+        trigger.add(nil, "terminate()", "go", {Enable=true}, 19, "^鬼门关 - |^一道闪电从天降下，直朝你劈去……结果没打中！$")
+        trigger.add(nil, "lost()", "go", {Enable=true, StopEval=true}, 21, "^这个方向没有出路。$|^什么\\?$")
+        trigger.add("go_hide_ga", "", "go", {Enable=true, Gag=true}, 1, "^> $")
+        return go_return(go_move())
     else
-        local interrupt = var.goto.pause
-        var.goto.pause = function()
-            var.goto.pause = nil
-            var.goto.room_ids = parse(dst)
-            var.goto.room_id = nil
-            var.goto.index = 1
-            var.goto.report = nil
-            if var.goto.event ~= nil then
-                var.goto.event = false
+        local interrupt = var.go.pause
+        var.go.pause = function()
+            var.go.pause = nil
+            var.go.room_ids = parse(dst)
+            var.go.room_id = nil
+            var.go.index = 1
+            var.go.report = nil
+            if var.go.event ~= nil then
+                var.go.event = false
             end
             return 0
         end
@@ -297,23 +297,23 @@ function goto(dst, mode)
     end
 end
 
-function goto_return(rc, msg)
+function go_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ goto_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
-    if var.goto == nil then
+            "函数［ go_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
+    if var.go == nil then
         return rc,msg
     end
-    trigger.delete_group("goto")
+    trigger.delete_group("go")
     if rc < 0 then
-        if #var.goto.room_ids == 0 then
+        if #var.go.room_ids == 0 then
             show("未知目的地", "orange")
         end
         show("移动失败", "red")
-        var.goto = nil
+        var.go = nil
     else
-        var.goto.thread = nil
-        var.goto.report = nil
-        var.goto.room_id = nil
+        var.go.thread = nil
+        var.go.report = nil
+        var.go.room_id = nil
         if get_lines(-1)[1] ~= "> " then
             if wait_line(nil, 30, nil, 20, "^> $") == false then
                 return -1
@@ -324,18 +324,18 @@ function goto_return(rc, msg)
     return rc,msg
 end
 
-function goto_relocate()
+function go_relocate()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ goto_relocate ］")
+            "函数［ go_relocate ］")
     if #set.inter(env.current.id, {3003, 3244}) > 0 then
         env.current.id = { 3244 }
         return
     end
     if #set.inter(env.current.id, {1827, 2988, 2989, 2990}) > 0 then
-        if map[var.goto.room_ids[var.goto.index]].zone == "西域白驼山" then
-            var.goto.adjust = 1826
+        if map[var.go.room_ids[var.go.index]].zone == "西域白驼山" then
+            var.go.adjust = 1826
         else
-            var.goto.adjust = 1327
+            var.go.adjust = 1327
         end
         env.current.id = { 2990 }
         local rc = xiyu_desert()
@@ -343,20 +343,20 @@ function goto_relocate()
             return -1
         elseif rc == 1 then
             env.current.id = {}
-            return goto_move()
+            return go_move()
         else
             return
         end
     end
     local rc = one_step()
     if rc == 0 then
-        return goto_move()
+        return go_move()
     elseif rc == 1 then
         if #env.current.exits == 0 then
             return -1
         end
         if state.nl >= 20 then
-            return goto_relocate()
+            return go_relocate()
         end
         if dazuo() ~= 0 then
             return -1
@@ -370,26 +370,26 @@ function goto_relocate()
                     return -1
                 end
                 if state.jl > state.jl_max / 10 then
-                    return goto_relocate()
+                    return go_relocate()
                 end
             end
         end
     else
         return -1
     end
-    return goto_relocate()
+    return go_relocate()
 end
 
-function goto_move()
+function go_move()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ goto_move ］")
+            "函数［ go_move ］")
     local rc
-    while var.goto.pause ~= nil do
-        if var.goto.pause() ~= 0 then
+    while var.go.pause ~= nil do
+        if var.go.pause() ~= 0 then
             return -1
         end
     end
-    if #var.goto.room_ids == 0 then
+    if #var.go.room_ids == 0 then
         return -1
     end
     if env.current.name == "" then
@@ -410,7 +410,7 @@ function goto_move()
             if rc < 0 then
                 return -1
             elseif rc == 1 then
-                return goto_move()
+                return go_move()
             end
         else
             if wait_line("out", 30, nil, 20, "^\\S+\\s+- ", "^> $") == false then
@@ -422,25 +422,25 @@ function goto_move()
     if rc < 0 then
         return -1
     elseif rc == 1 then
-        rc = goto_relocate()
+        rc = go_relocate()
         if rc ~= nil then
             return rc
         end
-        var.goto.adjust = nil
+        var.go.adjust = nil
     end
     -- local room_id    全路径规划方案
-    -- if false and #var.goto.room_ids > 1 then
-    --     if var.goto.multipath == nil then
-    --         var.goto.multipath = get_multipath(env.current.id[1], var.goto.room_ids)
-    --         for _,v in ipairs(var.goto.room_ids) do
-    --             get_multipath(v, var.goto.room_ids)
+    -- if false and #var.go.room_ids > 1 then
+    --     if var.go.multipath == nil then
+    --         var.go.multipath = get_multipath(env.current.id[1], var.go.room_ids)
+    --         for _,v in ipairs(var.go.room_ids) do
+    --             get_multipath(v, var.go.room_ids)
     --         end
     --         local all_cost = {}
-    --         for _,v in ipairs(set.permute(var.goto.room_ids)) do
+    --         for _,v in ipairs(set.permute(var.go.room_ids)) do
     --             set.append(all_cost, 0)
     --             for i = 1, #v, 1 do
     --                 local from,to = v[i-1] or env.current.id[1],v[i]
-    --                 local sub_cost = (var.goto.multipath[to] or {})[from] or {}
+    --                 local sub_cost = (var.go.multipath[to] or {})[from] or {}
     --                 sub_cost = ((sub_cost[to] or {}).cost or 0) - ((sub_cost[from] or {}).cost or 0)
     --                 all_cost[#all_cost] = set.last(all_cost) + sub_cost
     --                 if set.last(all_cost) >= (all_cost[#all_cost-1] or 10000) then
@@ -449,61 +449,61 @@ function goto_move()
     --                 end
     --             end
     --             if all_cost[#all_cost] < (all_cost[#all_cost-1] or 10000) then
-    --                 var.goto.room_ids = v
+    --                 var.go.room_ids = v
     --             end
     --         end
-    --         room_id = var.goto.room_ids[var.goto.index]
-    --         var.goto.path = var.goto.multipath[room_id][env.current.id[1]]
+    --         room_id = var.go.room_ids[var.go.index]
+    --         var.go.path = var.go.multipath[room_id][env.current.id[1]]
     --     else
-    --         room_id = var.goto.room_ids[var.goto.index]
-    --         if var.goto.next == true then
-    --             var.goto.next = nil
-    --             var.goto.path = var.goto.multipath[room_id][env.current.id[1]] or get_path(env.current.id[1], room_id)
+    --         room_id = var.go.room_ids[var.go.index]
+    --         if var.go.next == true then
+    --             var.go.next = nil
+    --             var.go.path = var.go.multipath[room_id][env.current.id[1]] or get_path(env.current.id[1], room_id)
     --         else
-    --             var.goto.path = get_path(env.current.id[1], room_id)
+    --             var.go.path = get_path(env.current.id[1], room_id)
     --         end
     --     end
     -- else
-    --     room_id = var.goto.room_ids[var.goto.index]
-    --     var.goto.path = get_path(env.current.id[1], room_id)
+    --     room_id = var.go.room_ids[var.go.index]
+    --     var.go.path = get_path(env.current.id[1], room_id)
     -- end
-    var.goto.room_id = var.goto.room_ids[var.goto.index]
-    var.goto.path = get_path(env.current.id[1], var.goto.room_id)
-    if var.goto.report == nil then
-        show("准备前往："..tostring(var.goto.room_id).."（"..tostring(var.goto.index).." / "..tostring(#var.goto.room_ids).."）", "white")
-        var.goto.report = true
+    var.go.room_id = var.go.room_ids[var.go.index]
+    var.go.path = get_path(env.current.id[1], var.go.room_id)
+    if var.go.report == nil then
+        show("准备前往："..tostring(var.go.room_id).."（"..tostring(var.go.index).." / "..tostring(#var.go.room_ids).."）", "white")
+        var.go.report = true
     end
-    if var.goto.path[var.goto.room_id].cost >= 10000 then
+    if var.go.path[var.go.room_id].cost >= 10000 then
         return -1
     end
-    return goto_exec(env.current.id[1])
+    return go_exec(env.current.id[1])
 end
 
-function goto_exec(current_id)
+function go_exec(current_id)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ goto_exec ］")
-    if current_id == nil or var.goto.path[current_id] == nil then
-        return goto_move()
+            "函数［ go_exec ］")
+    if current_id == nil or var.go.path[current_id] == nil then
+        return go_move()
     end
-    local next_id = var.goto.path[current_id].next
+    local next_id = var.go.path[current_id].next
     local pause_msg,flood = "移动完成",global.flood
     local path,path_overflow = {},{}
     local overflow_id,event
     while next_id ~= nil do
-        event = map_events[var.goto.path[next_id].step..tostring(next_id)] or
-                map_events[var.goto.path[next_id].step]
+        event = map_events[var.go.path[next_id].step..tostring(next_id)] or
+                map_events[var.go.path[next_id].step]
         if event ~= nil then
             pause_msg = "地图事件"
             break
         end
         if flood > config.flood then
-            if #path_overflow == 0 and (var.goto.path[next_id].last == 3039 or
-               set.has(maze, next_id) == true and set.has(maze, var.goto.path[next_id].last) == true) then
-                set.append(path, var.goto.path[next_id].step)
+            if #path_overflow == 0 and (var.go.path[next_id].last == 3039 or
+               set.has(maze, next_id) == true and set.has(maze, var.go.path[next_id].last) == true) then
+                set.append(path, var.go.path[next_id].step)
                 current_id = next_id
                 overflow_id = current_id
             else
-                set.append(path_overflow, var.goto.path[next_id].step)
+                set.append(path_overflow, var.go.path[next_id].step)
                 overflow_id = next_id
                 if flood > config.flood + 10 then
                     path_overflow = {}
@@ -512,12 +512,12 @@ function goto_exec(current_id)
                 end
             end
         else
-            set.append(path, var.goto.path[next_id].step)
+            set.append(path, var.go.path[next_id].step)
             current_id = next_id
             overflow_id = current_id
         end
-        flood = flood + string.count(var.goto.path[next_id].step, ";") + 1
-        next_id = var.goto.path[next_id].next
+        flood = flood + string.count(var.go.path[next_id].step, ";") + 1
+        next_id = var.go.path[next_id].next
     end
     if #path_overflow > 0 then
         set.extend(path, path_overflow)
@@ -530,28 +530,28 @@ function goto_exec(current_id)
     if l == false then
         return -1
     end
-    while var.goto.pause ~= nil do
-        if var.goto.pause() ~= 0 then
+    while var.go.pause ~= nil do
+        if var.go.pause() ~= 0 then
             return -1
         else
-            return goto_move()
+            return go_move()
         end
     end
     if l[1] == "移动完成" then
-        trigger.disable("goto_hide_ga")
+        trigger.disable("go_hide_ga")
         if locate() < 0 then
             return -1
         end
-        if env.current.name == map[var.goto.room_id].name and 
-           set.has(env.current.id, var.goto.room_id) == true then
-            env.current.id = { var.goto.room_id }
-            if var.goto.event ~= nil then
-                trigger.enable("goto_hide_ga")
+        if env.current.name == map[var.go.room_id].name and 
+           set.has(env.current.id, var.go.room_id) == true then
+            env.current.id = { var.go.room_id }
+            if var.go.event ~= nil then
+                trigger.enable("go_hide_ga")
             end
             return 0
         else
-            trigger.enable("goto_hide_ga")
-            return goto_move()
+            trigger.enable("go_hide_ga")
+            return go_move()
         end
     elseif l[1] == "稍事休息" then
         env.current.id = get_room_id_by_name(env.current.name)
@@ -574,22 +574,22 @@ function goto_exec(current_id)
         if env.current.name == map[current_id].name and set.has(env.current.id, current_id) == true then
             env.current.id = { current_id }
         else
-            return goto_move()
+            return go_move()
         end
-        var.goto.pause = true
+        var.go.pause = true
         l = wait_line(nil,
                       1, {StopEval=true}, 20,
                       "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                       "^你的眼前一黑，接著什么也不知道了....$|"..
                       "^鬼门关 - $|"..
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
         if l == false then
             global.flood = 0
         else
-            return goto_move()
+            return go_move()
         end
     else
         env.current.id = { current_id }
@@ -597,18 +597,18 @@ function goto_exec(current_id)
         if rc < 0 then
             return -1
         elseif rc == 1 then
-            return goto_move()
+            return go_move()
         end
         current_id = env.current.id[1]
-        while var.goto.pause ~= nil do
-            if var.goto.pause() ~= 0 then
+        while var.go.pause ~= nil do
+            if var.go.pause() ~= 0 then
                 return -1
             else
-                return goto_move()
+                return go_move()
             end
         end
     end
-    return goto_exec(current_id)
+    return go_exec(current_id)
 end
 
 function parse(dst)

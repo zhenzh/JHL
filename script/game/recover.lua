@@ -777,7 +777,7 @@ function ask_ping()
         printf(var.move)
         return ask_ping_return(1, "治疗失败")
     end
-    local rc = goto(1024)
+    local rc = go(1024)
     if rc ~= 0 then
         return ask_ping_return(1, "治疗失败")
     end
@@ -1468,9 +1468,9 @@ function dazuo_analysis(target, mode)
     return outcome,income,base
 end
 
-function recover_goto()
+function recover_go()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ recover_goto ］")
+            "函数［ recover_go ］")
     if state.qx * state.js > 0 and 
        state.jl >= state.jl_max / 10 then
         return 0

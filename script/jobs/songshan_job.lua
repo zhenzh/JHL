@@ -112,7 +112,7 @@ function songshan_job_p1()
             return 1
         end
     end
-    local rc = songshan_job_goto_zuolengchan()
+    local rc = songshan_job_go_zuolengchan()
     if rc ~= nil then
         return rc
     end
@@ -144,7 +144,11 @@ function songshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p3 ］")
     automation.idle = false
+<<<<<<< HEAD
     local rc = songshan_job_goto_zuolengchan()
+=======
+    local rc = songshan_job_go_zuolengchan()
+>>>>>>> main
     if rc ~= nil then
         return rc
     end
@@ -178,7 +182,7 @@ end
 function songshan_job_p5()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p5 ］")
-    local rc = songshan_job_goto_zuolengchan()
+    local rc = songshan_job_go_zuolengchan()
     if rc ~= nil then
         return rc
     end
@@ -192,11 +196,19 @@ function songshan_job_p5()
     return 1
 end
 
+<<<<<<< HEAD
 function songshan_job_goto_zuolengchan()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_goto_zuolengchan ］")
     if env.current.id[1] ~= 2478 then
         local rc = goto(2478)
+=======
+function songshan_job_go_zuolengchan()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ songshan_job_go_zuolengchan ］")
+    if env.current.id[1] ~= 2478 then
+        local rc = go(2478)
+>>>>>>> main
         if rc ~= 0 then
             return rc
         end
@@ -281,7 +293,7 @@ function songshan_job_exec()
     end
     for k,v in pairs(var.job.npc) do
         if env.current.id[1] ~= k then
-            rc = goto(k)
+            rc = go(k)
             if rc < 0 then
                 return -1
             end
@@ -522,7 +534,7 @@ function songshan_job_arrest(room, npc)
             if rc ~= nil then
                 return rc
             end
-            if goto(room) ~= 0 then
+            if go(room) ~= 0 then
                 config.jobs["嵩山任务"].phase = phase["任务失败"]
                 return songshan_job_p5()
             end

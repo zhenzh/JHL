@@ -8,10 +8,10 @@ function event_locate()
     end
 end
 
-function event_goto_pause(tmp)
+function event_go_pause(tmp)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ event_goto_pause ］参数：tmp = "..table.tostring(tmp))
-    if var.goto.pause ~= nil then
+            "函数［ event_go_pause ］参数：tmp = "..table.tostring(tmp))
+    if var.go.pause ~= nil then
         if tmp.power ~= nil then
             run("jiali "..tostring(tmp.power))
         end
@@ -26,13 +26,13 @@ end
 function event_draw_pay(money)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ event_draw_pay ］参数：money = "..tostring(money))
-    if var.goto.pause ~= nil then
+    if var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     if wait_line("score;i", 30, nil, 20, "^你身上带着\\S+件物品\\(负重\\s*\\d+%\\)：$|^目前你身上没有任何东西。$", "^> $") == false then
         return -1
     end
-    if var.goto.pause ~= nil then
+    if var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     if profile.balance + carryon.money < money then
@@ -42,19 +42,19 @@ function event_draw_pay(money)
     if carryon.money >= money then
         return 0
     end
-    local var_goto = var.goto
-    var.goto = {room_ids = {1028}, index = 1, thread = var_goto.thread, event = true, report = true}
-    if goto_move() ~= 0 then
+    local var_go = var.go
+    var.go = {room_ids = {1028}, index = 1, thread = var_go.thread, event = true, report = true}
+    if go_move() ~= 0 then
         return -1
     end
-    if var.goto.event == true then
-        var_goto.pause = var.goto.pause
-        var.goto = var_goto
+    if var.go.event == true then
+        var_go.pause = var.go.pause
+        var.go = var_go
     else
-        var.goto.event = nil
+        var.go.event = nil
         return 1,"移动调整"
     end
-    if var.goto.pause == nil then
+    if var.go.pause == nil then
         if draw(money - carryon.money) ~= 0 then
             return -1
         end
@@ -65,10 +65,10 @@ end
 function faint()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ faint ］")
-    trigger.disable_group("goto")
-    var.goto.pause = function()
-        var.goto.pause = nil
-        trigger.enable_group("goto")
+    trigger.disable_group("go")
+    var.go.pause = function()
+        var.go.pause = nil
+        trigger.enable_group("go")
         local l = wait_line(nil,
                             180, {StopEval=true}, 20,
                             "^慢慢地一阵眩晕感传来，你终于又有了知觉....$|"..
@@ -80,7 +80,7 @@ function faint()
             if run_hp() < 0 then
                 return -1
             end
-            if recover_goto() ~= 0 then
+            if recover_go() ~= 0 then
                 return -1
             else
                 return 0
@@ -92,10 +92,10 @@ end
 function terminate()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ die ］")
-    trigger.disable_group("goto")
-    var.goto.pause = function()
-        var.goto.pause = nil
-        trigger.enable_group("goto")
+    trigger.disable_group("go")
+    var.go.pause = function()
+        var.go.pause = nil
+        trigger.enable_group("go")
         return -1
     end
 end
@@ -103,11 +103,11 @@ end
 function lost()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ lost ］")
-    trigger.disable_group("goto")
-    var.goto.pause = function()
-        var.goto.pause = nil
+    trigger.disable_group("go")
+    var.go.pause = function()
+        var.go.pause = nil
         env.current.name = ""
-        trigger.enable_group("goto")
+        trigger.enable_group("go")
         return 0
     end
 end
@@ -115,14 +115,14 @@ end
 function tired()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ tired ］")
-    trigger.disable_group("goto")
-    var.goto.pause = function()
-        var.goto.pause = nil
-        trigger.enable_group("goto")
+    trigger.disable_group("go")
+    var.go.pause = function()
+        var.go.pause = nil
+        trigger.enable_group("go")
         if run_hp() < 0 then
             return -1
         end
-        if recover_goto() ~= 0 then
+        if recover_go() ~= 0 then
             return -1
         else
             return 0
@@ -133,11 +133,11 @@ end
 function hinder()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ hinder ］")
-    trigger.disable_group("goto")
-    var.goto.pause = function()
-        var.goto.pause = nil
+    trigger.disable_group("go")
+    var.go.pause = function()
+        var.go.pause = nil
         env.current.name = ""
-        trigger.enable_group("goto")
+        trigger.enable_group("go")
         if wait_no_busy("halt") < 0 then
             return -1
         end
@@ -148,12 +148,12 @@ end
 function yell_boat()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ yell_boat ］")
-    var.goto.yell_boat = var.goto.yell_boat or {}
+    var.go.yell_boat = var.go.yell_boat or {}
     local rc,msg = event_locate()
     if rc > 0 then
         return yell_boat_return(rc, msg)
     end
-    var.goto.yell_boat.room_id = msg
+    var.go.yell_boat.room_id = msg
     local l = wait_line("yell boat",
                         30, {StopEval=true}, 20,
                         "^什么\\?$|"..
@@ -162,18 +162,18 @@ function yell_boat()
                         "^你鼓足中气，长啸一声：“船家！”$")
     if l == false then
         return yell_boat_return(-1)
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return yell_boat_return(1, "移动暂停")
     elseif l[0] == "什么?" then
         map_adjust("开放松花江冰面")
         if env.current.name == "船厂" then
-            var.goto.path[1508].next = 3036
-            var.goto.path[3036] = {step = "east", last = 1508, next = 1507}
-            var.goto.path[1507] = {step = "east", last = 3036, next = 1506}
+            var.go.path[1508].next = 3036
+            var.go.path[3036] = {step = "east", last = 1508, next = 1507}
+            var.go.path[1507] = {step = "east", last = 3036, next = 1506}
         else
-            var.goto.path[1507].next = 3036
-            var.goto.path[3036] = {step = "west", last = 1507, next = 1508}
-            var.goto.path[1508] = {step = "west", last = 3036, next = 1485}
+            var.go.path[1507].next = 3036
+            var.go.path[3036] = {step = "west", last = 1507, next = 1508}
+            var.go.path[1508] = {step = "west", last = 3036, next = 1485}
         end
         return yell_boat_return(walk_ice())
     else
@@ -184,7 +184,7 @@ function yell_boat()
                       "^只听得(?:江|湖)面(?:上|不远处)隐隐传来：“别急嘛，这儿正忙着呐……”$")
         if l == false then
             return yell_boat_return(-1)
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return yell_boat_return(1, "移动暂停")
         elseif string.match(l[0], "正忙着") or string.match(l[0], "请稍候") then
             rc,msg = yell_boat_wait()
@@ -202,7 +202,7 @@ function yell_boat()
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return yell_boat_return(-1)
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return yell_boat_return(1, "移动暂停")
         elseif l[0] == "什么?" then
             return yell_boat()
@@ -210,7 +210,7 @@ function yell_boat()
            if wait_line(nil, 30, nil, 20, "^> $") == false then
                 return yell_boat_return(-1)
            end
-           env.current.id = {var.goto.path[var.goto.yell_boat.room_id].next}
+           env.current.id = {var.go.path[var.go.yell_boat.room_id].next}
            return yell_boat_return(0)
         end
     end
@@ -219,10 +219,10 @@ end
 function yell_boat_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ yell_boat_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
-    if var.goto.yell_boat == nil then
+    if var.go.yell_boat == nil then
         return rc,msg
     end
-    var.goto.yell_boat = nil
+    var.go.yell_boat = nil
     return rc,msg
 end
 
@@ -230,29 +230,29 @@ function yell_boat_wait()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ yell_boat_wait ］")
     local l
-    if env.current.name == "汉水南岸" and var.goto.room_ids[var.goto.index] ~= 1964 then
-        var.goto.path[1048] = {step = "northwest", last = 1049, next = 1965}
-        var.goto.path[1965] = {step = "yell boat;enter", last = 1048, next = 1528}
-        if var.goto.path[1528] == nil then
-            var.goto.path[1528] = {step = "out", last = 1965, next = 1527}
+    if env.current.name == "汉水南岸" and var.go.room_ids[var.go.index] ~= 1964 then
+        var.go.path[1048] = {step = "northwest", last = 1049, next = 1965}
+        var.go.path[1965] = {step = "yell boat;enter", last = 1048, next = 1528}
+        if var.go.path[1528] == nil then
+            var.go.path[1528] = {step = "out", last = 1965, next = 1527}
         else
-            var.goto.path[1528].step = "out"
-            var.goto.path[1528].last = 1965 
+            var.go.path[1528].step = "out"
+            var.go.path[1528].last = 1965 
         end
-        if var.goto.path[1528].next == 1527 then
-            if var.goto.path[1527] == nil then
-                var.goto.path[1527] = {step = "northeast", last = 1528, next = 1526}
+        if var.go.path[1528].next == 1527 then
+            if var.go.path[1527] == nil then
+                var.go.path[1527] = {step = "northeast", last = 1528, next = 1526}
             else
-                var.goto.path[1527].step = "northeast"
-                var.goto.path[1527].last = 1528
+                var.go.path[1527].step = "northeast"
+                var.go.path[1527].last = 1528
             end
         end
-        if var.goto.path[1527].next == 1526 then
-            if var.goto.path[1526] == nil then
-                var.goto.path[1526] = {step = "east", last = 1527, next = 1525}
+        if var.go.path[1527].next == 1526 then
+            if var.go.path[1526] == nil then
+                var.go.path[1526] = {step = "east", last = 1527, next = 1525}
             else
-                var.goto.path[1526].step = "east"
-                var.goto.path[1526].last = 1527
+                var.go.path[1526].step = "east"
+                var.go.path[1526].last = 1527
             end
         end
         l = wait_line("northwest",
@@ -264,29 +264,29 @@ function yell_boat_wait()
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             if wait_line(nil, 30, nil, 20, "^> $") == false then
                 return -1
             end
-            var.goto.yell_boat.room_id = 1048
+            var.go.yell_boat.room_id = 1048
         end
-    elseif env.current.name == "汉水北岸" and var.goto.room_ids[var.goto.index] ~= 1964 then
-        var.goto.path[1528] = {step = "southwest", last = 1527, next = 1965}
-        var.goto.path[1965] = {step = "yell boat;enter", last = 1528, next = 1048}
-        if var.goto.path[1048] == nil then
-            var.goto.path[1048] = {step = "out", last = 1965, next = 1049}
+    elseif env.current.name == "汉水北岸" and var.go.room_ids[var.go.index] ~= 1964 then
+        var.go.path[1528] = {step = "southwest", last = 1527, next = 1965}
+        var.go.path[1965] = {step = "yell boat;enter", last = 1528, next = 1048}
+        if var.go.path[1048] == nil then
+            var.go.path[1048] = {step = "out", last = 1965, next = 1049}
         else
-            var.goto.path[1049].step = "out"
-            var.goto.path[1049].last = 1965
+            var.go.path[1049].step = "out"
+            var.go.path[1049].last = 1965
         end
-        if var.goto.path[1048].next == 1049 then
-            if var.goto.path[1049] == nil then
-                var.goto.path[1049] = {step = "southeast", last = 1048, next = 1050}
+        if var.go.path[1048].next == 1049 then
+            if var.go.path[1049] == nil then
+                var.go.path[1049] = {step = "southeast", last = 1048, next = 1050}
             else
-                var.goto.path[1049].step = "southeast"
-                var.goto.path[1049].last = 1048
+                var.go.path[1049].step = "southeast"
+                var.go.path[1049].last = 1048
             end
         end
         l = wait_line("west;southwest",
@@ -298,37 +298,37 @@ function yell_boat_wait()
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             if wait_line(nil, 30, nil, 20, "^> $") == false then
                 return -1
             end
-            var.goto.yell_boat.room_id = 1528
+            var.go.yell_boat.room_id = 1528
         end
-    elseif set.last(env.current.id) == 1048 and var.goto.room_ids[var.goto.index] ~= 1965 then
-        if var.goto.path[1049] == nil then
-            var.goto.path[1049] = {step = "southeast", last = 1048, next = 1964}
+    elseif set.last(env.current.id) == 1048 and var.go.room_ids[var.go.index] ~= 1965 then
+        if var.go.path[1049] == nil then
+            var.go.path[1049] = {step = "southeast", last = 1048, next = 1964}
         else
-            var.goto.path[1049].next = 1964
+            var.go.path[1049].next = 1964
         end
-        var.goto.path[1964] = {step = "yell boat;enter", last = 1049, next = 1526}
-        if var.goto.path[1526] == nil then
-            var.goto.path[1526] = {step = "out", last = 1964, next = 1527}
+        var.go.path[1964] = {step = "yell boat;enter", last = 1049, next = 1526}
+        if var.go.path[1526] == nil then
+            var.go.path[1526] = {step = "out", last = 1964, next = 1527}
         else
-            var.goto.path[1526].step = "out"
-            var.goto.path[1526].last = 1964
+            var.go.path[1526].step = "out"
+            var.go.path[1526].last = 1964
         end
-        if var.goto.path[1526].next == 1527 then
-            if var.goto.path[1527] == nil then
-                var.goto.path[1527] = {step = "west", last = 1526, next = 1528}
+        if var.go.path[1526].next == 1527 then
+            if var.go.path[1527] == nil then
+                var.go.path[1527] = {step = "west", last = 1526, next = 1528}
             else
-                var.goto.path[1527].step = "west"
-                var.goto.path[1527].last = 1526
+                var.go.path[1527].step = "west"
+                var.go.path[1527].last = 1526
             end
         end
-        if var.goto.path[1527].next == 1528 then
-            var.goto.path[1528] = {step = "southwest", last = 1527}
+        if var.go.path[1527].next == 1528 then
+            var.go.path[1528] = {step = "southwest", last = 1527}
         end
         l = wait_line("southeast",
                       30, {StopEval=true}, 20,
@@ -339,29 +339,29 @@ function yell_boat_wait()
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             if wait_line(nil, 30, nil, 20, "^> $") == false then
                 return -1
             end
-            var.goto.yell_boat.room_id = 1049
+            var.go.yell_boat.room_id = 1049
         end
-    elseif set.last(env.current.id) == 1528 and var.goto.room_ids[var.goto.index] ~= 1965 then
-        if var.goto.path[1526] == nil then
-            var.goto.path[1526] = {step = "east", last = 1527, next = 1964}
+    elseif set.last(env.current.id) == 1528 and var.go.room_ids[var.go.index] ~= 1965 then
+        if var.go.path[1526] == nil then
+            var.go.path[1526] = {step = "east", last = 1527, next = 1964}
         else
-            var.goto.path[1526].next = 1964
+            var.go.path[1526].next = 1964
         end
-        var.goto.path[1964] = {step = "yell boat;enter", last = 1526, next = 1049}
-        if var.goto.path[1049] == nil then
-            var.goto.path[1049] = {step = "out", last = 1964, next = 1048}
+        var.go.path[1964] = {step = "yell boat;enter", last = 1526, next = 1049}
+        if var.go.path[1049] == nil then
+            var.go.path[1049] = {step = "out", last = 1964, next = 1048}
         else
-            var.goto.path[1049].step = "out"
-            var.goto.path[1049].last = 1964
+            var.go.path[1049].step = "out"
+            var.go.path[1049].last = 1964
         end
-        if var.goto.path[1049].next == 1048 then
-            var.goto.path[1048] = {step = "northwest", last = 1049}
+        if var.go.path[1049].next == 1048 then
+            var.go.path[1048] = {step = "northwest", last = 1049}
         end
         l = wait_line("northeast;east",
                       30, {StopEval=true}, 20,
@@ -372,16 +372,16 @@ function yell_boat_wait()
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             if wait_line(nil, 30, nil, 20, "^> $") == false then
                 return -1
             end
-            var.goto.yell_boat.room_id = 1526
+            var.go.yell_boat.room_id = 1526
         end
     else
-        var.goto.pause = true
+        var.go.pause = true
         l = wait_line(nil,
                       1, {StopEval=true}, 20,
                       "^你目前还没有任何为 移动暂停 的变量设定。$|"..
@@ -389,17 +389,17 @@ function yell_boat_wait()
                       "^你已经精疲力尽，动弹不得。$|"..
                       "^鬼门关 - $|"..
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             return yell_boat()
         end
     end
-    env.current.id = { var.goto.yell_boat.room_id }
-    if var.goto.pause ~= nil then
+    env.current.id = { var.go.yell_boat.room_id }
+    if var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     l = wait_line("yell boat",
@@ -412,20 +412,20 @@ function yell_boat_wait()
                   "^只听得江面上隐隐传来：“别急嘛，这儿正忙着呐……”$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif string.match(l[2][0], "正忙着") then
-        var.goto.pause = true
+        var.go.pause = true
         l = wait_line(nil,
                       1, {StopEval=true}, 20,
                       "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                       "^你的眼前一黑，接著什么也不知道了....$|"..
                       "^鬼门关 - $|"..
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             return yell_boat()
@@ -445,20 +445,20 @@ function knock_lou()
                         "^吊篮正在运转过程中，请稍候。$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[2][0] == "吊篮正在运转过程中，请稍候。" then
-        var.goto.pause = true
+        var.go.pause = true
         l = wait_line(nil,
                       1, {StopEval=true}, 20,
                       "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                       "^你的眼前一黑，接著什么也不知道了....$|"..
                       "^鬼门关 - $|"..
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             return knock_lou()
@@ -473,7 +473,7 @@ function knock_lou()
                   "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     else
        if wait_line(nil, 30, nil, nil, "^> $") == false then
@@ -488,7 +488,7 @@ function leave_transport()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ leave_transport ］")
     local rc,msg = event_locate()
-    var.goto.pause = true
+    var.go.pause = true
     local l = wait_line(nil,
                         180, {StopEval=true}, 20,
                         "^你目前还没有任何为 移动暂停 的变量设定。$|"..
@@ -501,12 +501,12 @@ function leave_transport()
                         "^你的眼前一黑，接著什么也不知道了....$|"..
                         "^鬼门关 - $|"..
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-    if var.goto.pause == true then
-        var.goto.pause = nil
+    if var.go.pause == true then
+        var.go.pause = nil
     end
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     l = wait_line("out",
@@ -518,16 +518,16 @@ function leave_transport()
                   "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     else
        if wait_line(nil, 30, nil, nil, "^> $") == false then
             return -1
        end
     end
-    if var.goto.path ~= nil then
+    if var.go.path ~= nil then
         if rc == 0 then
-            env.current.id = {var.goto.path[msg].next}
+            env.current.id = {var.go.path[msg].next}
         else
             return 1,"移动调整"
         end
@@ -542,7 +542,7 @@ function murong()
     if rc > 0 then
         return rc,msg
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, nil, 20,
                         "^穷光蛋，一边呆着去！$|"..
                         "^你把钱交给船家，船家领你上了一条小舟。$|"..
@@ -551,7 +551,7 @@ function murong()
                         "^(?:却见|)你\\S+运起斗转星移使用慕容身法一个纵身便往水面飞去。$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     if l[0] == "穷光蛋，一边呆着去！" then
@@ -567,7 +567,7 @@ function murong()
         end
         global.flood = 0
     end
-    env.current.id = {var.goto.path[msg].next}
+    env.current.id = {var.go.path[msg].next}
     return 0
 end
 
@@ -601,13 +601,13 @@ function jump_boat()
             end
         end
     end
-    if var.goto.pause ~= nil then
+    if var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     if wait_line("jump boat", 30, nil, 20, "^你屏气凝神，稳稳地站落在小舟之上。$") == false then
         return -1
     end
-    env.current.id = {var.goto.path[msg].next}
+    env.current.id = {var.go.path[msg].next}
     return 0
 end
 
@@ -628,7 +628,7 @@ function walk_ice()
             return -1
         end
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, {StopEval=true}, 20,
                         "^冰面 - |"..
                         "^松花江化冻了，你喊\\(yell\\)条船过江吧。$|"..
@@ -638,24 +638,24 @@ function walk_ice()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "松花江化冻了，你喊(yell)条船过江吧。" then
         map_adjust("松花江", "渡船")
         if calibration["过河"][1] == "大圣" then
-            var.goto.path[var.goto.path[3036].last].next = var.goto.path[3036].next
-            if var.goto.path[3036].next ~= nil then
-                var.goto.path[var.goto.path[3036].next].last = var.goto.path[3036].last
-                var.goto.path[var.goto.path[3036].next].step = "yell 大圣"
+            var.go.path[var.go.path[3036].last].next = var.go.path[3036].next
+            if var.go.path[3036].next ~= nil then
+                var.go.path[var.go.path[3036].next].last = var.go.path[3036].last
+                var.go.path[var.go.path[3036].next].step = "yell 大圣"
             end
             return 0
         else
-            var.goto.path[var.goto.path[3036].last].next = 1963
-            var.goto.path[1963] = var.goto.path[3036]
-            var.goto.path[1963].step = "yell boat;enter"
-            if var.goto.path[3036].next ~= nil then
-                var.goto.path[var.goto.path[3036].next].last = 1963
-                var.goto.path[var.goto.path[3036].next].step = "out"
+            var.go.path[var.go.path[3036].last].next = 1963
+            var.go.path[1963] = var.go.path[3036]
+            var.go.path[1963].step = "yell boat;enter"
+            if var.go.path[3036].next ~= nil then
+                var.go.path[var.go.path[3036].next].last = 1963
+                var.go.path[var.go.path[3036].next].step = "out"
             end
             return yell_boat()
         end
@@ -666,7 +666,7 @@ function walk_ice()
         end
     end
     env.current.id = {3036}
-    l = wait_line(var.goto.path[var.goto.path[3036].next].step,
+    l = wait_line(var.go.path[var.go.path[3036].next].step,
                   30, {StopEval=true}, 20,
                   "^(?:船厂|大门坎子) - |"..
                   "^你的眼前一黑，接著什么也不知道了....$|"..
@@ -675,10 +675,10 @@ function walk_ice()
                   "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     else
-        env.current.id = {var.goto.path[3036].next}
+        env.current.id = {var.go.path[3036].next}
         return 0
     end
 end
@@ -718,7 +718,7 @@ function quicksand()
                 if locate() < 0  then
                     return -1
                 end
-                if var.goto.pause ~= nil then
+                if var.go.pause ~= nil then
                     return 1,"移动暂停"
                 else
                     return quicksand()
@@ -731,7 +731,7 @@ function quicksand()
                     if wait_line(v, 30, {StopEval=true}, 20, "爱力生 - ", "> ") == false then
                         return -1
                     end
-                    if var.goto.pause ~= nil then
+                    if var.go.pause ~= nil then
                         return 1,"移动暂停"
                     else
                         env.current.id = {1090}
@@ -750,7 +750,7 @@ function quicksand()
             if locate() < 0  then
                 return -1
             end
-            if var.goto.pause ~= nil then
+            if var.go.pause ~= nil then
                 return 1,"移动暂停"
             else
                 return quicksand()
@@ -798,19 +798,19 @@ local navigation_list = {
 function navigation()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ navigation ］")
-    var.goto.navigation = var.goto.navigation or { phase = 1 }
+    var.go.navigation = var.go.navigation or { phase = 1 }
     local rc,msg = event_locate()
     if rc > 0 then
         return navigation_return(rc, msg)
     end
-    var.goto.navigation.room_id = msg
+    var.go.navigation.room_id = msg
     if env.current.name ~= "海船" then
         rc,msg = navigation_take_ship()
         if rc ~= nil then
             return navigation_return(rc, msg)
         end
     end
-    rc,msg = navigation_drive_ship(navigation_list[map[var.goto.room_ids[var.goto.index]].zone])
+    rc,msg = navigation_drive_ship(navigation_list[map[var.go.room_ids[var.go.index]].zone])
     if rc ~= nil then
         return navigation_return(rc, msg)
     end
@@ -823,24 +823,24 @@ function navigation()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return navigation_return(-1)
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return navigation_return(1, "移动暂停")
     else
        if wait_line(nil, 30, nil, 20, "^> $") == false then
             return navigation_return(-1)
        end
     end
-    env.current.id = {var.goto.path[var.goto.navigation.room_id].next}
+    env.current.id = {var.go.path[var.go.navigation.room_id].next}
     return navigation_return(0)
 end
 
 function navigation_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ navigation_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
-    if var.goto.navigation == nil then
+    if var.go.navigation == nil then
         return rc,msg
     end
-    var.goto.navigation = nil
+    var.go.navigation = nil
     return rc,msg
 end
 
@@ -854,7 +854,7 @@ function navigation_take_ship()
                         "^别叫了，这么大眼睛没看见船？$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     l = wait_line("enter",
@@ -871,17 +871,17 @@ function navigation_take_ship()
         return -1
     elseif l[0] == "这个方向没有出路" or l[0] == "什么?" then
         return navigation()
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "穷光蛋，一边呆着去！" then
         return event_draw_pay(2000)
     else
-        env.current.id = {var.goto.path[var.goto.navigation.room_id].next}
-        var.goto.navigation.room_id = env.current.id[1]
+        env.current.id = {var.go.path[var.go.navigation.room_id].next}
+        var.go.navigation.room_id = env.current.id[1]
     end
-    if var.goto.pause ~= nil then
+    if var.go.pause ~= nil then
         return 1,"移动暂停"
-    elseif var.goto.room_ids[var.goto.index] == var.goto.navigation.room_id then
+    elseif var.go.room_ids[var.go.index] == var.go.navigation.room_id then
         return 0
     end
     if wait_line("start", 30, nil, 20, "^你大喝一声“开船”，于是船便离了岸。$|^船已经出海了。$") == false then
@@ -895,7 +895,7 @@ function navigation_drive_ship(dst)
             "函数［ navigation_drive_ship ］参数："..table.tostring(dst))
     local l
     local coordinate = {x = 0, y = 0}
-    if var.goto.navigation.phase < 4 then
+    if var.go.navigation.phase < 4 then
         l = wait_line("locate",
                       30, nil, 20,
                       "^你现在在((?:舟山|塘沽口|永宁港|安海港))(?:|(?:正|)(\\S+?)约(\\S+?)海哩(?:(\\S+?)约(\\S+?)海哩|))。$|"..
@@ -903,7 +903,7 @@ function navigation_drive_ship(dst)
                       "^船还没开呢。$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         elseif l[0] == "船还没开呢。" then
             if wait_line("start", 30, nil, 20, "^你大喝一声“开船”，于是船便离了岸。$") == false then
@@ -915,12 +915,12 @@ function navigation_drive_ship(dst)
                           "^船夫说：“(\\S+)到啦，上岸吧”。$")
             if l == false then
                 return -1
-            elseif var.goto.pause ~= nil then
+            elseif var.go.pause ~= nil then
                 return 1,"移动暂停"
             end
         end
         if string.match(l[0], "上岸吧") then
-            if navigation_port[l[6]] == map[var.goto.path[var.goto.navigation.room_id].next].zone then
+            if navigation_port[l[6]] == map[var.go.path[var.go.navigation.room_id].next].zone then
                 return
             elseif navigation_port[l[6]] == nil and l[6] == dst.port then
                 return
@@ -949,35 +949,35 @@ function navigation_drive_ship(dst)
             coordinate.y = chs2num(l[5])
         end
     end
-    if var.goto.navigation.phase < 3 then
+    if var.go.navigation.phase < 3 then
         if coordinate.x < 3 and dst.coordinate.x > coordinate.x then
-            var.goto.navigation.nowdir= "go east"
-        elseif var.goto.navigation.phase == 1 and math.abs(dst.coordinate.y - coordinate.y) > dst.range then
+            var.go.navigation.nowdir= "go east"
+        elseif var.go.navigation.phase == 1 and math.abs(dst.coordinate.y - coordinate.y) > dst.range then
             if dst.coordinate.y > coordinate.y then
-                var.goto.navigation.nowdir= "go north"
+                var.go.navigation.nowdir= "go north"
             else
-                var.goto.navigation.nowdir= "go south"
+                var.go.navigation.nowdir= "go south"
             end
         elseif math.abs(dst.coordinate.x - coordinate.x) > dst.range then
-            if var.goto.navigation.phase ==  1 then
-                var.goto.navigation.phase = 2
+            if var.go.navigation.phase ==  1 then
+                var.go.navigation.phase = 2
             end
             if dst.coordinate.x > coordinate.x then
-                var.goto.navigation.nowdir= "go east"
+                var.go.navigation.nowdir= "go east"
             else
-                var.goto.navigation.nowdir= "go west"
+                var.go.navigation.nowdir= "go west"
             end
         else
             if dst.coordinate.x == 0 then
                 dst.range = 0
-                var.goto.navigation.phase = 3
+                var.go.navigation.phase = 3
             else
-                var.goto.navigation.phase = 4
+                var.go.navigation.phase = 4
             end
             return navigation_drive_ship(dst)
         end
-        var.goto.pause = true
-        l = wait_line(var.goto.navigation.nowdir,
+        var.go.pause = true
+        l = wait_line(var.go.navigation.nowdir,
                       3, {StopEval=true}, 20,
                       "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                       "^船夫说：“(\\S+)到啦，上岸吧”。$|"..
@@ -985,14 +985,14 @@ function navigation_drive_ship(dst)
                       "^你的眼前一黑，接著什么也不知道了....$|"..
                       "^鬼门关 - $|"..
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         end
         if l ~= false and l[1] ~= false then
-            if navigation_port[l[1]] == map[var.goto.path[var.goto.navigation.room_id].next].zone then
+            if navigation_port[l[1]] == map[var.go.path[var.go.navigation.room_id].next].zone then
                 return
             elseif navigation_port[l[1]] == nil then
                 if l[1] == dst.port then
@@ -1002,28 +1002,28 @@ function navigation_drive_ship(dst)
             run("start")
         end
     end
-    if var.goto.navigation.phase == 3 then
+    if var.go.navigation.phase == 3 then
         if math.abs(dst.coordinate.x - coordinate.x) < dst.range and math.abs(dst.coordinate.y - coordinate.y) < dst.range then
-            var.goto.navigation.phase = 4
+            var.go.navigation.phase = 4
             return navigation_drive_ship(dst)
         end
         if math.abs(dst.coordinate.x - coordinate.x) > math.abs(dst.coordinate.y - coordinate.y) then
             if dst.coordinate.x > coordinate.x then
-                var.goto.navigation.nowdir= "go east"
+                var.go.navigation.nowdir= "go east"
             else
-                var.goto.navigation.nowdir= "go west"
+                var.go.navigation.nowdir= "go west"
             end
         else
             if dst.coordinate.y > coordinate.y then
-                var.goto.navigation.nowdir= "go north"
-                var.goto.navigation.dir = var.goto.navigation.nowdir
+                var.go.navigation.nowdir= "go north"
+                var.go.navigation.dir = var.go.navigation.nowdir
             elseif dst.coordinate.y < coordinate.y then
-                var.goto.navigation.nowdir= "go south"
-                var.goto.navigation.dir = var.goto.navigation.nowdir
+                var.go.navigation.nowdir= "go south"
+                var.go.navigation.dir = var.go.navigation.nowdir
             end
         end
-        var.goto.pause = true
-        l = wait_line(var.goto.navigation.nowdir,
+        var.go.pause = true
+        l = wait_line(var.go.navigation.nowdir,
                       0.5, {StopEval=true}, 20,
                       "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                       "^船夫说：“(\\S+)到啦，上岸吧”。$|"..
@@ -1031,17 +1031,17 @@ function navigation_drive_ship(dst)
                       "^你的眼前一黑，接著什么也不知道了....$|"..
                       "^鬼门关 - $|"..
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         end
         if l ~= false then
             if l[0] == "船夫说：叹！漂到了一荒岛，还是赶紧离开吧。" then
-                var.goto.navigation.nowdir= var.goto.navigation.dir or "go west"
+                var.go.navigation.nowdir= var.go.navigation.dir or "go west"
             elseif l[1] ~= false then
-                if navigation_port[l[1]] == map[var.goto.path[var.goto.navigation.room_id].next].zone then
+                if navigation_port[l[1]] == map[var.go.path[var.go.navigation.room_id].next].zone then
                     return
                 elseif navigation_port[l[1]] == nil then
                     if l[1] == dst.port then
@@ -1052,7 +1052,7 @@ function navigation_drive_ship(dst)
             end
         end
     end
-    if var.goto.navigation.phase == 4 then
+    if var.go.navigation.phase == 4 then
         l = wait_line("lookout",
                       30, {StopEval=true}, 20,
                       "^船夫说：“(\\S+)到啦，上岸吧”。$|"..
@@ -1063,13 +1063,13 @@ function navigation_drive_ship(dst)
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         elseif l[0] == "你极目远眺，只觉大海茫茫。" then
-            var.goto.navigation.phase = 3
+            var.go.navigation.phase = 3
         else
             if l[2] ~= false then
-                var.goto.pause = true
+                var.go.pause = true
                 l = wait_line("go "..get_desc_dir(string.sub(l[2], 1, 3)),
                               0.5, {StopEval=true}, 20,
                               "^你目前还没有任何为 移动暂停 的变量设定。$|"..
@@ -1078,21 +1078,21 @@ function navigation_drive_ship(dst)
                               "^鬼门关 - $|"..
                               "^一道闪电从天降下，直朝你劈去……结果没打中！$")
             end
-            if var.goto.pause == true then
-                var.goto.pause = nil
+            if var.go.pause == true then
+                var.go.pause = nil
             end
-            if var.goto.pause ~= nil then
+            if var.go.pause ~= nil then
                 return 1,"移动暂停"
             end
             if l ~= false then
-                if navigation_port[l[1]] == map[var.goto.path[var.goto.navigation.room_id].next].zone then
+                if navigation_port[l[1]] == map[var.go.path[var.go.navigation.room_id].next].zone then
                     return
                 elseif navigation_port[l[1]] == nil then
                     if l[1] == dst.port then
                         return
                     end
                 end
-                var.goto.navigation.phase = 3
+                var.go.navigation.phase = 3
                 run("start")
             end
         end
@@ -1108,17 +1108,17 @@ local kill_npc_list = {
 function kill_npc()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ kill_npc ］")
-    var.goto.kill_npc = var.goto.kill_npc or { step = {} }
+    var.go.kill_npc = var.go.kill_npc or { step = {} }
     local rc,msg = event_locate()
     if rc > 0 then
         return kill_npc_return(rc, msg)
     end
-    var.goto.kill_npc.room_id = msg
-    for _,v in ipairs(string.split(var.goto.path[var.goto.path[msg].next].step, ";")) do
+    var.go.kill_npc.room_id = msg
+    for _,v in ipairs(string.split(var.go.path[var.go.path[msg].next].step, ";")) do
         if string.find(v, "kill ") then
-            var.goto.kill_npc.kill = v
+            var.go.kill_npc.kill = v
         else
-            set.append(var.goto.kill_npc.step, v)
+            set.append(var.go.kill_npc.step, v)
         end
     end
     return kill_npc_return(kill_npc_exec())
@@ -1127,17 +1127,17 @@ end
 function kill_npc_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ kill_npc_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
-    if var.goto.kill_npc == nil then
+    if var.go.kill_npc == nil then
         return rc,msg
     end
-    var.goto.kill_npc = nil
+    var.go.kill_npc = nil
     return rc,msg
 end
 
 function kill_npc_exec()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ kill_npc_exec ］")
-    local l = wait_line(set.concat(var.goto.kill_npc.step, ";"),
+    local l = wait_line(set.concat(var.go.kill_npc.step, ";"),
                         30, {StopEval=true}, 20,
                         "^(\\S+)\\s+- |"..
                         "^这个方向没有出路。$|"..
@@ -1207,33 +1207,33 @@ function kill_npc_exec()
     if l == false then
         return -1
     elseif l[1] ~= false then
-        if var.goto.kill_npc.power ~= nil then
-            run("jiali "..tostring(var.goto.kill_npc.power))
+        if var.go.kill_npc.power ~= nil then
+            run("jiali "..tostring(var.go.kill_npc.power))
         end
-        if var.goto.kill_npc.energy ~= nil then
-            run("jiajin "..tostring(var.goto.kill_npc.energy))
+        if var.go.kill_npc.energy ~= nil then
+            run("jiajin "..tostring(var.go.kill_npc.energy))
         end
-        env.current.id = { var.goto.path[var.goto.kill_npc.room_id].next }
+        env.current.id = { var.go.path[var.go.kill_npc.room_id].next }
         return 0
     elseif l[0] == "这个方向没有出路。" or l[0] == "什么?" then
         env.current.id = {}
         return 1,"移动调整"
     else
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         end
         if state.power > 0 then
-            var.goto.kill_npc.power = state.power
+            var.go.kill_npc.power = state.power
         end
         if state.energy > 1 then
-            var.goto.kill_npc.energy = state.energy
+            var.go.kill_npc.energy = state.energy
         end
         jia_min()
         if l[2] ~= false then
-            var.goto.kill_npc.kill = kill_npc_list[l[2]]
+            var.go.kill_npc.kill = kill_npc_list[l[2]]
         end
-        var.goto.pause = true
-        l = wait_line(var.goto.kill_npc.kill,
+        var.go.pause = true
+        l = wait_line(var.go.kill_npc.kill,
                       180, {StopEval=true}, 20,
                       "^这里没有这个人。$|"..
                       "^(?:蒙面女郎|邱山风|司徒横|婢女|壮汉|张志光|皇宫卫士|公孙止|樊一翁|银甲侍卫|殷锦|一品堂武士|校尉|小兰|西华子|无根道人|日月神教卫士|谭处端|天鹰教守卫|说不得|石嫂|清乐比丘|清观比丘|蒙古军官|(?:男|女)教众|凌虚道长|王夫人|静心|戒律僧|江百胜|简长老|家丁|胡老爷|黄衫女子|公冶乾|葛伦布|宁中则|陆大有|岳灵姗|梁发|劳德诺|施戴子|高根明|都大锦|狮吼子|采花子|帮众|张松溪|丫鬟|慧空尊者|虚通|虚明|欧阳锋|一品堂武士|皇宫卫士|清观比丘)倒在地上，挣扎了几下就死了。$|"..
@@ -1241,13 +1241,13 @@ function kill_npc_exec()
                       "^你的眼前一黑，接著什么也不知道了....$|"..
                       "^鬼门关 - $|"..
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
         if l == false then
             return -1
         end
-        local rc,msg = event_goto_pause(var.goto.kill_npc)
+        local rc,msg = event_go_pause(var.go.kill_npc)
         if rc > 0 then
             return rc,msg
         end
@@ -1265,17 +1265,17 @@ local hit_npc_list = {
 function hit_npc()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ hit_npc ］")
-    var.goto.hit_npc = var.goto.hit_npc or { step = {} }
+    var.go.hit_npc = var.go.hit_npc or { step = {} }
     local rc,msg = event_locate()
     if rc > 0 then
         return hit_npc_return(rc, msg)
     end
-    var.goto.hit_npc.room_id = msg
-    for _,v in ipairs(string.split(var.goto.path[var.goto.path[var.goto.hit_npc.room_id].next].step, ";")) do
+    var.go.hit_npc.room_id = msg
+    for _,v in ipairs(string.split(var.go.path[var.go.path[var.go.hit_npc.room_id].next].step, ";")) do
         if string.find(v, "hit ") then
-            var.goto.hit_npc.hit = v
+            var.go.hit_npc.hit = v
         else
-            set.append(var.goto.hit_npc.step, v)
+            set.append(var.go.hit_npc.step, v)
         end
     end
     return hit_npc_return(hit_npc_exec())
@@ -1284,17 +1284,17 @@ end
 function hit_npc_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ hit_npc_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
-    if var.goto.hit_npc == nil then
+    if var.go.hit_npc == nil then
         return rc,msg
     end
-    var.goto.hit_npc = nil
+    var.go.hit_npc = nil
     return rc,msg
 end
 
 function hit_npc_exec()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ hit_npc_exec ］")
-    local l = wait_line(set.concat(var.goto.hit_npc.step, ";"),
+    local l = wait_line(set.concat(var.go.hit_npc.step, ";"),
                         30, {StopEval=true}, 20,
                         "^(\\S+)\\s+- |"..
                         "^这个方向没有出路。$|"..
@@ -1317,33 +1317,33 @@ function hit_npc_exec()
     if l == false then
         return -1
     elseif l[1] ~= false then
-        if var.goto.hit_npc.power ~= nil then
-            run("jiali "..tostring(var.goto.hit_npc.power))
+        if var.go.hit_npc.power ~= nil then
+            run("jiali "..tostring(var.go.hit_npc.power))
         end
-        if var.goto.hit_npc.energy ~= nil then
-            run("jiajin "..tostring(var.goto.hit_npc.energy))
+        if var.go.hit_npc.energy ~= nil then
+            run("jiajin "..tostring(var.go.hit_npc.energy))
         end
-        env.current.id = { var.goto.path[var.goto.hit_npc.room_id].next }
+        env.current.id = { var.go.path[var.go.hit_npc.room_id].next }
         return 0
     elseif l[0] == "这个方向没有出路。" or l[0] == "什么?" then
         env.current.id = {}
         return 1,"移动调整"
     else
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         end
         if state.power > 0 then
-            var.goto.hit_npc.power = state.power
+            var.go.hit_npc.power = state.power
         end
         if state.energy > 1 then
-            var.goto.hit_npc.energy = state.energy
+            var.go.hit_npc.energy = state.energy
         end
         jia_min()
         if l[2] ~= false then
-            var.goto.hit_npc.hit = hit_npc_list[l[2]]
+            var.go.hit_npc.hit = hit_npc_list[l[2]]
         end
-        var.goto.pause = true
-        l = wait_line(var.goto.hit_npc.hit,
+        var.go.pause = true
+        l = wait_line(var.go.hit_npc.hit,
                       180, {StopEval=true}, 20,
                       "^你想攻击谁？$|"..
                       "^你必须等此人醒来才能进行切磋比试。$|"..
@@ -1353,13 +1353,13 @@ function hit_npc_exec()
                       "^你的眼前一黑，接著什么也不知道了....$|"..
                       "^鬼门关 - $|"..
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
         if l == false then
             return -1
         end
-        local rc,msg = event_goto_pause(var.goto.hit_npc)
+        local rc,msg = event_go_pause(var.go.hit_npc)
         if rc > 0 then
             return rc,msg
         end
@@ -1368,7 +1368,7 @@ function hit_npc_exec()
         elseif string.match(l[0], "几下就死了") then
             return 0
         else
-            local npc = string.gsub(var.goto.hit_npc.hit, "hit ", "")
+            local npc = string.gsub(var.go.hit_npc.hit, "hit ", "")
             rc,msg = hit_npc_carry_block(npc)
             if rc == 1 then
                 return hit_npc_exec()
@@ -1395,13 +1395,13 @@ function hit_npc_carry_block(npc)
         return -1
     elseif l[0] == "对方还没有完全昏迷，先等等吧。" or 
            l[0] == "你上一个动作还没有完成！" then
-        rc,msg = event_goto_pause(var.goto.hit_npc)
+        rc,msg = event_go_pause(var.go.hit_npc)
         if rc > 0 then
             return rc,msg
         end
         wait(0.1)
     elseif string.find(l[0], "对你而言太重") then
-        rc,msg = event_goto_pause(var.goto.hit_npc)
+        rc,msg = event_go_pause(var.go.hit_npc)
         if rc > 0 then
             return rc,msg
         end
@@ -1416,7 +1416,7 @@ function hit_npc_carry_block(npc)
         if l == false then
             return -1
         elseif l[0] == "光天化日的想抢劫啊？" then
-            rc,msg = event_goto_pause(var.goto.hit_npc)
+            rc,msg = event_go_pause(var.go.hit_npc)
             if rc > 0 then
                 return rc,msg
             end
@@ -1431,13 +1431,13 @@ function hit_npc_carry_block(npc)
             if drop(compare_carryon(inventory, carryon.inventory)) < 0  then
                 return -1
             end
-            rc,msg = event_goto_pause(var.goto.hit_npc)
+            rc,msg = event_go_pause(var.go.hit_npc)
             if rc > 0 then
                 return rc,msg
             end
         end
     else
-        rc,msg = event_goto_pause(var.goto.hit_npc)
+        rc,msg = event_go_pause(var.go.hit_npc)
         if rc > 0 then
             return rc,msg
         end
@@ -1464,26 +1464,26 @@ function hit_npc_drop_block(npc)
         return -1
     end
     if state ~= nil then
-        if var.goto.hit_npc.power ~= nil then
-            run("jiali "..tostring(var.goto.hit_npc.power))
+        if var.go.hit_npc.power ~= nil then
+            run("jiali "..tostring(var.go.hit_npc.power))
         end
-        if var.goto.hit_npc.energy ~= nil then
-            run("jiajin "..tostring(var.goto.hit_npc.energy))
+        if var.go.hit_npc.energy ~= nil then
+            run("jiajin "..tostring(var.go.hit_npc.energy))
         end
     end
-    if var.goto.pause ~= nil then
+    if var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     if rc ~= 0 then
         return 1,"移动调整"
     else
-        env.current.id = {map[var.goto.hit_npc.room_id].esc}
-        if var.goto.path[env.current.id[1]] == nil then
+        env.current.id = {map[var.go.hit_npc.room_id].esc}
+        if var.go.path[env.current.id[1]] == nil then
             for k,v in pairs(map[env.current.id[1]].links) do
-                if v == var.goto.hit_npc.room_id then
-                    var.goto.path[var.goto.hit_npc.room_id].step = k
-                    var.goto.path[var.goto.hit_npc.room_id].last = env.current.id[1]
-                    var.goto.path[env.current.id[1]] = {step = "", next = var.goto.hit_npc.room_id}
+                if v == var.go.hit_npc.room_id then
+                    var.go.path[var.go.hit_npc.room_id].step = k
+                    var.go.path[var.go.hit_npc.room_id].last = env.current.id[1]
+                    var.go.path[env.current.id[1]] = {step = "", next = var.go.hit_npc.room_id}
                     break
                 end
             end
@@ -1499,7 +1499,7 @@ function open_door()
     if rc > 0 then
         return rc,msg
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, {StopEval=true}, 20,
                         "^(\\S+)\\s+- |"..
                         "^这个方向没有出路。$|"..
@@ -1512,10 +1512,10 @@ function open_door()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[1] ~= false then
-        env.current.id = {var.goto.path[msg].next}
+        env.current.id = {var.go.path[msg].next}
         return 0
     elseif l[0] == "壮年僧人说道：这位施主请回罢，本寺不接待俗人。" or 
            l[0] == "壮年僧人说道：对不起，俗家弟子不得入寺修行。" then
@@ -1532,28 +1532,28 @@ function busy()
     if rc > 0 then
         return rc,msg
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, nil, 20,
                         "^\\S+\\s+- |"..
                         "^就你这点功夫还想飞檐走壁？$")
     if l == false then
         return -1
     elseif l[0] == "就你这点功夫还想飞檐走壁？" then
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             map_adjust("北京城墙", "关闭")
             return 1,"移动调整"
         end
     end
-    if var.goto.path[var.goto.path[msg].next].step == "jump wall" then
+    if var.go.path[var.go.path[msg].next].step == "jump wall" then
         wait(3)
         global.flood = 0
     end
     if wait_no_busy() < 0 then
         return -1
     end
-    env.current.id = {var.goto.path[msg].next}
+    env.current.id = {var.go.path[msg].next}
     return 0
 end
 
@@ -1571,7 +1571,7 @@ function fall()
     if rc > 0 then
         return rc,msg
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, {StopEval=true}, 20,
                         "^(\\S+)\\s+- |"..
                         "^你一不小心脚下踏了个空，... 啊...！$|"..
@@ -1585,10 +1585,10 @@ function fall()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[1] ~= false then
-        env.current.id = {var.goto.path[msg].next}
+        env.current.id = {var.go.path[msg].next}
     else
         env.current.id = {fall_land[msg]}
     end
@@ -1602,15 +1602,15 @@ function xueshan()
         return 1,"重新定位"
     end
     if global.flood > config.flood then
-        var.goto.pause = true
+        var.go.pause = true
         local l = wait_line(nil,
                             1, {StopEval=true}, 20,
                             "^你目前还没有任何为 移动暂停 的变量设定。$|"..
                             "^你的眼前一黑，接著什么也不知道了....$|"..
                             "^鬼门关 - $|"..
                             "^一道闪电从天降下，直朝你劈去……结果没打中！$")
-        if var.goto.pause == true then
-            var.goto.pause = nil
+        if var.go.pause == true then
+            var.go.pause = nil
         end
         if l == false then
             global.flood = 0
@@ -1627,7 +1627,7 @@ function xueshan()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "大雪山口 - " then
         env.current.id = { 1984 }
@@ -1642,7 +1642,7 @@ function xueshan()
                       "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         end
         if wait_line(nil, 30, nil, 20, "^> $") == false then
@@ -1660,7 +1660,7 @@ function huashan_cliff()
     if rc > 0 then
         return rc,msg
     end
-    local step = string.split(var.goto.path[var.goto.path[msg].next].step, ";")
+    local step = string.split(var.go.path[var.go.path[msg].next].step, ";")
     local l = wait_line(step[1],
                         30, {StopEval=true}, 20,
                         "^什么\\?$|"..
@@ -1673,24 +1673,24 @@ function huashan_cliff()
     elseif l[0] == "什么?" or 
            l[0] == "你拿什么来绑树啊？" then
         rc,msg = event_draw_pay(30)
-        if rc > 0 and var.goto.event == nil then
+        if rc > 0 and var.go.event == nil then
             return rc,msg
         end
-        if var.goto.pause == nil then
-            local var_goto = var.goto
-            var.goto = {room_ids = {615}, index = 1, thread = var_goto.thread, event = true, report = true}
-            if goto_move() ~= 0 then
+        if var.go.pause == nil then
+            local var_go = var.go
+            var.go = {room_ids = {615}, index = 1, thread = var_go.thread, event = true, report = true}
+            if go_move() ~= 0 then
                 return -1
             else
-                if var.goto.event == true then
-                    var_goto.pause = var.goto.pause
-                    var.goto = var_goto
+                if var.go.event == true then
+                    var_go.pause = var.go.pause
+                    var.go = var_go
                 else
-                    var.goto.event = nil
+                    var.go.event = nil
                     return 1,"移动调整"
                 end
             end
-            if var.goto.pause == nil then
+            if var.go.pause == nil then
                 if buy({["绳子:sheng zi"] = 1}) ~= 0 then
                     return -1
                 end
@@ -1708,7 +1708,7 @@ function huashan_cliff()
             return -1
         end
     end
-    env.current.id = { var.goto.path[msg].next }
+    env.current.id = { var.go.path[msg].next }
     return 0
 end
 
@@ -1719,14 +1719,14 @@ function quanzhen_cliff()
     if rc > 0 then
         return rc,msg
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, {StopEval=true}, 20,
                         "^悬崖|^崖顶|"..
                         "^你还在忙着呢。$"..
                         "^四面光溜溜的崖陡如壁，你轻功不够，怎么也爬不上去。$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "四面光溜溜的崖陡如壁，你轻功不够，怎么也爬不上去。" then
         map_adjust("全真悬崖", "关闭")
@@ -1736,7 +1736,7 @@ function quanzhen_cliff()
         if wait_no_busy() < 0 then
             return -1
         end
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         end
         return quanzhen_cliff()
@@ -1748,8 +1748,8 @@ function quanzhen_cliff()
         if locate() < 0  then
             return -1
         end
-        if set.has(env.current.id, var.goto.path[msg].next) then
-            env.current.id = { var.goto.path[msg].next }
+        if set.has(env.current.id, var.go.path[msg].next) then
+            env.current.id = { var.go.path[msg].next }
             return 0
         else
             return 1,"移动调整"
@@ -1770,7 +1770,7 @@ function beijing_gate()
     if rc > 0 then
         return rc,msg
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, {StopEval=true}, 20,
                         "^(\\S+)\\s+- |"..
                         "^这个方向没有出路。$|"..
@@ -1782,7 +1782,7 @@ function beijing_gate()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[1] == false then
         if l[0] == "什么?" or l[0] == "这个方向没有出路。" then
@@ -1810,7 +1810,7 @@ function beijing_gate()
     if wait_line(nil, 30, nil, 20, "^> $") == false then
         return -1
     end
-    env.current.id = { var.goto.path[msg].next }
+    env.current.id = { var.go.path[msg].next }
     return 0
 end
 
@@ -1821,7 +1821,7 @@ function quanzhou_gate()
     if rc > 0 then
         return rc,msg
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, {StopEval=true}, 20,
                         "^\\S+\\s+- |"..
                         "^这个方向没有出路。$|"..
@@ -1832,7 +1832,7 @@ function quanzhou_gate()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "什么?" or l[0] == "这个方向没有出路。" then
         map_adjust("泉州新门", "关闭")
@@ -1841,7 +1841,7 @@ function quanzhou_gate()
         if wait_line(nil, 30, nil, 20, "^> $") == false then
             return -1
         else
-            env.current.id = {var.goto.path[msg].next}
+            env.current.id = {var.go.path[msg].next}
             return 0
         end
     end
@@ -1870,7 +1870,7 @@ function emei_99guai()
                             "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         elseif wait_line(nil, 30, nil, 20, "^> $") == false then
             return -1
@@ -1880,7 +1880,7 @@ function emei_99guai()
         end
         return 1,"移动调整"
     else
-        local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+        local l = wait_line(var.go.path[var.go.path[msg].next].step,
                             30, {StopEval=true}, 20,
                             "^\\S+\\s+- |"..
                             "^你的眼前一黑，接著什么也不知道了....$|"..
@@ -1889,7 +1889,7 @@ function emei_99guai()
                             "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         end
         l = wait_line("eat busy",
@@ -1918,7 +1918,7 @@ function emei_99guai()
                           "^一道闪电从天降下，直朝你劈去……结果没打中！$")
             if l == false then
                 return -1
-            elseif var.goto.pause ~= nil then
+            elseif var.go.pause ~= nil then
                 return 1,"移动暂停"
             elseif wait_line(nil, 30, nil, 20, "^> $") == false then
                 return -1
@@ -1927,10 +1927,10 @@ function emei_99guai()
                 return -1
             end
             return 1,"移动调整"
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         else
-            env.current.id = { var.goto.path[msg].next }
+            env.current.id = { var.go.path[msg].next }
             return 0
         end
     end
@@ -1957,7 +1957,7 @@ function nanjiang_desert()
             end
         end
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, {StopEval=true}, 20,
                         "^\\S+\\s+- |"..
                         "^你已经感到不行了，冥冥中你觉得有人把你抬到天山脚下。$|"..
@@ -1967,7 +1967,7 @@ function nanjiang_desert()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "你已经感到不行了，冥冥中你觉得有人把你抬到天山脚下。" then
         if wait_line(nil, 30, {StopEval=true}, 20, "^你的眼前一黑，接著什么也不知道了....$") == false then
@@ -1979,7 +1979,7 @@ function nanjiang_desert()
     if wait_line(nil, 30, nil, 20, "^> $") == false then
         return -1
     else
-        env.current.id = { var.goto.path[msg].next }
+        env.current.id = { var.go.path[msg].next }
         return 0
     end
 end
@@ -2001,7 +2001,7 @@ function kitchen()
     if rc > 0 then
         return rc,msg
     end
-    local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+    local l = wait_line(var.go.path[var.go.path[msg].next].step,
                         30, {StopEval=true}, 20,
                         "^(\\S+)\\s+- |"..
                         "^老师傅拦着你说：你想把食物拿去哪里？东西放下再走。$|"..
@@ -2018,10 +2018,10 @@ function kitchen()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[1] ~= false then
-        env.current.id = { var.goto.path[msg].next }
+        env.current.id = { var.go.path[msg].next }
         return 0
     else
         if run_i() < 0 then
@@ -2038,7 +2038,7 @@ function kitchen()
                 return -1
             end
         end
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         else
             return kitchen()
@@ -2057,12 +2057,12 @@ local dynamic_exit_exclude = {
 function dynamic_exit()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ dynamic_exit ］")
-    var.goto.dynamic_exit = var.goto.dynamic_exit or {}
+    var.go.dynamic_exit = var.go.dynamic_exit or {}
     local rc,msg = event_locate()
     if rc > 0 then
         return dynamic_exit_return(rc, msg)
     end
-    var.goto.dynamic_exit.room_id = msg
+    var.go.dynamic_exit.room_id = msg
     if type(env.current.exits) == "string" then
         if env.current.exits == "" then
             env.current.exits = {}
@@ -2080,7 +2080,7 @@ function dynamic_exit()
             env.current.exits = string.split(env.current.exits, "[和 、]+")
         end
     end
-    if var.goto.pause ~= nil then
+    if var.go.pause ~= nil then
         return dynamic_exit_return(1, "移动暂停")
     end
     rc,msg = dynamic_exit_exec(set.compl(env.current.exits, dynamic_exit_exclude[msg] or {}))
@@ -2091,7 +2091,7 @@ function dynamic_exit()
         return dynamic_exit_return(-1)
     end
     env.current.id = { msg }
-    if var.goto.pause ~= nil then
+    if var.go.pause ~= nil then
         return dynamic_exit_return(1, "移动暂停")
     else
         return dynamic_exit()
@@ -2101,10 +2101,10 @@ end
 function dynamic_exit_return(rc, msg)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ dynamic_exit_return ］参数：rc = "..tostring(rc)..", msg = "..tostring(msg))
-    if var.goto.dynamic_exit == nil then
+    if var.go.dynamic_exit == nil then
         return rc,msg
     end
-    var.goto.dynamic_exit = nil
+    var.go.dynamic_exit = nil
     return rc,msg
 end
 
@@ -2114,11 +2114,11 @@ function dynamic_exit_exec(exits)
     local dir,rc
     while #exits > 0 do
         dir = set.pop(exits)
-        if (var.goto.dynamic_exit.room_id == 1433 or var.goto.dynamic_exit.room_id == 1301) and 
-           var.goto.path[var.goto.dynamic_exit.room_id].step ~= nil and 
-           get_reverse_dir(dir) == var.goto.path[var.goto.dynamic_exit.room_id].step then
+        if (var.go.dynamic_exit.room_id == 1433 or var.go.dynamic_exit.room_id == 1301) and 
+           var.go.path[var.go.dynamic_exit.room_id].step ~= nil and 
+           get_reverse_dir(dir) == var.go.path[var.go.dynamic_exit.room_id].step then
             set.insert(exits, 1, dir)
-            var.goto.path[var.goto.dynamic_exit.room_id].step = "go"
+            var.go.path[var.go.dynamic_exit.room_id].step = "go"
         else
             break
         end
@@ -2141,7 +2141,7 @@ function dynamic_exit_exec(exits)
         else
             env.nextto.id = {}
         end
-        if set.has(env.nextto.id, var.goto.path[var.goto.dynamic_exit.room_id].next) then
+        if set.has(env.nextto.id, var.go.path[var.go.dynamic_exit.room_id].next) then
             local l = wait_line(dir,
                                 30, {StopEval=true}, 20,
                                 "^\\S+\\s+- |"..
@@ -2153,13 +2153,13 @@ function dynamic_exit_exec(exits)
                                 "^一道闪电从天降下，直朝你劈去……结果没打中！$")
             if l == false then
                 return -1
-            elseif var.goto.pause ~= nil then
+            elseif var.go.pause ~= nil then
                 return 1,"移动暂停"
             elseif l[0] == "这个方向没有出路。" or l[0] == "什么?" then
                 return
             else
-                env.current.id = {var.goto.path[var.goto.dynamic_exit.room_id].next}
-                var.goto.path[env.current.id[1]].step = dir
+                env.current.id = {var.go.path[var.go.dynamic_exit.room_id].next}
+                var.go.path[env.current.id[1]].step = dir
                 if wait_line(nil, 30, nil, 20, "^> $") == false then
                     return -1
                 else
@@ -2179,7 +2179,7 @@ function dynamic_exit_exec(exits)
                                 "^一道闪电从天降下，直朝你劈去……结果没打中！$")
             if l == false then
                 return -1
-            elseif var.goto.pause ~= nil then
+            elseif var.go.pause ~= nil then
                 return 1,"移动暂停"
             elseif l[0] == "这个方向没有出路。" or l[0] == "什么?" then
                 return
@@ -2190,7 +2190,7 @@ function dynamic_exit_exec(exits)
                 if locate() < 0 then
                     return -1
                 end
-                var.goto.path[env.current.id[1]].step = dir
+                var.go.path[env.current.id[1]].step = dir
                 if #env.current.id == 1 then
                     return 0
                 else
@@ -2210,7 +2210,7 @@ function dynamic_exit_exec(exits)
                                 "^一道闪电从天降下，直朝你劈去……结果没打中！$")
             if l == false then
                 return -1
-            elseif var.goto.pause ~= nil then
+            elseif var.go.pause ~= nil then
                 return 1,"移动暂停"
             elseif l[0] == "这个方向没有出路。" or l[0] == "什么?" then
                 return
@@ -2223,8 +2223,8 @@ function dynamic_exit_exec(exits)
                 end
                 if #env.nextto.id == 1 then
                     env.current.id = {env.nextto.id[1]}
-                    if env.current.id[1] == var.goto.path[var.goto.dynamic_exit.room_id].next then
-                        var.goto.path[env.current.id[1]].step = dir
+                    if env.current.id[1] == var.go.path[var.go.dynamic_exit.room_id].next then
+                        var.go.path[env.current.id[1]].step = dir
                         return 0
                     end
                 elseif #env.nextto.id > 1 then
@@ -2251,7 +2251,7 @@ function peach_grove()
     if rc > 0 then
         return rc, msg
     end
-    if var.goto.room_ids[var.goto.index] == 1759 then
+    if var.go.room_ids[var.go.index] == 1759 then
         if wait_line("look", 30, nil, nil, "^桃花林 - $", "^> $") == false then
             return -1
         end
@@ -2274,13 +2274,13 @@ function peach_grove()
                 if run_i() < 0 then
                     return -1
                 end
-                if var.goto.pause ~= nil then
+                if var.go.pause ~= nil then
                     return 1,"移动暂停"
                 end
                 return peach_grove()
             end
             carryon.inventory["铁八卦:tie bagua"] = { name = "铁八卦", id = "tie bagua", count = 1, seq = { "1" } }
-            if var.goto.pause ~= nil then
+            if var.go.pause ~= nil then
                 return 1,"移动暂停"
             end
         end
@@ -2300,7 +2300,7 @@ function peach_grove()
                           "^一道闪电从天降下，直朝你劈去……结果没打中！$")
             if l == false then
                 return -1
-            elseif var.goto.pause ~= nil then
+            elseif var.go.pause ~= nil then
                 return 1,"移动暂停"
             end
         end
@@ -2322,7 +2322,7 @@ function peach_grove()
         if wait_no_busy() < 0 then
             return -1
         end
-        if var.goto.pause ~= nil then
+        if var.go.pause ~= nil then
             return 1,"移动暂停"
         end
     end
@@ -2352,7 +2352,7 @@ function hotel()
             return -1
         end
     end
-    if var.goto.pause ~= nil then
+    if var.go.pause ~= nil then
         return 1,"移动暂停"
     end
     if carryon.inventory["铜钱:coin"] ~= nil and carryon.inventory["铜钱:coin"].count >= 500 then
@@ -2362,20 +2362,20 @@ function hotel()
     end
     if money == nil then
         if carryon.money + profile.balance >= 500 then
-            local var_goto = var.goto
-            var.goto = {room_ids = {1028}, index = 1, thread = var_goto.thread, event = true, report = true}
-            if goto_move() ~= 0 then
+            local var_go = var.go
+            var.go = {room_ids = {1028}, index = 1, thread = var_go.thread, event = true, report = true}
+            if go_move() ~= 0 then
                 return -1
             else
-                if var.goto.event == true then
-                    var_goto.pause = var.goto.pause
-                    var.goto = var_goto
+                if var.go.event == true then
+                    var_go.pause = var.go.pause
+                    var.go = var_go
                 else
-                    var.goto.event = nil
+                    var.go.event = nil
                     return 1
                 end
             end
-            if var.goto.pause == nil then
+            if var.go.pause == nil then
                 rc = draw(500 - (((carryon.inventory["白银:silver"] or {}).count or 0) * 100))
                 if rc < 0 then
                     return -1
@@ -2415,7 +2415,7 @@ function xiyu_desert()
         return rc, msg
     end
     repeat
-        local next_id = var.goto.adjust or var.goto.path[msg].next
+        local next_id = var.go.adjust or var.go.path[msg].next
         local l = wait_line(xiyu_desert_dir[next_id],
                             30, {StopEval=true}, 20,
                             "^(\\S+) - |"..
@@ -2425,7 +2425,7 @@ function xiyu_desert()
                             "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             return 1,"移动暂停"
         elseif l[1] ~= "大沙漠" then
             env.current.id = { next_id }
@@ -2442,7 +2442,7 @@ function heifeng()
         return rc, msg
     end
     if state.nl > state.nl_max / 15 then
-        local l = wait_line(var.goto.path[var.goto.path[msg].next].step,
+        local l = wait_line(var.go.path[var.go.path[msg].next].step,
                             30, {StopEval=true}, 20,
                             "^黑风口 - |"..
                             "^你的眼前一黑，接著什么也不知道了....$|"..
@@ -2451,7 +2451,7 @@ function heifeng()
                             "^一道闪电从天降下，直朝你劈去……结果没打中！$")
         if l == false then
             return -1
-        elseif var.goto.pause ~= nil then
+        elseif var.go.pause ~= nil then
             if l[0] == "你的眼前一黑，接著什么也不知道了...." then
                 env.current.id = { 1489 }
             end
@@ -2463,7 +2463,7 @@ function heifeng()
         if dazuo() ~= 0 then
             return -1
         else
-            if var.goto.pause ~= nil then
+            if var.go.pause ~= nil then
                 return 1,"移动暂停"
             else
                 return heifeng()
@@ -2489,7 +2489,7 @@ function tiesuo()
                         "^一道闪电从天降下，直朝你劈去……结果没打中！$")
     if l == false then
         return -1
-    elseif var.goto.pause ~= nil then
+    elseif var.go.pause ~= nil then
         return 1,"移动暂停"
     elseif l[0] == "你从山坡上咕碌咕碌地滚了下来，只觉得浑身无处不疼，还受了几处伤。" then
          map_adjust("灵鹫索桥", "禁用")
@@ -2499,7 +2499,7 @@ function tiesuo()
         if calibration["灵鹫索桥"][1] == "禁用" then
             map_adjust("灵鹫索桥", "启用")
         end
-        env.current.id = { var.goto.path[msg].next }
+        env.current.id = { var.go.path[msg].next }
         return 0
     end
 end
