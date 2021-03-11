@@ -6,6 +6,8 @@ local songshan_job_area = {
     79,75,74,49,50,51,52,51,59,51,50,60,61,60,50,49,70,71,70,69,72,73,72,69,62,63,64,68,64,65,64,67,66
 }
 
+config.jobs["嵩山任务"].limit = config.jobs["嵩山任务"].limit or 5000
+
 function enable_songshan_job()
     trigger.delete_group("songshan_job")
     trigger.add("songshan_job_npc_come", "songshan_job_npc_come()", "songshan_job", {Enable=false}, 100, "^(?:秦娟|郑鄂|仪文|仪和|仪琳|仪质|仪清)\\S*走了过来。$")
@@ -23,6 +25,15 @@ local phase = {
     ["任务完成"] = 4,
     ["任务失败"] = 5
 }
+
+if automation.timer["songshan_job_cd"] ~= nil then
+    config.jobs["嵩山任务"].active = false
+    local seconds = math.max(0.001, automation.timer["songshan_job_cd"].remain - (time.epoch() - automation.epoch) / 1000 )
+    timer.add(automation.timer["songshan_job_cd"], seconds)
+    automation.timer["songshan_job_cd"] = nil
+else
+    config.jobs["嵩山任务"].active = true
+end
 
 function songshan_job()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
@@ -65,8 +76,8 @@ function songshan_job_return(rc)
     config.jobs["嵩山任务"].discuss = nil
     config.jobs["嵩山任务"].arrest = nil
     statistics_append("嵩山任务")
-    if var.statistics ~= nil and var.statistics.result == "成功" then
-        if var.job.statistics.exp < 10 then
+    if automation.statistics.processing["嵩山任务"] == nil and set.last(automation.statistics).result == "成功" then
+        if set.last(automation.statistics).exp < 10 then
             config.jobs["嵩山任务"].active = false
             timer.add("songshan_job_cd", 3600, "config.jobs['嵩山任务'].active = true", "songshan_job", {Enable=true, OneShot=true})
         end
@@ -96,8 +107,12 @@ function songshan_job_p1()
         if rc ~= 0 then
             return rc
         end
+        if privilege_job("嵩山任务") == true then
+            var.job.statistics = nil
+            return 1
+        end
     end
-    local rc = songshan_job_goto_zuolengchan()
+    local rc = songshan_job_go_zuolengchan()
     if rc ~= nil then
         return rc
     end
@@ -129,7 +144,7 @@ function songshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p3 ］")
     automation.idle = false
-    local rc = songshan_job_goto_zuolengchan("walk")
+    local rc = songshan_job_go_zuolengchan()
     if rc ~= nil then
         return rc
     end
@@ -147,13 +162,23 @@ function songshan_job_p4()
     end
     config.jobs["嵩山任务"].phase = phase["任务获取"]
     var.job.statistics.result = "成功"
+    while state.exp - var.job.statistics.exp < 10 do
+        if var.job.settle == true then
+            break
+        end
+        wait(0.1)
+        if run_score() < 0 then
+            return -1
+        end
+    end
+    timer.delete("songshan_job_settle")
     return 0
 end
 
 function songshan_job_p5()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p5 ］")
-    local rc = songshan_job_goto_zuolengchan()
+    local rc = songshan_job_go_zuolengchan()
     if rc ~= nil then
         return rc
     end
@@ -167,11 +192,11 @@ function songshan_job_p5()
     return 1
 end
 
-function songshan_job_goto_zuolengchan(mode)
+function songshan_job_go_zuolengchan()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ songshan_job_goto_zuolengchan ］参数：mode = "..tostring(mode))
+            "函数［ songshan_job_go_zuolengchan ］")
     if env.current.id[1] ~= 2478 then
-        local rc = goto(2478, mode)
+        local rc = go(2478)
         if rc ~= 0 then
             return rc
         end
@@ -207,6 +232,7 @@ function songshan_job_refresh()
         if l == false then
             return -1
         elseif l[0] == "左冷禅对着你竖起了右手大拇指，好样的。" then
+            timer.add("songshan_job_settle", 2, "var.job.settle = true", "songshan_job", {Enable=true, OneShot=true})
             return songshan_job_p4()
         elseif l[0] == "左冷禅说道：去了这么久才回来，那些恒山派的女尼早已脱身了！" then
             config.jobs["嵩山任务"].phase = phase["任务获取"]
@@ -255,7 +281,7 @@ function songshan_job_exec()
     end
     for k,v in pairs(var.job.npc) do
         if env.current.id[1] ~= k then
-            rc = goto(k)
+            rc = go(k)
             if rc < 0 then
                 return -1
             end
@@ -496,7 +522,7 @@ function songshan_job_arrest(room, npc)
             if rc ~= nil then
                 return rc
             end
-            if goto(room) ~= 0 then
+            if go(room) ~= 0 then
                 config.jobs["嵩山任务"].phase = phase["任务失败"]
                 return songshan_job_p5()
             end

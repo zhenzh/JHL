@@ -160,7 +160,7 @@ trigger.add("get_profile_l9", "get_profile_l9(get_matches(1), get_matches(2), ge
 trigger.add("get_profile_l10", "get_profile_l10(get_matches(1), get_matches(2), get_matches(3))", "信息采集", {Enable=true}, 5, "^│江湖贡献：(\\d+)\\s+江湖潜力：\\s+(\\d+)\\s+\\(\\+存\\s+(\\d+(?:|万))\\s*\\)\\s*│$")
 trigger.add("get_profile_l11", "get_profile_l11(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│江湖伴侣：(\\S+)\\s+含恨入土：\\s+(\\d+)\\s+\\(\\+真\\s+\\d+\\s*\\)\\s*│$")
 trigger.add("get_profile_l12", "get_profile_l12(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^│江湖门派：(\\S+)\\s+手下冤魂：\\s+(\\d+)\\s+\\(\\+敌\\s+\\d+\\s*\\)\\s*│$")
-trigger.add("get_profile_l13", "get_profile_l13(get_matches(1))", "信息采集", {Enable=true}, 5, "^│授业师父：(\\S+)\\s+前生仇敌：(?:|\\S+\\(\\w+ \\w+\\))\\s*│$")
+trigger.add("get_profile_l13", "get_profile_l13(get_matches(1))", "信息采集", {Enable=true}, 5, "^│授业师父：(\\S+)\\s+前生仇敌：(?:|\\S+\\([ \\w]+\\))\\s*│$")
 trigger.add("get_carryon_empty", "get_carryon_empty()", "信息采集", {Enable=true}, 5, "^目前你身上没有任何东西。$")
 trigger.add("get_carryon_summary", "get_carryon_summary(get_matches(1), get_matches(2))", "信息采集", {Enable=true}, 5, "^你身上带着(\\S+)件物品\\(负重\\s*(\\d+)%\\)：$")
 trigger.add("get_carryon_item", "get_carryon_item(get_matches(1))", "信息采集", {Enable=false}, 5, "^(?:\\s+|□|\\s+\\S+ )(\\S+\\([ \\w]+\\))")
@@ -232,7 +232,7 @@ function get_room_exits(exits)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ get_room_exits ］参数：exits = "..tostring(exits))
     trigger.disable("get_room_desc")
-    if exits == "" then
+    if exits == "" or exits == false then
         exits = {}
     end
     env.room.exits = exits
@@ -269,91 +269,92 @@ end
 function weather_before_dawn()
     trigger.disable("get_room_desc")
     env.weather_time = "凌晨"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "关闭")
+    map_adjust("北京城门", "开放", "泉州新门", "关闭")
 end
 
 function time_before_dawn()
     env.weather_time = "凌晨"
     map_adjust("泉州新门", "关闭")
-    timer.add(nil, 10, "map_adjust('北京城门', '开放', '北京城墙', '关闭')", nil, {Enable=true, OneShot=true})
+    timer.add(nil, 10, "map_adjust('北京城门', '开放')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_early_morning()
     trigger.disable("get_room_desc")
     env.weather_time = "早晨"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function time_early_morning()
     env.weather_time = "早晨"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭")
+    map_adjust("北京城门", "开放")
     timer.add(nil, 10, "map_adjust('泉州新门', '开放')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_morning()
     trigger.disable("get_room_desc")
     env.weather_time = "上午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function time_morning()
     env.weather_time = "上午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function weather_noon()
     trigger.disable("get_room_desc")
     env.weather_time = "正午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function time_noon()
     env.weather_time = "正午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function weather_afternoon()
     trigger.disable("get_room_desc")
     env.weather_time = "下午"
-    map_adjust("北京城门", "开放", "北京城墙", "开放", "泉州新门", "关闭")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function time_afternoon()
     env.weather_time = "下午"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function weather_evening()
     trigger.disable("get_room_desc")
     env.weather_time = "傍晚"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
+    map_attr.cost["west53"] = 10000
 end
 
 function time_evening()
     env.weather_time = "傍晚"
-    map_adjust("北京城门", "开放", "北京城墙", "关闭", "泉州新门", "开放")
+    map_adjust("北京城门", "开放", "泉州新门", "开放")
 end
 
 function weather_night()
     trigger.disable("get_room_desc")
     env.weather_time = "夜晚"
-    map_adjust("北京城门", "关闭", "泉州新门", "关闭", "北京城墙", "开放")
+    map_adjust("北京城门", "关闭", "泉州新门", "关闭")
 end
 
 function time_night()
     env.weather_time = "夜晚"
-    timer.add(nil, 10, "map_adjust('北京城门', '关闭', '泉州新门', '关闭', '北京城墙', '开放')", nil, {Enable=true, OneShot=true})
+    timer.add(nil, 10, "map_adjust('北京城门', '关闭', '泉州新门', '关闭')", nil, {Enable=true, OneShot=true})
 end
 
 function weather_mid_night()
     trigger.disable("get_room_desc")
     env.weather_time = "午夜"
-    map_adjust("北京城门", "关闭", "泉州新门", "关闭", "北京城墙", "开放")
+    map_adjust("北京城门", "关闭", "泉州新门", "关闭")
 end
 
 function time_mid_night()
     env.weather_time = "午夜"
-    map_adjust("北京城门", "关闭", "泉州新门", "关闭", "北京城墙", "开放")
+    map_adjust("北京城门", "关闭", "泉州新门", "关闭")
 end
 
 function get_port(port)
@@ -917,32 +918,27 @@ function get_personal_weapon_name(name)
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ get_personal_weapon_name ］参数：name = "..tostring(name))
     name = string.gsub(name, "%$%u+%$?", "")
+    local weapon_type = {
+        ["斧"] = "axe",
+        ["枪"] = "pike",
+        ["钩"] = "hook",
+        ["鞭"] = "whip",
+        ["棍"] = "club",
+        ["剑"] = "sword",
+        ["刀"] = "blade",
+        ["棒"] = "stick",
+        ["锤"] = "hammer",
+        ["笔"] = "stroke",
+        ["杖"] = "staff"
+    }
     if carryon.weapon.name ~= name then
         carryon.weapon.name = name
-        items["自铸之斧:personal axe"].name    = carryon.weapon.name
-        items["自铸之枪:personal pike"].name   = carryon.weapon.name
-        items["自铸之钩:personal hook"].name   = carryon.weapon.name
-        items["自铸之鞭:personal whip"].name   = carryon.weapon.name
-        items["自铸之棍:personal club"].name   = carryon.weapon.name
-        items["自铸之剑:personal sword"].name  = carryon.weapon.name
-        items["自铸之剑:personal sword"].name  = carryon.weapon.name
-        items["自铸之刀:personal blade"].name  = carryon.weapon.name
-        items["自铸之杖:personal staff"].name  = carryon.weapon.name
-        items["自铸之棒:personal stick"].name  = carryon.weapon.name
-        items["自铸之锤:personal hammer"].name = carryon.weapon.name
-        items["自铸之笔:personal stroke"].name = carryon.weapon.name
-        items[carryon.weapon.name..":personal axe"]    = items["自铸之斧:personal axe"]
-        items[carryon.weapon.name..":personal pike"]   = items["自铸之枪:personal pike"]
-        items[carryon.weapon.name..":personal hook"]   = items["自铸之钩:personal hook"]
-        items[carryon.weapon.name..":personal whip"]   = items["自铸之鞭:personal whip"]
-        items[carryon.weapon.name..":personal club"]   = items["自铸之棍:personal club"]
-        items[carryon.weapon.name..":personal sword"]  = items["自铸之剑:personal sword"]
-        items[carryon.weapon.name..":personal sword"]  = items["自铸之剑:personal sword"]
-        items[carryon.weapon.name..":personal blade"]  = items["自铸之刀:personal blade"]
-        items[carryon.weapon.name..":personal staff"]  = items["自铸之杖:personal staff"]
-        items[carryon.weapon.name..":personal stick"]  = items["自铸之棒:personal stick"]
-        items[carryon.weapon.name..":personal hammer"] = items["自铸之锤:personal hammer"]
-        items[carryon.weapon.name..":personal stroke"] = items["自铸之笔:personal stroke"]
+        for k,v in pairs(weapon_type) do
+            items["自铸之"..k..":personal "..v].name = carryon.weapon.name
+            items[carryon.weapon.name..":personal "..v] = items["自铸之"..k..":personal "..v]
+            items["自铸之"..k..":personal "..v] = nil
+            automation.items[carryon.weapon.name..":personal "..v] = items[carryon.weapon.name..":personal "..v]
+        end
     end
 end
 

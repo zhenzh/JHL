@@ -50,18 +50,51 @@ end
 
 automation.timer = automation.timer or {}
 automation.items = automation.items or {}
-automation.killer = automation.killer or {}
-automation.npc_killer = automation.npc_killer or {"猫也会心碎"}
+automation.killer = automation.killer or { "猫也会心碎" }
 
-if automation.timer["invalid_ask_ping"] ~= nil then
-    local seconds = math.max(0.001, automation.timer["invalid_ask_ping"].remain - (time.epoch() - automation.epoch) / 1000 )
-    timer.add(automation.timer["invalid_ask_ping"], seconds)
-    automation.timer["invalid_ask_ping"] = nil
+local buff = {
+    "invalid_ask_ping",
+    "invalid_ask_yuluwan",
+    "invalid_fu_yuluwan",
+    "invalid_fu_sanhuangwan",
+    "invalid_fu_daxueteng",
+    "invalid_fu_renshenguo",
+    "invalid_fu_xuelian"
+}
+
+local debuff = {
+}
+
+local jobcd = {
+    "ftb_job_cd",
+    "songshan_job_cd",
+    "hengshan_job_cd",
+    "longxiang_pozhang_cd"
+}
+
+state.buff = automation.buff or state.buff
+state.debuff = automation.debuff or state.debuff
+automation.buff = nil
+automation.debuff = nil
+
+for _,v in ipairs(buff) do
+    if automation.timer[v] == nil then
+        state.buff[v] = nil
+    else
+        local seconds = math.max(0.001, automation.timer[v].remain - (time.epoch() - automation.epoch) / 1000 )
+        timer.add(automation.timer[v], seconds)
+        automation.timer[v] = nil
+    end
 end
-if automation.timer["invalid_ask_yuluwan"] ~= nil then
-    local seconds = math.max(0.001, automation.timer["invalid_ask_yuluwan"].remain - (time.epoch() - automation.epoch) / 1000 )
-    timer.add(automation.timer["invalid_ask_yuluwan"], seconds)
-    automation.timer["invalid_ask_yuluwan"] = nil
+
+for _,v in ipairs(debuff) do
+    if automation.timer[v] == nil then
+        state.debuff[v] = nil
+    else
+        local seconds = math.max(0.001, automation.timer[v].remain - (time.epoch() - automation.epoch) / 1000 )
+        timer.add(automation.timer[v], seconds)
+        automation.timer[v] = nil
+    end
 end
 
 automation.skill = nil
@@ -70,9 +103,14 @@ for k,v in pairs(automation.items) do
     items[k] = v
 end
 
-if automation.repository ~= nil then
-    carryon.repository = automation.repository
-    automation.repository = nil
+if automation.carryon ~= nil then
+    carryon = automation.carryon
+    automation.carryon = nil
+end
+
+if automation.skills ~= nil then
+    skills = automation.skills
+    automation.skills = nil
 end
 
 <<<<<<< HEAD
@@ -96,7 +134,6 @@ collectgarbage("collect")
 
 function init()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ init ］")
-    map_adjust("门派接引", "启用", "过河", "大圣", "丐帮密道", "启用", "南阳城", "关闭", "南阳城郊", "关闭", "黑龙江栈道", "禁用", "少林山门", "开放", "北京城门", "开放", "泉州新门", "开放", "古墓水道", "禁用")
     trigger.add("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
     if wait_line("jiali max;jiajin max;score;hp;skills;enable;prepare;set;jiajin 1;jiali none", 30, nil, 10, "^从现在起你用零点内力伤敌。$", "^> $") ~= false then
         if run_i() < 0 then
@@ -134,7 +171,7 @@ function load_jobs()
             if type(config.jobs[k]) == "table" then
                 for i,j in pairs(v) do
                     if i ~= "enable" then
-                        config.jobs[k].i = j
+                        config.jobs[k][i] = j
                     end
                 end
             end
@@ -145,7 +182,7 @@ function load_jobs()
         if config.jobs[v].enable == true then
             loadstring("require '"..config.jobs[v].name.."'")()
             if config.jobs[v].efunc ~= nil then
-                config.jobs[v].efunc() 
+                config.jobs[v].efunc()
             end
         else
             if config.jobs[v].dfunc ~= nil then
@@ -155,30 +192,28 @@ function load_jobs()
     end
 end
 
-function reset()
+function reset(fresh)
     automation.config = nil
-    if automation.thread ~= nil then
+    if fresh == true then
+        automation = {}
+    elseif automation.thread ~= nil then
         automation.thread = nil
         automation.jid = (var or {}).jid
         automation.config_jobs = config.jobs
-        automation.repository = (carryon or {}).repository
-        local timer_record = {
-            "invalid_ask_ping",
-            "invalid_ask_yuluwan",
-            "invalid_fu_yuluwan",
-            "invalid_fu_sanhuangwan",
-            "invalid_fu_daxueteng",
-            "invalid_fu_renshenguo",
-            "invalid_fu_xuelian",
-            "ftb_job_cd",
-            "songshan_job_cd",
-            "hengshan_job_cd",
-            "longxiang_pozhang_cd"
-        }
-        automation.timer = {}
-        for _,v in ipairs(timer_record) do
-            automation.timer[v] = timer.get(v)
-        end
+        automation.carryon = carryon
+        automation.skills = skills
+    end
+    automation.buff = state.buff
+    automation.debuff = state.debuff
+    automation.timer = {}
+    for _,v in ipairs(buff) do
+        automation.timer[v] = timer.get(v)
+    end
+    for _,v in ipairs(debuff) do
+        automation.timer[v] = timer.get(v)
+    end
+    for _,v in ipairs(jobcd) do
+        automation.timer[v] = timer.get(v)
     end
     automation.debug = global.debug.level
     automation.ui = ui
@@ -220,9 +255,8 @@ else
         function ()
             automation.thread = coroutine.running()
             loadstring(automation.reconnect)()
-            if init() < 0 then
-                return -1
-            end
+            trigger.delete_group("automation_reset")
+            init()
             load_jobs()
             start()
         end

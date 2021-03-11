@@ -16,6 +16,10 @@ local ftb_job_nick2 = {"剑", "刀", "手", "脚", "掌", "拳", "门", "客", "
                        "柔情", "无痕", "无法", "无天", "无云", "天王","一剑", "一刀", "杀手", "之神", "之子", "少爷", "阎王", "侯爷", "土地",
                        "判官","无常", "魔", "印", "公子"}
 
+config.jobs["斧头帮任务"].enemy = config.jobs["斧头帮任务"].enemy or 0
+config.jobs["斧头帮任务"].confirm = config.jobs["斧头帮任务"].confirm or {}
+config.jobs["斧头帮任务"].exclude = config.jobs["斧头帮任务"].exclude or {}
+
 function enable_ftb_job()
     trigger.delete_group("ftb_job")
     trigger.add("ftb_job_wait_info", "ftb_job_wait_info()", "ftb_job", {Enable=false, Multi=true}, 99, "^程金斧说道：听说有(\\S+)个家伙想对本帮不利.\\n程金斧说道：据说他们已经到了(\\S+)(?:\\(该处靠近([\\S, ]+)\\)|)方圆(\\S+)里之内.$")
@@ -35,9 +39,17 @@ local phase = {
 local low_priority = { 2724, 1977, 290, 2399, 2400, 969, 971, 2042, 2043, 2044, 1017, 86, 25, 286 }
 
 if automation.timer["ftb_job_cd"] ~= nil then
+    config.jobs["斧头帮任务"].active = false
     local seconds = math.max(0.001, automation.timer["ftb_job_cd"].remain - (time.epoch() - automation.epoch) / 1000 )
     timer.add(automation.timer["ftb_job_cd"], seconds)
     automation.timer["ftb_job_cd"] = nil
+else
+    config.jobs["斧头帮任务"].active = true
+end
+
+if config.jobs["斧头帮任务"].phase == 2 then
+    config.jobs["斧头帮任务"].phase = 1
+    config.jobs["斧头帮任务"].dest = nil
 end
 
 function ftb_job()
@@ -85,7 +97,7 @@ end
 function ftb_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ ftb_job_p1 ］")
-    local rc = ftb_job_goto_chengjinfu()
+    local rc = ftb_job_go_chengjinfu()
     if rc ~= nil then
         return rc
     end
@@ -127,11 +139,11 @@ function ftb_job_p3()
     return 1
 end
 
-function ftb_job_goto_chengjinfu()
+function ftb_job_go_chengjinfu()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ ftb_job_goto_chengjinfu ］")
+            "函数［ ftb_job_go_chengjinfu ］")
     if env.current.id[1] ~= 1705 then
-        local rc = goto(1705)
+        local rc = go(1705)
         if rc ~= 0 then
             return rc
         end
@@ -288,7 +300,7 @@ function ftb_job_exec()
             else
                 local rc = 0
                 if env.current.id[1] ~= k then
-                    rc = goto(k)
+                    rc = go(k)
                 end
                 if rc == 0 then
                     rc = ftb_job_ask_npc(k, v)
@@ -327,16 +339,16 @@ function ftb_job_search()
         return -1
     elseif rc > 0 then
         if var.job.range >= 7 then
-            if var.job.spare ~= nil then
-                local spare = var.job.spare
-                var.job.spare = nil
-                ftb_job_get_area(spare)
-                return ftb_job_p2()
-            end
             if config.jobs["斧头帮任务"].progress ~= nil then
                 config.jobs["斧头帮任务"].phase = phase["任务完成"]
                 return ftb_job_p1()
             else
+                if var.job.spare ~= nil then
+                    local spare = var.job.spare
+                    var.job.spare = nil
+                    ftb_job_get_area(spare)
+                    return ftb_job_p2()
+                end
                 return ftb_job_p3()
             end
         end
@@ -376,7 +388,7 @@ function ftb_job_ask_npc(room, npc)
         end
     end
     if env.current.id[1] ~= room then
-        if goto(room) ~= 0 then
+        if go(room) ~= 0 then
             return
         end
     end
@@ -433,7 +445,7 @@ function ftb_job_kill_npc(room, npc)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ ftb_job_kill_npc ］参数：room = "..table.tostring(room)..", npc = "..table.tostring(npc))
     if env.current.id[1] ~= room then
-        if goto(room) ~= 0 then
+        if go(room) ~= 0 then
             return
         end
     end
@@ -443,12 +455,18 @@ function ftb_job_kill_npc(room, npc)
     if wield(config.fight["斧头帮任务"].weapon or config.fight["通用"].weapon) ~= 0 then
         return -1
     end
+    if env.current.name == "迷宫树林" then
+        local rc = ftb_job_drive_npc(npc)
+        timer.delete("ftb_job_timeout")
+        return rc
+    end
     local l = wait_line("kill "..string.lower(npc[2]),
                         30, nil, nil,
                         "^你对著"..npc[1].."喝道：「\\S+」$|"..
                         "^这里没有这个人。$|"..
                         "^你现在正忙着呢。$|"..
-                        "^这里不准战斗。$")
+                        "^这里不准战斗。$|"..
+                        "^你来这是来打麻将而不是打架。$")
     if l == false then
         return -1
     elseif l[0] == "你现在正忙着呢。" then
@@ -457,7 +475,7 @@ function ftb_job_kill_npc(room, npc)
         local around = get_room_id_by_tag("nojob", get_room_id_around(), "exclude")
         config.jobs["斧头帮任务"].dest = set.union(set.compl(config.jobs["斧头帮任务"].dest, around), around)
         return
-    elseif l[0] == "这里不准战斗。" then
+    elseif l[0] == "这里不准战斗。" or l[0] == "你来这是来打麻将而不是打架。" then
         local rc = ftb_job_drive_npc(npc)
         timer.delete("ftb_job_timeout")
         return rc

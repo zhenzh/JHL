@@ -102,6 +102,7 @@ calibration = {
             map_attr.cost["west561"] = nil
             map_attr.cost["north2822"] = nil
             map_attr.cost["west2687"] = nil
+            map_attr.cost["west405"] = nil
             map_attr.cost["south1245"] = 10000
             map_attr.cost["north800"] = 10000
             map_attr.cost["open door;south2038"] = 10000
@@ -123,6 +124,7 @@ calibration = {
             map_attr.cost["west561"] = 10000
             map_attr.cost["north2822"] = 10000
             map_attr.cost["west2687"] = 10000
+            map_attr.cost["west405"] = 10000
             map_attr.cost["south1245"] = nil
             map_attr.cost["north800"] = nil
             map_attr.cost["open door;south2038"] = 3
@@ -154,6 +156,7 @@ calibration = {
             map_attr.cost["open door;south3099"] = nil
             map_attr.cost["south2821"] = nil
             map_attr.cost["east2686"] = nil
+            map_attr.cost["west405"] = nil
             calibration["性别"][1] = "无"
         end,
     },
@@ -384,6 +387,11 @@ calibration = {
                 set.pop(items["铁八卦:tie bagua"].place)
                 set.pop(items["铁八卦:tie bagua"].get)
             end
+            if items["《紫霞秘笈》:zixia miji"].place[1] == 885 then
+                set.remove(items["《紫霞秘笈》:zixia miji"].price, 1)
+                set.remove(items["《紫霞秘笈》:zixia miji"].place, 1)
+                set.remove(items["《紫霞秘笈》:zixia miji"].get, 1)
+            end
 
             map[2878].links["south"] = nil
             map[2878].links["kill xihua zi;south"] = 2883
@@ -516,6 +524,9 @@ calibration = {
             map[883].links["east"] = 886
             map[870].links["west"] = 871
             map[893].links["northup"] = 894
+            set.insert(items["《紫霞秘笈》:zixia miji"].price, 1, 0)
+            set.insert(items["《紫霞秘笈》:zixia miji"].place, 1, 885)
+            set.insert(items["《紫霞秘笈》:zixia miji"].get, 1, "search bed")
             calibration["门派"][1] = "华山派"
         end,
         ["丐帮"] = function()
@@ -630,7 +641,7 @@ calibration = {
             map[665].links["kill zhang songxi;south"] = nil
             map[665].links["kill zhang songxi;east"] = nil
             map[665].links["west"] = 666
-            map[665].links["south"] = 667
+            map[665].links["south"] = 672
             map[665].links["east"] = 679
             set.append(items["《九阳神功残篇》:jiuyang canpian"].place, 677)
             set.append(items["《九阳神功残篇》:jiuyang canpian"].get, "ask zhang sanfeng about 九阳神功")
@@ -1034,3 +1045,15 @@ function map_adjust(...)
         end
     end
 end
+
+map_adjust("门派接引", "启用",
+           "过河", "大圣",
+           "丐帮密道", "启用",
+           "南阳城", "关闭",
+           "南阳城郊", "关闭",
+           "黑龙江栈道", "禁用",
+           "少林山门", "开放",
+           "北京城门", "开放",
+           "北京城墙", "开放",
+           "泉州新门", "开放",
+           "古墓水道", "禁用")

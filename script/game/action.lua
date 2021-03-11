@@ -470,7 +470,7 @@ function qu(list)
     local rc,msg
     local _list = table.copy(list)
     if env.current.name ~= "存物室" then
-        rc = goto(290)
+        rc = go(290)
         if rc ~= 0 then
             return rc
         end
@@ -674,7 +674,7 @@ function draw(money)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ draw ］参数：money = "..tostring(money))
     if env.current.name ~= "钱庄" then
-        local rc = goto(1028)
+        local rc = go(1028)
         if rc ~= 0 then
             return rc
         end
@@ -708,7 +708,7 @@ function deposit(money)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ deposit ］参数：money = "..tostring(money))
     if env.current.name ~= "钱庄" then
-        local rc = goto(1028)
+        local rc = go(1028)
         if rc ~= 0 then
             return rc
         end
@@ -917,7 +917,7 @@ end
 function store_all_pots()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ store_all_pots ］")
-    local rc = goto(2399)
+    local rc = go(2399)
     if rc ~= 0 then
         return rc
     end
@@ -1222,7 +1222,7 @@ function aquire_exec(list)
         aquire_plan(k, v)
     end
     for _,v in pairs(table.index(var.aquire.plan)) do
-        local rc,msg = goto(v)
+        local rc,msg = go(v)
         if rc < 0 then
             return -1
         elseif rc == 1 then
@@ -1371,12 +1371,15 @@ function aquire_other(method, list)
                         "^拉章活佛说道：好吧，这本经书你拿回去好好钻研。$|"..
                         "^然後梁长老伸手入怀，取出一颗百草丹给你。$|"..
                         "^梁长老说道：我身上此刻没有百草丹，你还是快到城里去找大夫吧！$|"..
+                        "^你将枕头掀起，突然发现一本薄薄的册子，仔细一看原来是华山镇山之宝《紫霞秘笈》！$|"..
+                        "^你将枕头掀起，底下却甚麽都没有。$|"..
                         "^这里没有 .+ 这个人。$")
     if l == false then
         return -1
     elseif l[0] == "梁长老说道：我身上此刻没有百草丹，你还是快到城里去找大夫吧！" or 
            l[0] == "陆乘风说道：抱歉，你来得不是时候，已经发完了。" or 
            l[0] == "陆乘风说道：我不是才给过你药吗？怎麽又来要了，真是贪得无厌！" or 
+           l[0] == "你将枕头掀起，底下却甚麽都没有。" or 
            string.match(l[0], "这里没有") then
         return 1
     else
@@ -1401,7 +1404,7 @@ function zero_mole(target)
         return 0
     end
     if env.current.id[1] ~= 1790 then
-        local rc = goto(1790)
+        local rc = go(1790)
         if rc ~= 0 then
             return rc
         end
@@ -1463,7 +1466,7 @@ function search_room(obj)
         var.search.area = set.union(set.compl(var.search.area, env.current.id), env.current.id)
     end
     var.search.dest = set.pop(var.search.area)
-    local rc = goto(var.search.dest)
+    local rc = go(var.search.dest)
     if rc ~= 0 then
         return search_room(obj)
     end

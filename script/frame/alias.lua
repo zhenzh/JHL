@@ -71,7 +71,7 @@ alias.add("gps", [[^\s*gps\s*$]], [[
 ]])
 
 alias.add("flyto", [[^flyto\s+(.+)$]], [[
-    coroutine.wrap(function() goto(get_matches(1)) end)()
+    coroutine.wrap(function() go(get_matches(1)) end)()
 ]])
 
 alias.add("flynext", [[^\s*flynext\s*$]], [[
@@ -79,7 +79,7 @@ alias.add("flynext", [[^\s*flynext\s*$]], [[
 ]])
 
 alias.add("walkto", [[^walkto\s+(.*)$]], [[
-    coroutine.wrap(function() goto(get_matches(1), "walk") end)()
+    coroutine.wrap(function() go(get_matches(1), "walk") end)()
 ]])
 
 alias.add("walknext", [[^\s*walknext\s*$]], [[

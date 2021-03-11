@@ -8,6 +8,17 @@ global.phase = {
     ["练功"] = 4,
 }
 
+config.lian.weapon = {
+    force   = "",
+    dodge   = "",
+    strike  = "",
+    cuff    = "",
+    hand    = "",
+    finger  = "",
+    claw    = "",
+    kick    = ""
+}
+
 local noisy_rooms = {
     ["德陵"] = 1591,
     ["西夏王陵"] = 1591,
@@ -20,6 +31,20 @@ local noisy_rooms = {
     ["碎石沙路"] = 1347,
     ["楼兰废墟"] = 1347,
     ["星宿海"] = 1356,
+}
+
+local lian_weapon = {
+    sword  = "钢剑:gangjian",
+    blade  = "钢刀:blade",
+    hammer = "铁锤:hammer",
+    staff  = "禅杖:chan zhang",
+    club   = "铁棍:tiegun",
+    stick  = "铜棒:tong bang",
+    whip   = "长鞭:changbian",
+    axe    = "大斧头:da futou",
+    pike   = "长枪:chang qiang",
+    stroke = "判官笔:panguan bi",
+    hook   = "双钩:shuang gou"
 }
 
 trigger.add("reduce_exp", "reduce_exp(tonumber(get_matches(1)))", "automation", {Enable=true}, 100, "^你的经验下降了(\\d+)点。$")
@@ -141,8 +166,7 @@ function automation_reset_heal()
     if l == false then
         return automation_reset()
     elseif l[0] == "纪晓芙正在运功为你疗伤，忽觉自己内息後继乏力，祗得暂缓疗伤，站起身来。" then
-        local rc = one_step()
-        if rc ~= 0 then
+        if one_step() ~= 0 then
             return automation_reset()
         end
     end
@@ -154,10 +178,38 @@ function automation_reset_killer()
             "函数［ automation_reset_killer ］")
     automation.reconnect = nil
     automation.idle = false
-    trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
-    trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
-    local rc = one_step()
-    if rc ~= 0 then
+    trigger.add("automation_reset_killer_win", "automation_reset_killer_win()", "automation_reset", {Enable=true}, 10, "^日月神教使者突然卖一破绽，跳出战圈，逃了！$|"..
+                                                                                                                       "^日月神教使者悻然说道：算你够狠！老子先不奉陪了！咱们走着瞧！$|"..
+                                                                                                                       "^猫也会心碎指着\\S+赞叹道：“\\S+是古往今来绿林第一大强盗！$")
+    trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation_reset", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
+    trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation_reset", {Enable=true}, 10, "^鬼门关 - $")
+    if wait_no_busy("halt") < 0 then
+        return -1
+    end
+    local rc = fight()
+    if rc < 0 then
+        return automation_reset("automation_reset_killer()")
+    end
+    return 0
+end
+
+function automation_reset_killer_win()
+    if var.fight ~= nil then
+        var.fight.stop = 0
+    end
+end
+
+function automation_reset_escape()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ automation_reset_escape ］")
+    automation.reconnect = nil
+    automation.idle = false
+    trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation_reset", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
+    trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation_reset", {Enable=true}, 10, "^鬼门关 - $")
+    if wait_no_busy("halt") < 0 then
+        return -1
+    end
+    if one_step() ~= 0 then
         return automation_reset()
     end
     return 0
@@ -186,22 +238,13 @@ function start()
     trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add("automation_reset_connect", "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")
     trigger.add("automation_reset_heal", "automation_reset('automation_reset_heal()')", "automation", {Enable=true}, 10, "^纪晓芙坐了下来运起内功，将手掌贴在你背心，缓缓地将真气输入你的体内....")
-    trigger.add("automation_reset_killer", "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^日月神教使者对着你大吼：跟我回去参见教主！$|"..
-                                                                                                                             "^日月神教使者对着你大吼：还想跑？快跟大爷回去晋见本神教教主！$|"..
-                                                                                                                             "^看起来(?:"..set.concat(automation.npc_killer, "|")..")想杀死你！$")
-    if config.jobs["斧头帮任务"].phase == 2 then
-        config.jobs["斧头帮任务"].phase = 1
+    trigger.add("automation_reset_killer", "automation_reset('automation_reset_killer()')", "automation", {Enable=true}, 10, "^看起来(?:"..set.concat(automation.killer, "|")..")想杀死你！$|"..
+                                                                                                                             "^日月神教使者对着你大吼：(?:跟我回去参见教主！|还想跑？快跟大爷回去晋见本神教教主！)$")
+    if config.beat_killer == false then
+        trigger.add("automation_reset_escape", "automation_reset('automation_reset_escape()')", "automation", {Enable=true, StopEval=true}, 9, "^看起来猫也会心碎想杀死你！$")
     end
 
-    if profile.family == "雪山派" and profile.master == "金轮法王" then
-        require "longxiang_pozhang"
-        if config.jobs["龙象破障"] == nil then
-            config.jobs["龙象破障"] = { active = true }
-        end
-        if config.jobs[2] ~= "龙象破障" then
-            table.insert(config.jobs, 2, "龙象破障")
-        end
-        config.jobs["龙象破障"].enable = true
+    if profile.master == "金轮法王" then
         if profile.longxiang == nil then
             profile.longxiang = { progress = 0, pozhang = 0 }
         end
@@ -215,16 +258,7 @@ function start()
             run("set pozhang 0")
         end
         profile.longxiang.pozhang = tonumber(l[1] or 0)
-        trigger.add("get_longxiang_level", "get_longxiang_level(get_matches(1))", nil, {Enable=true, OneShot=true}, 5, "^你手结\\S+印，运起的龙象般若功(\\S+)层功法「\\S+」$")
-        trigger.add("get_longxiang_status", "get_longxiang_status(get_matches(1), get_matches(2))", nil, {Enable=true, Multi=true, OneShot=true}, 5, "^你向鸠摩智打听有关「熟练度」的消息。\\n鸠摩智说道：你现在的熟练度是(\\d+)点，还需要精研龙象神功((?:-|)\\d+)次方可精进。$")
-        trigger.add("get_longxiang_progress", "get_longxiang_progress()", nil, {Enable=true}, 5, "^你的龙象之力运行完毕，将内力收回丹田。$")
-        trigger.add("get_longxiang_pozhang", "get_longxiang_pozhang()", nil, {Enable=true, OneShot=true}, 5, "^汝须破除我他迷障，才能精进无碍！$")
-        if timer.is_exist("longxiang_pozhang_cd") == true then
-            config.jobs["龙象破障"].active = false
-        else
-            config.jobs["龙象破障"].active = true
-            config.jobs["龙象破障"].phase = nil
-        end
+        require "longxiang_pozhang"
     elseif config.jobs["龙象破障"] ~= nil then
         config.jobs["龙象破障"] = nil
         table.delete(config.jobs, "龙象破障")
@@ -279,7 +313,7 @@ function flow_prepare_job()
         return -1
     end
     if table.is_empty(carryon.repository) then
-        if goto(290) ~= 0 then
+        if go(290) ~= 0 then
             return -1
         end
         if run_list() < 0 then
@@ -303,7 +337,7 @@ function flow_prepare_job()
         end
     end
     if pots ~= nil then
-        if goto(2399) ~= 0 then
+        if go(2399) ~= 0 then
             return -1
         end
         local l = wait_line("cun",
@@ -327,7 +361,7 @@ function flow_prepare_job()
         end
     end
     if noisy_rooms[env.current.name] ~= nil then
-        if goto(noisy_rooms[env.current.name]) ~= 0 then
+        if go(noisy_rooms[env.current.name]) ~= 0 then
             return -1
         end
     end
@@ -362,6 +396,10 @@ function flow_do_job()
         end
         return 0
     else
+        if privilege_job(config.jobs[global.jid]) == true then
+            global.jid = 1
+            return flow_do_job()
+        end
         if config.jobs[global.jid] == "嵩山任务" then
             if config.jobs[global.jid].enable == true and config.jobs[global.jid].active == true then
                 if statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
@@ -554,7 +592,7 @@ function prepare_items()
         return rc
     end
     if is_own("牛皮酒袋:jiudai") == true and (carryon.container["jiudai 1"].water == false or carryon.container["jiudai 1"].stage < 5) then
-        if goto(959) ~= 0 then
+        if go(959) ~= 0 then
             return -1
         end
         local l = wait_line("fill jiudai",
@@ -712,24 +750,11 @@ end
 
 function plan_lian_weapon(list)
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ plan_lian_weapon ］")
-    local default = {
-        sword  = "钢剑:gangjian",
-        blade  = "钢刀:blade",
-        hammer = "铁锤:hammer",
-        staff  = "禅杖:chan zhang",
-        club   = "铁棍:tiegun",
-        stick  = "铜棒:tong bang",
-        whip   = "长鞭:changbian",
-        axe    = "大斧头:da futou",
-        pike   = "长枪:chang qiang",
-        stroke = "判官笔:panguan bi",
-        hook   = "双钩:shuang gou"
-    }
+            "函数［ plan_lian_weapon ］参数：list = "..table.tostring(list))
     for _,v in ipairs(config.lian) do
         if set.has({"sword", "blade", "hammer", "stick", "club", "axe", "whip", "pike", "staff", "hook", "stroke"}, v) then
             if config.lian.weapon[v] == nil then
-                config.lian.weapon[v] = default[v]
+                config.lian.weapon[v] = lian_weapon[v]
             end
             list[config.lian.weapon[v]] = math.max(1, (list[config.lian.weapon[v]] or 0))
         end
@@ -753,13 +778,14 @@ function prepare_skills()
     end
     local check_enable = false
     for k,v in pairs(skills.enable) do
-        if cfg[k] == nil then
-            check_enable = true
-            run("jifa "..k.." none")
-        else
+        -- if cfg[k] == nil then
+        --     check_enable = true
+        --     run("enable "..k.." none")
+        -- else
+        if cfg[k] ~= nil then
             if cfg[k][2] ~= v.name then
                 check_enable = true
-                run("jifa "..k.." "..cfg[k][1])
+                run("enable "..k.." "..cfg[k][1])
             end
             skill_id[k] = cfg[k][1]
             cfg[k] = nil
@@ -768,7 +794,7 @@ function prepare_skills()
     local prepare = set.pop(cfg)
     for k,v in pairs(cfg) do
         check_enable = true
-        run("jifa "..k.." "..v[1])
+        run("enable "..k.." "..v[1])
         skill_id[k] = cfg[k][1]
     end
     local current_prepare = table.keys(skills.prepare)
@@ -833,7 +859,7 @@ function privilege_job(job)
         if config.jobs[v].enable == true and config.jobs[v].active == true then
             if config.jobs[config.jobs[global.jid]].limit == nil then
                 return true
-            elseif statistics("-c", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
+            elseif statistics("classify", 1, config.jobs[global.jid]) < config.jobs[config.jobs[global.jid]].limit then
                 return true
             end
         end

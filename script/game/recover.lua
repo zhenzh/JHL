@@ -777,7 +777,7 @@ function ask_ping()
         printf(var.move)
         return ask_ping_return(1, "治疗失败")
     end
-    local rc = goto(1024)
+    local rc = go(1024)
     if rc ~= 0 then
         return ask_ping_return(1, "治疗失败")
     end
@@ -945,10 +945,11 @@ function linjizhuang_yun_daxiao()
                         "^你屏息静气，交错运行大小二庄，只觉一股暖流出天门，穿地户，沿着全身经脉运行一周，汇入丹田气海。$|"..
                         "^你已经运功调节精气大小了。$|"..
                         "^你的内力不够。$|"..
+                        "^以你现在的状态，不需要运功调节精气大小。$|"..
                         "^你已经受伤过重，只怕一运真气便有生命危险！$")
     if l == false then
         return -1
-    elseif l[0] == "你已经运功调节精气大小了。" then
+    elseif l[0] == "你已经运功调节精气大小了。" or l[0] == "以你现在的状态，不需要运功调节精气大小。" then
         return 1,"治疗失败"
     else
         if run_hp() < 0 then
@@ -1467,9 +1468,9 @@ function dazuo_analysis(target, mode)
     return outcome,income,base
 end
 
-function recover_goto()
+function recover_go()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ recover_goto ］")
+            "函数［ recover_go ］")
     if state.qx * state.js > 0 and 
        state.jl >= state.jl_max / 10 then
         return 0
@@ -1497,13 +1498,21 @@ function recover(nl)
     if rc < 0 then
         return -1
     elseif rc == 1 then
-        return ask_ping()
+        if msg == "中断事件" then
+            return rc,msg
+        else
+            return ask_ping()
+        end
     end
     rc,msg = yun_forceheal()
     if rc < 0 then
         return -1
     elseif rc == 1 then
-        return ask_ping()
+        if msg == "中断事件" then
+            return rc,msg
+        else
+            return ask_ping()
+        end
     end
     rc,msg = heal_regenerate(70)
     if rc ~= 0  then

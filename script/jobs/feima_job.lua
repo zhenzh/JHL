@@ -106,7 +106,7 @@ end
 function feima_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ feima_job_p1 ］")
-    local rc = feima_job_goto_maxingkong()
+    local rc = feima_job_go_maxingkong()
     if rc ~= nil then
         return rc
     end
@@ -116,7 +116,7 @@ end
 function feima_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ feima_job_p2 ］")
-    local rc,msg = feima_job_goto_biaoche()
+    local rc,msg = feima_job_go_biaoche()
     if rc ~= nil then
         return rc
     end
@@ -124,11 +124,14 @@ function feima_job_p2()
     if rc ~= nil then
         return rc
     end
-    map_adjust("门派接引", "禁用", "过河", "渡船", "丐帮密道", "禁用")
+    map_adjust("门派接引", "禁用", "过河", "渡船")
     if calibration["南阳城"][1] == "开放" then
         map_attr.cost["north2401"] = 10000
     end
+    local gb_links = map[3039].links
+    map[3039].links = {}
     config.jobs["飞马镖局"].path = get_path(config.jobs["飞马镖局"].biaoche, config.jobs["飞马镖局"].dest[1])
+    map[3039].links = gb_links
     if calibration["南阳城"][1] == "开放" then
         map_attr.cost["north2401"] = nil
     end
@@ -181,7 +184,7 @@ end
 function feima_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ feima_job_p3 ］")
-    local rc = feima_job_goto_maxingkong()
+    local rc = feima_job_go_maxingkong()
     if rc == nil then
         return feima_job_settle()
     end
@@ -208,7 +211,7 @@ function feima_job_p4()
             coroutine.resume(var.job.thread)
         end
     end
-    local rc = feima_job_goto_maxingkong()
+    local rc = feima_job_go_maxingkong()
     if rc == nil then
         rc = feima_job_abandon_job()
     end
@@ -238,12 +241,12 @@ function feima_job_wait_sub_thread_break()
     return
 end
 
-function feima_job_goto_maxingkong()
+function feima_job_go_maxingkong()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ feima_job_goto_maxingkong ］")
+            "函数［ feima_job_go_maxingkong ］")
     if env.current.id[1] ~= 2921 then
         var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
-        local rc = goto(2921)
+        local rc = go(2921)
         if rc ~= 0 then
             return rc
         end
@@ -285,15 +288,15 @@ function feima_job_aquire()
     return
 end
 
-function feima_job_goto_biaoche()
+function feima_job_go_biaoche()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ feima_job_goto_biaoche ］")
+            "函数［ feima_job_go_biaoche ］")
     if config.jobs["飞马镖局"].biaoche == nil then
         config.jobs["飞马镖局"].phase = phase["任务放弃"]
         return feima_job_p4()
     else
         if env.current.id[1] ~= config.jobs["飞马镖局"].biaoche then
-            local rc = goto(config.jobs["飞马镖局"].biaoche)
+            local rc = go(config.jobs["飞马镖局"].biaoche)
             if rc ~= 0 then
                 config.jobs["飞马镖局"].phase = phase["任务放弃"]
                 return feima_job_p4()
@@ -336,7 +339,7 @@ function feima_job_ganche()
     if dir == nil then
         var.job.bevent = true
         feima_job_wait_sub_thread_break()
-        rc = one_step()
+        local rc = one_step()
         if rc ~= 0 then
             config.jobs["飞马镖局"].phase = phase["任务放弃"]
             return feima_job_p4()
@@ -541,9 +544,6 @@ function feima_job_kill_enemy()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ feima_job_kill_enemy ］")
     if var.job.enemy.count > 0 or var.job.addenemy.count > 0 then
-        if prepare_skills() < 0 then
-            return -1
-        end
         local rc = fight()
         if rc < 0 then
             return -1
