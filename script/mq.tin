@@ -71,8 +71,6 @@
 
 #read {$script_path/control/alias.tin};
 
-#class {mq} {close};
-
 #mq {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
 #mq {#send {OnSend HOME = "$work_path/"}};
 #mq {#send {OnSend SCRIPT = "$script_path/"}};

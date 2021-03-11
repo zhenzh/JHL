@@ -226,18 +226,17 @@ function reset_env()
     print("Reset")
 end
 
--- function window_size()
---     local width,height = getMainWindowSize()
---     return { width = width, height = height }
--- end
+function window_size()
+    return 1024,768
+end
 
--- function window_wrap()
---     return 100 --getWindowWrap()
--- end
+function window_wrap()
+    return 100
+end
 
--- function minimal_resources()
---     setConsoleBufferSize(10000, 1000)
--- end
+function minimal_resources()
+    return true
+end
 
 function simulate(msg)
     print("Showme "..msg)
