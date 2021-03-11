@@ -3,7 +3,8 @@ require "set"
 require "stringEx"
 require "timeEx"
 require "mathEx"
---require "alias"
+require "ioEx"
+require "alias"
 require "trigger"
 require "timer"
 
@@ -150,7 +151,7 @@ local color_map = {
     yellowgreen = "9acd32"
 }
 
-local rex = require("rex_posix")
+local rex = require("rex_pcre2")
 regex = regex or {}
 
 function regex.match(text, pattern)
@@ -182,7 +183,12 @@ function trigger_regex(name)
 end
 
 function OnReceive(raw, txt)
-    assert(trigger_process(txt))
+    local rc,trc = xpcall(function() trigger_process(txt) end, debug.traceback)
+    if rc ~= true then
+        print("Debug "..trc)
+        return false
+    end
+    return true
 end
 
 function get_lines(from, to)
@@ -234,7 +240,7 @@ end
 -- end
 
 function simulate(msg)
-    return --feedTriggers(msg.."\n")
+    print("Showme "..msg)
 end
 
 function send_cmd(...)

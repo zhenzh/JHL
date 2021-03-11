@@ -1,10 +1,16 @@
 local line
 
 function OnReceive(raw, txt)
+    return true
 end
 
 function OnSend(msg)
-    assert(loadstring(msg))()
+    local rc,trc = xpcall(loadstring(msg), debug.traceback)
+    if rc ~= true then
+        print("Debug "..trc)
+        return false
+    end
+    return true
 end
 
 while true do

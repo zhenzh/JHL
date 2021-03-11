@@ -4,6 +4,13 @@
 #run {mq} {lua $script_path/listener.lua};
 #config {charset} {UTF-8};
 
+#action {{^Debug (.*)$}} {
+    #local msg {%2};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #main {#echo {<Fff0000>$msg}};
+} {9.999};
+
 #action {^Reset$} {
     #main {#read {$script_path/mq.tin}};
 } {1};
@@ -15,6 +22,13 @@
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
     #main {#echo {$msg}};
+} {9.999};
+
+#action {{^Showme (.*)$}} {
+    #local msg {%2};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #main {#showme {$msg}};
 } {9.999};
 
 #action {{^Send (.*)$}} {
@@ -38,9 +52,9 @@
     #main {#ticker {%2} {#mq {#send {OnSend $msg}}} {%3}};
 } {9.999};
 
-#action {{^Undelay (.*)$}} {#main {#undelay {%2}}} {9.999};
+#action {{^UnDelay (.*)$}} {#main {#undelay {%2}}} {9.999};
 
-#action {{^Unticker (.*)$}} {#main {#unticker {%2}}} {9.999};
+#action {{^UnTicker (.*)$}} {#main {#unticker {%2}}} {9.999};
 
 #main;
 
@@ -54,6 +68,8 @@
     #mq {#send {OnSend $cmd}};
 } {9.999};
 #event {RECEIVED LINE} {#mq {#send {OnReceive RAW %0 TXT %1}}} {9.999};
+
+#read {$script_path/control/alias.tin};
 
 #class {mq} {close};
 

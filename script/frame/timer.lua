@@ -56,7 +56,7 @@ function timer.delete(name)
     if not timer.is_exist(name) then
         return false
     end
-    print("Un"..string.lower(timers[name].id).." "..name)
+    print("Un"..timers[name].id.." "..name)
     if timers[name] ~= nil and timers[name].group ~= nil then
         timers.group[timers[name].group][name] = nil
         if table.is_empty(timers.group[timers[name].group]) then
@@ -80,8 +80,8 @@ function timer.enable(name)
         timers[name].seconds = math.max(0, timers[name].seconds - timers[name].elapsed)
     end
     timers[name].elapsed = 0
-    print("Unticker "..name)
-    print("Undelay "..name)
+    print("UnTicker "..name)
+    print("UnDelay "..name)
     print(timers[name].id.." "..name.." "..tostring(timers[name].seconds).." "..send)
     timers[name].created = time.epoch()
     timers[name].enable = true
@@ -92,7 +92,7 @@ function timer.disable(name)
     if not timer.is_exist(name) then
         return false
     end
-    print("Un"..string.lower(timers[name].id).." "..name)
+    print("Un"..timers[name].id.." "..name)
     timers[name].elapsed = (time.epoch() - (timers[name].created or time.epoch())) / 1000
     timers[name].enable = false
     return true
