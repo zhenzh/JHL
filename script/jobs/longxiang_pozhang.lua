@@ -69,7 +69,7 @@ end
 function longxiang_pozhang_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ longxiang_pozhang_p1 ］")
-    local rc = longxiang_pozhang_goto_fawang()
+    local rc = longxiang_pozhang_go_fawang()
     if rc ~= nil then
         return rc
     end
@@ -102,11 +102,11 @@ function longxiang_pozhang_p3()
     return 0
 end
 
-function longxiang_pozhang_goto_fawang()
+function longxiang_pozhang_go_fawang()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ longxiang_pozhang_goto_fawang ］")
+            "函数［ longxiang_pozhang_go_fawang ］")
     if env.current.id[1] ~= 1787 then
-        local rc = goto(1787)
+        local rc = go(1787)
         if rc ~= 0 then
             return rc
         end
@@ -191,7 +191,7 @@ function longxiang_pozhang_search_nenghai()
     end
     for k,_ in pairs(npc) do
         if env.current.id[1] ~= k then
-            if goto(k) ~= 0 then
+            if go(k) ~= 0 then
                 return -1
             end
         end

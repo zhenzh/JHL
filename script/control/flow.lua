@@ -313,7 +313,7 @@ function flow_prepare_job()
         return -1
     end
     if table.is_empty(carryon.repository) then
-        if goto(290) ~= 0 then
+        if go(290) ~= 0 then
             return -1
         end
         if run_list() < 0 then
@@ -337,7 +337,7 @@ function flow_prepare_job()
         end
     end
     if pots ~= nil then
-        if goto(2399) ~= 0 then
+        if go(2399) ~= 0 then
             return -1
         end
         local l = wait_line("cun",
@@ -361,7 +361,7 @@ function flow_prepare_job()
         end
     end
     if noisy_rooms[env.current.name] ~= nil then
-        if goto(noisy_rooms[env.current.name]) ~= 0 then
+        if go(noisy_rooms[env.current.name]) ~= 0 then
             return -1
         end
     end
@@ -592,7 +592,7 @@ function prepare_items()
         return rc
     end
     if is_own("牛皮酒袋:jiudai") == true and (carryon.container["jiudai 1"].water == false or carryon.container["jiudai 1"].stage < 5) then
-        if goto(959) ~= 0 then
+        if go(959) ~= 0 then
             return -1
         end
         local l = wait_line("fill jiudai",

@@ -106,7 +106,7 @@ end
 function feima_job_p1()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ feima_job_p1 ］")
-    local rc = feima_job_goto_maxingkong()
+    local rc = feima_job_go_maxingkong()
     if rc ~= nil then
         return rc
     end
@@ -116,7 +116,7 @@ end
 function feima_job_p2()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ feima_job_p2 ］")
-    local rc,msg = feima_job_goto_biaoche()
+    local rc,msg = feima_job_go_biaoche()
     if rc ~= nil then
         return rc
     end
@@ -184,7 +184,7 @@ end
 function feima_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ feima_job_p3 ］")
-    local rc = feima_job_goto_maxingkong()
+    local rc = feima_job_go_maxingkong()
     if rc == nil then
         return feima_job_settle()
     end
@@ -211,7 +211,7 @@ function feima_job_p4()
             coroutine.resume(var.job.thread)
         end
     end
-    local rc = feima_job_goto_maxingkong()
+    local rc = feima_job_go_maxingkong()
     if rc == nil then
         rc = feima_job_abandon_job()
     end
@@ -241,12 +241,12 @@ function feima_job_wait_sub_thread_break()
     return
 end
 
-function feima_job_goto_maxingkong()
+function feima_job_go_maxingkong()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ feima_job_goto_maxingkong ］")
+            "函数［ feima_job_go_maxingkong ］")
     if env.current.id[1] ~= 2921 then
         var.job.statistics.begin_time = var.job.statistics.begin_time or time.epoch()
-        local rc = goto(2921)
+        local rc = go(2921)
         if rc ~= 0 then
             return rc
         end
@@ -288,15 +288,15 @@ function feima_job_aquire()
     return
 end
 
-function feima_job_goto_biaoche()
+function feima_job_go_biaoche()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ feima_job_goto_biaoche ］")
+            "函数［ feima_job_go_biaoche ］")
     if config.jobs["飞马镖局"].biaoche == nil then
         config.jobs["飞马镖局"].phase = phase["任务放弃"]
         return feima_job_p4()
     else
         if env.current.id[1] ~= config.jobs["飞马镖局"].biaoche then
-            local rc = goto(config.jobs["飞马镖局"].biaoche)
+            local rc = go(config.jobs["飞马镖局"].biaoche)
             if rc ~= 0 then
                 config.jobs["飞马镖局"].phase = phase["任务放弃"]
                 return feima_job_p4()
