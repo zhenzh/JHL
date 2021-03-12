@@ -1,4 +1,6 @@
 function statistics(mode, shift, classify)
+    message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ statistics ］参数：mode = "..tostring(mode)..", shift = "..tostring(shift)..", classify = "..tostring(classify))
     local list = { end_time = time.epoch(), death = 0, idle = 0, connect = 0, reset = 0 }
     if type(shift) ~= "number" then
         show("统计时间不正确", "red")
