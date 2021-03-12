@@ -43,19 +43,23 @@
     #local msg {%4};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
-    #main {#delay {%2} {#mq {#send {OnSend $msg}}} {%3}};
+    #line substitute variable {
+        #delay {%2} {#send {OnSend $msg}} {%3};
+    }
 } {9.999};
 
 #action {{^Ticker ([\w\d_]+) ([\d\.]+) (.*)$}} {
     #local msg {%4};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
-    #main {#ticker {%2} {#mq {#send {OnSend $msg}}} {%3}};
+    #line substitute variable {
+        #ticker {%2} {#send {OnSend $msg}} {%3};
+    }
 } {9.999};
 
-#action {{^UnDelay (.*)$}} {#main {#undelay {%2}}} {9.999};
+#action {{^UnDelay (.*)$}} {#undelay {%2}} {9.999};
 
-#action {{^UnTicker (.*)$}} {#main {#unticker {%2}}} {9.999};
+#action {{^UnTicker (.*)$}} {#unticker {%2}} {9.999};
 
 #main;
 
@@ -70,7 +74,7 @@
 } {9.999};
 #event {RECEIVED LINE} {
     #mq {
-        #send {OnReceiveTXT %1};
+        #send {\nOnReceiveTXT %1};
         #send {OnReceiveRAW %0};
     };
 } {9.999};

@@ -239,13 +239,13 @@ function minimal_resources()
 end
 
 function simulate(msg)
-    print("Showme "..msg.."\n")
+    print("Showme "..msg)
 end
 
 function send_cmd(...)
     for _,v in ipairs({...}) do
         for _,i in ipairs(string.split(v, ";")) do
-            print("Send "..i.."\n")
+            print("Send "..i)
         end
     end
 end
@@ -258,7 +258,7 @@ function show(msg, fcolor, bcolor)
     if type(msg) ~= "string" then
         msg = tostring(msg)
     end
-    print("Echo <B"..bcolor.."><F"..fcolor..">"..string.gsub(msg, "\n", "").."\n")
+    print("Echo <B"..bcolor.."><F"..fcolor..">"..string.gsub(msg, "\n", ""))
 end
 
 function printf(parameter)

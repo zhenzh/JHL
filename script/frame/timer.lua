@@ -80,9 +80,9 @@ function timer.enable(name)
         timers[name].seconds = math.max(0, timers[name].seconds - timers[name].elapsed)
     end
     timers[name].elapsed = 0
-    print("UnTicker "..name.."\n")
-    print("UnDelay "..name.."\n")
-    print(timers[name].id.." "..name.." "..tostring(timers[name].seconds).." "..send.."\n")
+    print("UnTicker "..name)
+    print("UnDelay "..name)
+    print(timers[name].id.." "..name.." "..tostring(timers[name].seconds).." "..send)
     timers[name].created = time.epoch()
     timers[name].enable = true
     return true
@@ -92,7 +92,7 @@ function timer.disable(name)
     if not timer.is_exist(name) then
         return false
     end
-    print("Un"..timers[name].id.." "..name.."\n")
+    print("Un"..timers[name].id.." "..name)
     timers[name].elapsed = (time.epoch() - (timers[name].created or time.epoch())) / 1000
     timers[name].enable = false
     return true
