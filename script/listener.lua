@@ -1,6 +1,10 @@
 local line
 
-function OnReceive(raw, txt)
+function OnReceiveRAW(msg)
+    return true
+end
+
+function OnReceiveTXT(msg)
     return true
 end
 
@@ -16,9 +20,8 @@ end
 while true do
     line = io.read()
     local typ,msg = string.match(line, "^(On%w+) (.*)$")
-    if typ == "OnReceive" then
-        local raw,txt = string.match(msg, "^RAW (.*) TXT (.*)$")
-        OnReceive(raw, txt)
+    if typ == "OnReceiveTXT" then
+        OnReceiveTXT(msg)
     elseif typ == "OnSend" then
         OnSend(msg)
     end

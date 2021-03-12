@@ -182,10 +182,10 @@ function trigger_regex(name)
     return true
 end
 
-function OnReceive(raw, txt)
-    local rc,trc = xpcall(function() trigger_process(txt) end, debug.traceback)
+function OnReceiveTXT(msg)
+    local rc,trc = xpcall(function() trigger_process(msg) end, debug.traceback)
     if rc ~= true then
-        print("Debug "..trc)
+        print("Debug "..trc.."\n")
         return false
     end
     return true
@@ -223,7 +223,7 @@ function gag()
 end
 
 function reset_env()
-    print("Reset")
+    print("Reset\n")
 end
 
 function window_size()
@@ -239,13 +239,13 @@ function minimal_resources()
 end
 
 function simulate(msg)
-    print("Showme "..msg)
+    print("Showme "..msg.."\n")
 end
 
 function send_cmd(...)
     for _,v in ipairs({...}) do
         for _,i in ipairs(string.split(v, ";")) do
-            print("Send "..i)
+            print("Send "..i.."\n")
         end
     end
 end
@@ -258,7 +258,7 @@ function show(msg, fcolor, bcolor)
     if type(msg) ~= "string" then
         msg = tostring(msg)
     end
-    print("Echo <B"..bcolor.."><F"..fcolor..">"..msg)
+    print("Echo <B"..bcolor.."><F"..fcolor..">"..string.gsub(msg, "\n", "").."\n")
 end
 
 function printf(parameter)

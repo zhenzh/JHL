@@ -3,6 +3,7 @@
 #zap {mq};
 #run {mq} {lua $script_path/listener.lua};
 #config {charset} {UTF-8};
+#log {overwrite} {$work_path/log/mq.log}
 
 #action {{^Debug (.*)$}} {
     #local msg {%2};
@@ -67,7 +68,12 @@
     #replace {cmd} {\\} {\\};
     #mq {#send {OnSend $cmd}};
 } {9.999};
-#event {RECEIVED LINE} {#mq {#send {OnReceive RAW %0 TXT %1}}} {9.999};
+#event {RECEIVED LINE} {
+    #mq {
+        #send {OnReceiveTXT %1};
+        #send {OnReceiveRAW %0};
+    };
+} {9.999};
 
 #read {$script_path/control/alias.tin};
 
