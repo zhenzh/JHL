@@ -11,10 +11,7 @@
 #alias {{^\s*auto(?:\s+(-\w+)|\s*)$}} {#mq {#send {OnSend alias_auto("%2")}}};
 #alias {{^\s*sync\s*$}} {#mq {#send {OnSend alias_sync()}}};
 #alias {{^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$}} {#mq {#send {OnSend alias_add_yun_desc("%2", "%3", "%4", "%5")}}};
-#alias {{^\s*stat\s*(.*)\s*$}} {
-    #local {opts} {%2};
-    #replace {opts} { } {;};
-    #foreach {$opts} {opt} {#list {list} {add} {$opt}};
-    #mq {#send {OnSend alias_statistics("${list[1]}", "${list[2]}", "${list[3]}", "${list[4]}")}};
-    #unvariable {list};
-};
+#alias {{^\s*stat\s*$}} {#mq {#send {OnSend alias_statistics()}}};
+#alias {{^\s*stat\s+([\-ls]+)\s+(\d+)\s*$}} {#mq {#send {OnSend alias_statistics("%2", "%3")}}};
+#alias {{^\s*stat\s+([\-ls]+)\s*$}} {#mq {#send {OnSend alias_statistics("%2")}}};
+#alias {{^\s*stat\s+(\d+)\s*$}} {#mq {#send {OnSend alias_statistics("-s", "%2")}}};
