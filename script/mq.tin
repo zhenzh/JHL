@@ -22,6 +22,7 @@
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
     #main {#echo {$msg}};
 } {9.999};
 
@@ -29,6 +30,7 @@
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
     #main {#showme {$msg}};
 } {9.999};
 
@@ -36,6 +38,7 @@
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
     #main {#send {$msg}};
 } {9.999};
 
@@ -43,6 +46,7 @@
     #local msg {%4};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
     #line substitute variable {
         #delay {%2} {#send {OnSend $msg}} {%3};
     }
@@ -52,6 +56,7 @@
     #local msg {%4};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
     #line substitute variable {
         #ticker {%2} {#send {OnSend $msg}} {%3};
     }
