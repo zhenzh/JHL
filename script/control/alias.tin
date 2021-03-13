@@ -1,8 +1,11 @@
-#alias {{^\s*reset\s*(.*)\s*$}} {#mq {#send {OnSend alias_reset("%2")}}};
+#alias {{^\s*reset\s*(.*)\s*$}} {
+    #main {#class {main} {kill}};
+    #mq {#send {OnSend alias_reset("%2")}}
+};
 #alias {{^\s*log\s+((?:on|off))\s*$}} {
     #if {$log == ""} {
         #class {main} {open};
-        #variable {log} {2021};
+        #format {log} {%t} {%Y%m%d%H%M%S};
         #class {main} {close};
     };
     #if {%2 == on} {
