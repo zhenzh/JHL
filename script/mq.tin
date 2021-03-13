@@ -5,20 +5,20 @@
 #config {charset} {UTF-8};
 #log {overwrite} {$work_path/log/mq.log}
 
-#action {{^Debug (.*)$}} {
+#action {{^DEBUG (.*)$}} {
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
     #main {#echo {<Fff0000>$msg}};
 } {9.999};
 
-#action {^Reset$} {
+#action {^RESET$} {
     #main {#read {$script_path/mq.tin}};
 } {1};
 
-#action {^Gag$} {#main {#line gag}} {9.999};
+#action {^GAG$} {#main {#line gag}} {9.999};
 
-#action {{^Echo (.*)$}} {
+#action {{ECHO (.*)$}} {
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -26,7 +26,7 @@
     #main {#echo {$msg}};
 } {9.999};
 
-#action {{^Showme (.*)$}} {
+#action {{SHOWME (.*)$}} {
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -34,7 +34,7 @@
     #main {#showme {$msg}};
 } {9.999};
 
-#action {{^Send (.*)$}} {
+#action {{SEND (.*)$}} {
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -42,7 +42,7 @@
     #main {#send {$msg}};
 } {9.999};
 
-#action {{^Delay ([\w\d_]+) ([\d\.]+) (.*)$}} {
+#action {{DELAY ([\w\d_]+) ([\d\.]+) (.*)$}} {
     #local msg {%4};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -52,7 +52,7 @@
     }
 } {9.999};
 
-#action {{^Ticker ([\w\d_]+) ([\d\.]+) (.*)$}} {
+#action {{TICKER ([\w\d_]+) ([\d\.]+) (.*)$}} {
     #local msg {%4};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -62,9 +62,9 @@
     }
 } {9.999};
 
-#action {{^UnDelay (.*)$}} {#undelay {%2}} {9.999};
+#action {{UNDELAY (.*)$}} {#undelay {%2}} {9.999};
 
-#action {{^UnTicker (.*)$}} {#unticker {%2}} {9.999};
+#action {{UNTICKER (.*)$}} {#unticker {%2}} {9.999};
 
 #main;
 
