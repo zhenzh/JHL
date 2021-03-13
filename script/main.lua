@@ -251,7 +251,9 @@ else
             automation.thread = coroutine.running()
             loadstring(automation.reconnect)()
             trigger.delete_group("automation_reset")
-            init()
+            if init() < 0 then
+                return automation_reset()
+            end
             load_jobs()
             start()
         end

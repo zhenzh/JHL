@@ -151,7 +151,7 @@ local color_map = {
     yellowgreen = "9acd32"
 }
 
-local rex = require("rex_pcre2")
+local rex = require("rex_pcre")
 regex = regex or {}
 
 function regex.match(text, pattern)
@@ -185,7 +185,7 @@ end
 function OnReceiveTXT(msg)
     local rc,trc = xpcall(function() trigger_process(msg) end, debug.traceback)
     if rc ~= true then
-        print("DEBUG "..trc.."\n")
+        print("DEBUG "..trc)
         return false
     end
     return true
@@ -223,7 +223,7 @@ function gag()
 end
 
 function reset_env()
-    print("RESET\n")
+    print("RESET")
 end
 
 function window_size()

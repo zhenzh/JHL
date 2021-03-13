@@ -3,22 +3,28 @@
     #mq {#send {OnSend alias_reset("%2")}}
 };
 #alias {{^\s*log\s+((?:on|off))\s*$}} {
-    #if {$log == ""} {
+    #if {%2 == off} {
+        #if {$log != ""} {
+            #log {off} {$work_path/log/$log.log};
+        };
+        #unvariable {log};
+    } {
         #class {main} {open};
+        #if {$log != ""} {
+            #log {off} {$work_path/log/$log.log};
+        };
         #format {log} {%t} {%Y%m%d%H%M%S};
         #class {main} {close};
-    };
-    #if {%2 == on} {
         #log {overwrite} {$work_path/log/$log.log};
-    } {
-        #log {off} {$work_path/log/$log.log};
-        #unvariable {log};
     };
 };
 #alias {{^\s*log\s+mq\s+((?:on|off))\s*$}} {
-    #local {opt} {%2};
-    #replace {opt} {on} {append};
-    #mq {#log {$opt} {$work_path/log/mq.log}};
+    #if {%2 == off} {
+        #mq {#log {overwrite} {$work_path/log/mq.log}};
+        #mq {#log {off} {$work_path/log/mq.log}};
+    } {
+        #mq {#log {append} {$work_path/log/mq.log}};
+    };
 };
 #alias {{^\s*flush\s*$}} {#mq {#send {OnSend alias_flush()}}};
 #alias {{^\s*debug\s+(\w+)\s*$}} {#mq {#send {OnSend alias_debug("%2")}}};

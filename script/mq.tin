@@ -3,7 +3,7 @@
 #zap {mq};
 #run {mq} {lua $script_path/listener.lua};
 #config {charset} {UTF-8};
-#log {overwrite} {$work_path/log/mq.log}
+#log {append} {$work_path/log/mq.log}
 
 #action {{^DEBUG (.*)$}} {
     #local msg {%2};
@@ -90,5 +90,3 @@
 #mq {#send {OnSend HOME = "$work_path/"}};
 #mq {#send {OnSend SCRIPT = "$script_path/"}};
 #mq {#send {OnSend require "main"}};
-
-#log {off} {$work_path/log/mq.log}
