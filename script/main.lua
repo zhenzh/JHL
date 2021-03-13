@@ -19,6 +19,12 @@ get_script_path().."gps/?.lua;"..
 get_script_path().."control/?.lua;"..
 get_script_path().."jobs/?.lua"
 
+if loadstring == nil then
+    function loadstring(msg)
+        return load(msg)
+    end
+end
+
 require "config"
 require "client"
 require "common"

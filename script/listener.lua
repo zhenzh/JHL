@@ -11,7 +11,7 @@ end
 function OnSend(msg)
     local rc,trc = xpcall(loadstring(msg), debug.traceback)
     if rc ~= true then
-        print("Debug "..trc)
+        print("DEBUG "..trc)
         return false
     end
     return true
