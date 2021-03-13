@@ -79,7 +79,7 @@
 } {9.999};
 #event {RECEIVED LINE} {
     #mq {
-        #send {\nOnReceiveTXT %1};
+        #send {OnReceiveTXT %1};
         #send {OnReceiveRAW %0};
     };
 } {9.999};
@@ -90,3 +90,5 @@
 #mq {#send {OnSend HOME = "$work_path/"}};
 #mq {#send {OnSend SCRIPT = "$script_path/"}};
 #mq {#send {OnSend require "main"}};
+
+#log {off} {$work_path/log/mq.log}
