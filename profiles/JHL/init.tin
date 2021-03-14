@@ -6,7 +6,7 @@
 #replace {script_path} {profiles/%*} {script};
 
 #session {main} {118.25.151.226} {5555};
+#config {charset} {GBK1TOUTF8};
 #split;
-#config {charset} {GBK1TOUTF8}
 
 #read {$script_path/mq.tin};

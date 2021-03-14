@@ -211,7 +211,6 @@ function reset(fresh)
         automation.timer[v] = timer.get(v)
     end
     automation.debug = global.debug.level
-    automation.ui = ui
     automation.epoch = time.epoch()
     table.save(get_work_path().."log/automation.tmp", automation)
     table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))

@@ -3,14 +3,14 @@
     #mq {#send {OnSend alias_reset("%2")}}
 };
 #alias {{^\s*log\s+((?:on|off))\s*$}} {
-    #if {%2 == off} {
-        #if {$log != ""} {
+    #if {"%2" == "off"} {
+        #if {"$log" != ""} {
             #log {off} {$work_path/log/$log.log};
         };
         #unvariable {log};
     } {
         #class {main} {open};
-        #if {$log != ""} {
+        #if {"$log" != ""} {
             #log {off} {$work_path/log/$log.log};
         };
         #format {log} {%t} {%Y%m%d%H%M%S};
@@ -19,7 +19,7 @@
     };
 };
 #alias {{^\s*log\s+mq\s+((?:on|off))\s*$}} {
-    #if {%2 == off} {
+    #if {"%2" == "off"} {
         #mq {#log {overwrite} {$work_path/log/mq.log}};
         #mq {#log {off} {$work_path/log/mq.log}};
     } {

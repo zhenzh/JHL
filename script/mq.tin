@@ -2,8 +2,8 @@
 
 #zap {mq};
 #run {mq} {lua $script_path/listener.lua};
+#log {append} {$work_path/log/mq.log};
 #config {charset} {UTF-8};
-#log {append} {$work_path/log/mq.log}
 
 #action {{^DEBUG (.*)$}} {
     #local msg {%2};
