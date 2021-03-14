@@ -19,6 +19,12 @@ get_script_path().."gps/?.lua;"..
 get_script_path().."control/?.lua;"..
 get_script_path().."jobs/?.lua"
 
+if loadstring == nil then
+    function loadstring(msg)
+        return load(msg)
+    end
+end
+
 require "config"
 require "client"
 require "common"
@@ -205,7 +211,6 @@ function reset(fresh)
         automation.timer[v] = timer.get(v)
     end
     automation.debug = global.debug.level
-    automation.ui = ui
     automation.epoch = time.epoch()
     table.save(get_work_path().."log/automation.tmp", automation)
     table.save(get_work_path().."log/global.tmp", (global.buffer or { "" }))
@@ -245,7 +250,9 @@ else
             automation.thread = coroutine.running()
             loadstring(automation.reconnect)()
             trigger.delete_group("automation_reset")
-            init()
+            if init() < 0 then
+                return automation_reset()
+            end
             load_jobs()
             start()
         end
