@@ -18,7 +18,7 @@
 
 #action {^GAG$} {#main {#line gag}} {9.999};
 
-#action {{ECHO (.*)(?:OnReceive.*|OnSend.*|)$}} {
+#action {{ECHO (.*)$}} {
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -26,7 +26,15 @@
     #main {#echo {$msg}};
 } {9.999};
 
-#action {{SHOWME (.*)(?:OnReceive.*|OnSend.*|)$}} {
+#action {{^ECHO (.*)(?:OnReceive|OnSend).*$}} {
+    #local msg {%2};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
+    #main {#echo {$msg}};
+} {9.998};
+
+#action {{SHOWME (.*)$}} {
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -34,7 +42,15 @@
     #main {#showme {$msg}};
 } {9.999};
 
-#action {{SEND (.*)(?:OnReceive.*|OnSend.*|)$}} {
+#action {{^SHOWME (.*)(?:OnReceive|OnSend).*$}} {
+    #local msg {%2};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
+    #main {#showme {$msg}};
+} {9.998};
+
+#action {{SEND (.*)$}} {
     #local msg {%2};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -42,7 +58,15 @@
     #main {#send {$msg}};
 } {9.999};
 
-#action {{DELAY ([\w\d_]+) ([\d\.]+) (.*)(?:OnReceive.*|OnSend.*|)$}} {
+#action {{^SEND (.*)(?:OnReceive|OnSend).*$}} {
+    #local msg {%2};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
+    #main {#send {$msg}};
+} {9.998};
+
+#action {{DELAY ([\w\d_]+) ([\d\.]+) (.*)$}} {
     #local msg {%4};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -52,7 +76,17 @@
     }
 } {9.999};
 
-#action {{TICKER ([\w\d_]+) ([\d\.]+) (.*)(?:OnReceive.*|OnSend.*|)$}} {
+#action {{^DELAY ([\w\d_]+) ([\d\.]+) (.*)(?:OnReceive|OnSend).*$}} {
+    #local msg {%4};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
+    #line substitute variable {
+        #delay {%2} {#send {OnSend $msg}} {%3};
+    }
+} {9.998};
+
+#action {{TICKER ([\w\d_]+) ([\d\.]+) (.*)$}} {
     #local msg {%4};
     #replace msg {\\x7B} {\x7B};
     #replace msg {\\x7D} {\x7D};
@@ -62,9 +96,21 @@
     }
 } {9.999};
 
-#action {{UNDELAY (.*)(?:OnReceive.*|OnSend.*|)$}} {#undelay {%2}} {9.999};
+#action {{^TICKER ([\w\d_]+) ([\d\.]+) (.*)(?:OnReceive|OnSend).*$}} {
+    #local msg {%4};
+    #replace msg {\\x7B} {\x7B};
+    #replace msg {\\x7D} {\x7D};
+    #replace msg {%%} {%%%};
+    #line substitute variable {
+        #ticker {%2} {#send {OnSend $msg}} {%3};
+    }
+} {9.999};
+
+#action {{UNDELAY (.*)$}} {#undelay {%2}} {9.999};
+#action {{^UNDELAY (.*)(?:OnReceive|OnSend).*$}} {#undelay {%2}} {9.998};
 
 #action {{UNTICKER (.*)(?:OnReceive.*|OnSend.*|)$}} {#unticker {%2}} {9.999};
+#action {{^UNTICKER (.*)(?:OnReceive|OnSend).*$}} {#unticker {%2}} {9.998};
 
 #main;
 
