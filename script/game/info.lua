@@ -1350,7 +1350,7 @@ local unknown_force_yun = {
 
 function invalid_ask_ping()
     state.buff.ask_ping = false
-    if not trigger.is_exist("invalid_ask_ping") then
+    if not timer.is_exist("invalid_ask_ping") then
         timer.add("invalid_ask_ping", 1800, "state.buff.ask_ping = nil", "state", {Enable=true, OneShot=true})
     end
 end
