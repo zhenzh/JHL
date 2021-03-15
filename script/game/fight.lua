@@ -193,14 +193,16 @@ function fight()  -- 0 成功， 1 未知， 2 失败， 3 普攻
     if (var.fight.stop or 3) < 3 then
         return fight_return(var.fight.stop)
     end
-    local rc = wield(config.fight[var.fight.job].weapon or config.fight["通用"].weapon)
-    if rc < 0 then
-        return fight_return(-1)
-    elseif rc == 1 then
-        return fight_return(2)
-    end
     if prepare_skills() < 0 then
         return fight_return(-1)
+    end
+    if var.wield == nil then
+        local rc = wield(config.fight[var.fight.job].weapon or config.fight["通用"].weapon)
+        if rc < 0 then
+            return fight_return(-1)
+        elseif rc == 1 then
+            return fight_return(2)
+        end
     end
     if (var.fight.stop  or 0) < 3 then
         if state.nl <= profile.power * 7 and state.power > 0 then
