@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd profiles/$1/
-tt++ init.tin
+tt++ ../../script/init.tin

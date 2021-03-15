@@ -602,7 +602,7 @@ function prepare_items()
             return -1
         end
     end
-    run("wear all;hp")
+    run("wear nasos uniforms;hp")
     if state.food < 100 or state.drink < 100 or state.food * state.drink == 0 then
         if feed("full") < 0  then
             return -1
