@@ -357,7 +357,7 @@ function yun_bidu_exec()
             return 1,"中断事件"
         end
     elseif l[0] == "你现在的内力不足以运使内功逼出身上毒质。" then
-        var.yun_bidu.base = math.max(50, state.nl)
+        var.yun_bidu.base = math.max(50, state.nl+1)
     elseif l[0] == "你目前还没有任何为 中断事件 的变量设定。" then
         return 1,"中断事件"
     end

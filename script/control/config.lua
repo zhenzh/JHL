@@ -70,6 +70,7 @@ config = {
     },
     fight = {       -- 战斗配置
         armor = "党卫军衣:nasos uniforms",   -- 装备护甲
+        others = {},                        -- 其他装备
         ["通用"] = {        -- 默认设置
             weapon = { "", "" },            -- 装备武器
             yuns = { "" },                  -- 内功技能
