@@ -144,6 +144,7 @@ function songshan_job_p3()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ songshan_job_p3 ］")
     automation.idle = false
+    map_adjust("丐帮密道", "关闭")
     local rc = songshan_job_go_zuolengchan("walk")
     if rc ~= nil then
         return rc
