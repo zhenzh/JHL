@@ -384,7 +384,9 @@ function feima_job_ganche()
                 return -1
             end
             env.current.id = { current_id }
-        end 
+        else
+            env.current.id = {}
+        end
         local rc = locate()
         if rc < 0 then
             return -1
