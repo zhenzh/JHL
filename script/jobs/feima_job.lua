@@ -352,7 +352,11 @@ function feima_job_ganche()
         if var.job.enemy.count > 0 or 
            var.job.addenemy.count > 0 or
            config.jobs["飞马镖局"].phase > phase["任务执行"] then
-            return feima_job_post_ganche()
+            local rc = feima_job_post_ganche()
+            if rc ~= nil then
+                return rc
+            end
+            return feima_job_ganche()
         end
         wait(0.1)
     end
@@ -412,7 +416,7 @@ function feima_job_ganche()
             env.current.id = {config.jobs["飞马镖局"].path[config.jobs["飞马镖局"].biaoche].next}
             config.jobs["飞马镖局"].biaoche = env.current.id[1]
             if var.job.enemy.count > 0 or var.job.addenemy.count > 0 then
-                if var.job.thread_suspend == false then 
+                if var.job.thread_suspend == false then
                     if var.yun_bidu ~= nil then
                         if var.wait_no_busy ~= nil then
                             var.wait_no_busy.stop = true
