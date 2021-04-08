@@ -241,6 +241,14 @@ function fight_return(rc)
     end
     var.fight = nil
     trigger.disable_group("fight")
+    if rc < 2 then
+        if state.buff["riyue-lun_dazhuan"] ~= nil then
+            wait_line(nil,
+                      3, nil, 100,
+                      "^\\S+在你身旁绕了个圈子，你伸手一招，那飞行中的\\S+便重新飞回你的手中！$")
+            state.buff["riyue-lun_dazhuan"] = nil
+        end
+    end
     return rc
 end
 
