@@ -26,12 +26,15 @@
 ## 简介
 
 本机器人专为中文武侠类 MUD 游戏《江湖路》(106.225.179.81:8888) 制作，为实现游戏过程中全自动无人值守任务。
+
 机器人作为 MUD 游戏的一大特色，减少了大量繁琐的重复操作，是理想的游戏辅助。
+
 希望能以此吸引到更多有相同爱好，对 MUD 感兴趣的朋友一起交流学习。
 
 ### 使用语言
 
 机器人主体采用 LUA 语言，尽量做到最少依赖不通用的库以及客户端所独有的库
+
 少量代码段包含不同客户端所采用的独立语言，主要集中在机器人加载项与客户端接口模块
 
 ### 编码格式
@@ -65,15 +68,19 @@
 #### Windows
 
 双击执行 `Mudlet-<version>-windows-installer.exe`，将会打开 Mudlet 主界面，首次执行后安装即已自动完成。
+
 用户无需额外操作，可直接关闭主界面退出。后续用户可改从本地已安装的应用程序 Mudlet.exe 处启动，`Mudlet-<version>-windows-installer.exe` 文件无需保留。
 
 - 本地安装路径在用户目录 `AppData` 下，以 Administrator 用户为例：
+  
   应用程序和相关库文件将被自动安装到 `C:\Users\Administrator\AppData\Local\Mudlet`
+
   用户配置文件将被放置在 `C:\Users\Administrator\.config\mudlet`
 
 #### MacOS
 
 直接安装 `Mudlet-<version>.dmg` 文件。
+
 安装完成后，用户配置文件将被放置在 `$HOME/.config/mudlet` 目录下。
 
 #### Linux
@@ -85,6 +92,7 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 ```
 
 在图形终端内直接运行解压后的 .AppImage 文件，使其自动完成配置文件目录的初始化。
+
 首次运行后，用户配置文件将被放置在 `$HOME/.config/mudlet` 目录下。
 
 #### 机器人配置
@@ -116,7 +124,8 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 
 #### Docker
 
-安装 Docker 软件，参见 Docker [官方安装文档](https://docs.docker.com/engine/install/)
+安装 Docker 软件，参见 Docker [官方安装文档](https://docs.docker.com/engine/install/)。
+
 下载 [tintin 分支](https://github.com/zhenzh/JHL/archive/tintin.zip)
 
 打开命令行界面（Windows 打开 PowerShell）构建 docker 容器镜像：`docker build -t jhl:latest <机器人所在路径>`
@@ -127,7 +136,8 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 
 #### MacOS/Linux
 
-安装 tintin++，详细步骤参见[官网安装说明](https://tintin.mudhalla.net/install.php)
+安装 tintin++，详细步骤参见[官网安装说明](https://tintin.mudhalla.net/install.php)。
+
 安装 Lua5.1（如果没有 5.1 版本可选，5.2 版本也可以兼容）：
 
 - MacOS `brew install lua@5.1`
@@ -151,7 +161,8 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 - 修改 `profiles/<角色 ID>/char.cfg` 文件，根据游戏角色自身情况调整相关配置
 
 注意：修改配置文件请使用支持 UTF-8 格式的文本编辑器，Windows 自带的记事本和写字板编辑可能出现乱码及添加隐藏字符等问题，造成机器人加载失败。
-Windows 上可使用 notepad++, notpad2, ultraedit 等编辑工具
+
+Windows 上可使用 vscode，notepad++，notpad2，ultraedit 等编辑工具
 
 ## 开始游戏
 
