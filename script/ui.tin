@@ -1,5 +1,4 @@
 #split;
-#split 0 0 0 60;
 
 #config {mouse} {on};
 #event {SCROLLED MOUSE WHEEL UP} {#buffer up 1};

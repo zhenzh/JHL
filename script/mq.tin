@@ -13,7 +13,8 @@
 } {9.999};
 
 #action {^RESET$} {
-    #main {#read {$script_path/mq.tin}};
+    #gts {#read {$script_path/mq.tin}};
+    #gts {#read {$script_path/main.tin}};
 } {1};
 
 #action {^GAG$} {#main {#line gag}} {9.999};
@@ -111,28 +112,3 @@
 
 #action {{UNTICKER (.*)(?:OnReceive.*|OnSend.*|)$}} {#unticker {%2}} {9.999};
 #action {{^UNTICKER (.*)(?:OnReceive|OnSend).*$}} {#unticker {%2}} {9.998};
-
-#main;
-
-#class {mq} {open};
-
-#alias {^/%*$} {
-    #local {cmd} {%0};
-    #replace {cmd} {^/%s} {};
-    #replace {cmd} {%s$} {};
-    #replace {cmd} {\\} {\\};
-    #mq {#send {OnSend $cmd}};
-} {9.999};
-#event {RECEIVED LINE} {
-    #mq {
-        #send {OnReceiveTXT %1};
-        #send {OnReceiveRAW %0};
-    };
-} {9.999};
-
-#read {$script_path/control/alias.tin};
-
-#mq {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
-#mq {#send {OnSend HOME = "$work_path/"}};
-#mq {#send {OnSend SCRIPT = "$script_path/"}};
-#mq {#send {OnSend require "main"}};
