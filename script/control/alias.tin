@@ -1,0 +1,44 @@
+#alias {{^\s*reset\s*(.*)\s*$}} {
+    #main {#class {main} {kill}};
+    #mq {#send {OnSend alias_reset("%2")}}
+};
+#alias {{^\s*log\s+((?:on|off))\s*$}} {
+    #if {"%2" == "off"} {
+        #if {"$log" != ""} {
+            #log {off} {$work_path/log/$log.log};
+        };
+        #unvariable {log};
+    } {
+        #class {main} {open};
+        #if {"$log" != ""} {
+            #log {off} {$work_path/log/$log.log};
+        };
+        #format {log} {%t} {%Y%m%d%H%M%S};
+        #class {main} {close};
+        #log {overwrite} {$work_path/log/$log.log};
+    };
+};
+#alias {{^\s*log\s+mq\s+((?:on|off))\s*$}} {
+    #if {"%2" == "off"} {
+        #mq {#log {overwrite} {$work_path/log/mq.log}};
+        #mq {#log {off} {$work_path/log/mq.log}};
+    } {
+        #mq {#log {append} {$work_path/log/mq.log}};
+    };
+};
+#alias {{^\s*flush\s*$}} {#mq {#send {OnSend alias_flush()}}};
+#alias {{^\s*debug\s+(\w+)\s*$}} {#mq {#send {OnSend alias_debug("%2")}}};
+#alias {{^\s*dump\s*$}} {#mq {#send {OnSend alias_dump()}}};
+#alias {{^\s*gps\s*$}} {#mq {#send {OnSend alias_gps()}}};
+#alias {{^\s*flyto\s+(.+)\s*$}} {#mq {#send {OnSend alias_flyto("%2")}}};
+#alias {{^\s*flynext\s*$}} {#mq {#send {OnSend alias_flynext()}}};
+#alias {{^\s*walkto\s+(.+)\s*$}} {#mq {#send {OnSend alias_walkto("%2")}}};
+#alias {{^\s*walknext\s*$}} {#mq {#send {OnSend alias_walknext()}}};
+#alias {{^\s*query (.+)\s*$}} {#mq {#send {OnSend alias_query("%2")}}};
+#alias {{^\s*auto(?:\s+(-\w+)|\s*)$}} {#mq {#send {OnSend alias_auto("%2")}}};
+#alias {{^\s*sync\s*$}} {#mq {#send {OnSend alias_sync()}}};
+#alias {{^\s*addyun ([-\w]+) (\w+) (\S+) (\S+)$}} {#mq {#send {OnSend alias_add_yun_desc("%2", "%3", "%4", "%5")}}};
+#alias {{^\s*stat\s*$}} {#mq {#send {OnSend alias_statistics()}}};
+#alias {{^\s*stat\s+([\-ls]+)\s+(\d+)\s*$}} {#mq {#send {OnSend alias_statistics("%2", "%3")}}};
+#alias {{^\s*stat\s+([\-ls]+)\s*$}} {#mq {#send {OnSend alias_statistics("%2")}}};
+#alias {{^\s*stat\s+(\d+)\s*$}} {#mq {#send {OnSend alias_statistics("-s", "%2")}}};
