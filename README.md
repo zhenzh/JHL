@@ -126,9 +126,9 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 
 安装 Docker 软件，参见 Docker [官方安装文档](https://docs.docker.com/engine/install/)。
 
-下载 [tintin 分支](https://github.com/zhenzh/JHL/archive/tintin.zip)
+下载 [tintin 分支](https://github.com/zhenzh/JHL/archive/tintin.zip) 并解压
 
-打开命令行界面（Windows 打开 PowerShell）构建 docker 容器镜像：`docker build -t jhl:latest <机器人所在路径>`
+打开命令行界面（Windows 打开 PowerShell）执行启动脚本：`<解压后的机器人所在路径>/docker-start.sh <角色 ID> `
 
 #### Windows
 
@@ -143,6 +143,12 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 - MacOS `brew install lua@5.1`
 - Ubuntu/Debian `apt get -y install lua5.1-0`
 - Alpine `apk add lua5.1`
+
+安装 [LuaRocks](https://github.com/luarocks/luarocks/wiki/Download) 5.1
+
+安装 Lua pcre 库：`luarocks-5.1 install lrexlib-pcre`
+
+执行启动脚本：`<解压后的机器人所在路径>/start.sh <角色 ID> `
 
 ### [Mushclient](http://www.gammon.com.au/mushclient/mushclient.htm)
 

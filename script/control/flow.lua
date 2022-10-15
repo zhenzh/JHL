@@ -144,7 +144,7 @@ function automation_reset_connect()
         if l == false or l[0] == "对不起，密码错误！" then
             return automation_reset_connect()
         elseif l[0] == "您要将另一个连线中的相同人物赶出去，取而代之吗？(Yes/No)" then
-            if wait_line("y", 30, nil, 10, "^您目前的权限是：.*，您设定为.*显示。$|^重新连线完毕。$") == false then
+            if wait_line("y", 30, nil, 5, "^您目前的权限是：.*，您设定为.*显示。$|^重新连线完毕。$") == false then
                 return automation_reset_connect()
             end
         end
