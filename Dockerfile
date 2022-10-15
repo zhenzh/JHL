@@ -30,7 +30,7 @@ RUN echo "termcapinfo xterm-256color 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'" >> 
 RUN echo "attrcolor b '.I'" >> ~/.screenrc
 RUN echo "defscrollback 100000" >> ~/.screenrc
 RUN echo "hardstatus alwayslastline" >> ~/.screenrc
-RUN echo "hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m-%d %{W}%c %{g}]'" >> ~/.screenrc
+RUN echo "hardstatus string '%{= kG}[ %{G}%H %{g}][%{B} %m-%d %{W}%c %{g}]'" >> ~/.screenrc
 COPY --from=build /usr/local/bin/tt++ /usr/local/bin
 COPY --from=build /usr/local/lib/lua/5.1/rex_pcre.so /usr/local/lib/lua/5.1
 CMD [ "sleep", "infinity" ]

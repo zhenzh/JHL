@@ -19,7 +19,7 @@
     };
 } {9.999};
 
-#read {$script_path/control/alias.tin};
+#read {$script_path/alias.tin};
 
 #mq {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
 #mq {#send {OnSend HOME = "$work_path/"}};

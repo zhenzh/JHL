@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [[ `docker image list jhl:latest | wc -l` -le 1 ]]; then
+if [[ `docker image list jhl:latest | wc -l` -le 1 ]] || [[ $2 == "--new-image" ]]; then
     docker build -t jhl:latest .
     if [[ $? -ne 0 ]]; then
         echo "image build failed, try again"
@@ -8,6 +8,10 @@ if [[ `docker image list jhl:latest | wc -l` -le 1 ]]; then
     fi
 fi
 
+if [[ $2 == "--new-image" ]]; then
+    docker container stop `docker container list -a -q -f name=$1`
+    docker container rm `docker container list -a -q -f name=$1`
+fi
 
 if [[ `docker container list -a -f name=$1 | wc -l` -le 1 ]]; then
     docker run --name $1 --hostname $1 -e "USERID=$1" -d -v $PWD:/JHL jhl:latest
