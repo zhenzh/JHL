@@ -1,0 +1,24 @@
+#info system save;
+
+#variable {work_path} {$info[SYSTEM][CWD]};
+
+#variable {script_path} {$info[SYSTEM][CWD]};
+#replace {script_path} {profiles/%*} {script};
+
+#event {SESSION DISCONNECTED} {
+    #if {"%0" == "main"} {
+        #gts;
+        #echo {%s} {<110>连接已被服务器断开，10 秒后自动重连。<070>};
+        #delay {10} {
+            #echo {%s} {<120>自动重连。<070>};
+            #read {$script_path/main.tin};
+            #mq {#send {OnSend if automation.reconnect ~= nil then send_cmd("") end}};
+        };
+    };
+    #elseif {"%0" == "mq"} {
+        #read {$script_path/mq.tin};
+    }
+};
+
+#read {$script_path/mq.tin};
+#read {$script_path/main.tin};
