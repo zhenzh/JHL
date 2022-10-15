@@ -132,7 +132,7 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 
 #### Windows
 
-仅支持 Window10 以上版本，通过 Docker 容器镜像运行。详细步骤参见 Docker(#Docker)
+仅支持 Window10 以上版本，通过 Docker 容器镜像运行。详细步骤参见 [Docker](#docker)
 
 #### MacOS/Linux
 
