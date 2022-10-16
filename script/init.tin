@@ -1,3 +1,6 @@
+#variable {host} {106.225.179.81};
+#variable {port} {8888};
+
 #info system save;
 
 #variable {work_path} {$info[SYSTEM][CWD]};
@@ -12,7 +15,6 @@
         #delay {10} {
             #echo {%s} {<120>自动重连。<070>};
             #read {$script_path/main.tin};
-            #mq {#send {OnSend if automation.reconnect ~= nil then send_cmd("") end}};
         };
     };
     #elseif {"%0" == "mq"} {

@@ -127,6 +127,16 @@ automation.statistics.processing = automation.statistics.processing or {}
 
 collectgarbage("collect")
 
+function keepalive()
+    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
+            "函数［ keepalive ］")
+    timer.add("keepalive", 30, "disconnect('keepalive') disconnect()", "automation", {Enable=true, OneShot=true})
+    if connect("keepalive") == true then
+        timer.delete("keepalive")
+        timer.add("keepalive", 30, "keepalive()", "automation", {Enable=true, OneShot=true})
+    end
+end
+
 function init()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ init ］")
     trigger.add("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
@@ -248,7 +258,14 @@ else
     coroutine.wrap(
         function ()
             automation.thread = coroutine.running()
-            loadstring(automation.reconnect)()
+            if #global.buffer == 0 or 
+               get_lines(-1)[1] == "请输入您的英文ID：" or 
+               get_lines(-1)[1] == "请重新输入您的ID：" or 
+               set.has(get_lines(-3), "英文ID识别( 新玩家请输入 new 进入人物建立单元 )") then
+                automation_reset_connect()
+            else
+                loadstring(automation.reconnect)()
+            end
             trigger.delete_group("automation_reset")
             if init() < 0 then
                 return automation_reset()
@@ -258,3 +275,5 @@ else
         end
     )()
 end
+
+--keepalive()

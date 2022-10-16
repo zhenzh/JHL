@@ -8,7 +8,8 @@ RUN apk add gcc libc-dev make wget zlib-dev lua-dev pcre-dev luarocks
 
 RUN luarocks-5.1 install lrexlib-pcre
 
-RUN wget https://github.com/scandum/tintin/releases/download/2.02.20/tintin-2.02.20.tar.gz
+COPY . /tmp/
+RUN if [[ `ls /tmp | grep tintin-2.02.20.tar.gz | wc -l` -eq 0 ]]; then wget https://github.com/scandum/tintin/releases/download/2.02.20/tintin-2.02.20.tar.gz; else mv /tmp/tintin-2.02.20.tar.gz /build; fi
 RUN tar xzvf tintin-2.02.20.tar.gz && cd tt/src && ./configure && make install
 
 FROM alpine:latest

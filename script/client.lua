@@ -226,6 +226,18 @@ function reset_env()
     print("RESET")
 end
 
+function disconnect(session)
+    print("DISCONNECT "..(session or "main"))
+end
+
+function connect(session, active)
+    if active == true then
+        print("CONNECT "..session.." ACTIVE")
+    else
+        print("CONNECT "..session.." INACTIVE")
+    end
+end
+
 function window_size()
     return 1024,768
 end

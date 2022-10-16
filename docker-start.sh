@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ `docker image list jhl:latest | wc -l` -le 1 ]] || [[ $2 == "--new-image" ]]; then
     docker build -t jhl:latest .

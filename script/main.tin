@@ -1,4 +1,4 @@
-#session {main} {106.225.179.81} {8888};
+#session {main} {$host} {$port};
 #read {$script_path/ui.tin};
 
 #config {charset} {GBK1TOUTF8};
@@ -25,4 +25,5 @@
 #mq {#send {OnSend HOME = "$work_path/"}};
 #mq {#send {OnSend SCRIPT = "$script_path/"}};
 #mq {#send {OnSend require "main"}};
+#mq {#send {OnSend if automation.reconnect ~= nil then send_cmd("") end}};
 #main;

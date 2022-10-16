@@ -124,7 +124,6 @@ end
 function automation_reset_connect()
     message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
             "函数［ automation_reset_connect ］")
-    automation.reconnect = nil
     set.append(automation.statistics.connect, time.epoch())
     if get_lines(-1)[1] == "请输入您的英文ID：" or 
        get_lines(-1)[1] == "请重新输入您的ID：" then
@@ -148,6 +147,7 @@ function automation_reset_connect()
                 return automation_reset_connect()
             end
         end
+        automation.reconnect = nil
         return 0
     end
     wait(0.1)
@@ -233,7 +233,7 @@ function start()
     trigger.enable("others_come")
     trigger.enable("others_leave")
     trigger.enable("hide_busy")
-    timer.add(nil, 180, "automation_idle()", "automation", {Enable=true})
+    timer.add("automation_idle", 180, "automation_idle()", "automation", {Enable=true})
     trigger.add("automation_reset_faint", "automation_reset('automation_reset_faint()')", "automation", {Enable=true}, 30, "^你的眼前一黑，接著什么也不知道了....$")
     trigger.add("automation_reset_die", "automation_reset('automation_reset_die()')", "automation", {Enable=true}, 10, "^鬼门关 - $")
     trigger.add("automation_reset_connect", "automation_reset('automation_reset_connect()')", "automation", {Enable=true}, 10, "^一道闪电从天降下，直朝你劈去……结果没打中！$|^英文ID识别\\( 新玩家请输入 new 进入人物建立单元 \\)$")

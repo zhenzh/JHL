@@ -17,6 +17,19 @@
     #gts {#read {$script_path/main.tin}};
 } {1};
 
+#action {{^DISCONNECT (.*)$}} {
+    #gts {#zap {%2}};
+} {1};
+
+#action {{^CONNECT (.*) (.*)$}} {
+    #if {%3 == "INACTIVE"} {
+        #gts {#session {%3} {$host} {$port}};
+    };
+    #else {
+        #session {%2} {$host} {$port};
+    };
+} {1};
+
 #action {^GAG$} {#main {#line gag}} {9.999};
 
 #action {{ECHO (.*)$}} {
