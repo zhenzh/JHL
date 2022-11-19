@@ -557,7 +557,7 @@ function murong()
     if l[0] == "穷光蛋，一边呆着去！" then
         return event_draw_pay(400)
     elseif string.find(l[0], "慕容身法") then
-        if wait_line("", 30, nil, 20, "^(?:小岛边|岸边|码头) - ") == false or 
+        if wait_line("hi", 30, nil, 20, "^(?:小岛边|岸边|码头) - ") == false or 
            wait_line(nil, 30, nil, 20, "^> $") == false then
             return -1
         end
