@@ -2,7 +2,7 @@
 
 #zap {mq};
 #run {mq} {lua $script_path/listener.lua};
-#log {append} {$work_path/log/mq.log};
+#log {timestamp} {%Y%m%d%H%M%S };
 #config {charset} {UTF-8};
 
 #action {{^DEBUG (.*)$}} {
@@ -30,7 +30,11 @@
     };
 } {1};
 
-#action {^GAG$} {#main {#line gag}} {9.999};
+#action {{^GAG (.*)$}} {#main {
+    #buffer {find} {^%2$} {gag};
+    #buffer {clear} {$gag};
+    #buffer {end};
+}} {9.999};
 
 #action {{ECHO (.*)$}} {
     #local msg {%2};

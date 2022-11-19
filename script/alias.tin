@@ -1,29 +1,22 @@
 #alias {{^\s*reset\s*(.*)\s*$}} {
     #main {#class {main} {kill}};
-    #mq {#send {OnSend alias_reset("%2")}}
+    #mq {#send {OnSend alias_reset("%2")}};
 };
-#alias {{^\s*log\s+((?:on|off))\s*$}} {
+#alias {{^\s*log\s+(.+)\s*$}} {
     #if {"%2" == "off"} {
-        #if {"$log" != ""} {
-            #log {off} {$work_path/log/$log.log};
-        };
-        #unvariable {log};
-    } {
-        #class {main} {open};
-        #if {"$log" != ""} {
-            #log {off} {$work_path/log/$log.log};
-        };
-        #format {log} {%t} {%Y%m%d%H%M%S};
-        #class {main} {close};
-        #log {overwrite} {$work_path/log/$log.log};
+        #variable {logging} {off};
+        #mq {#log {off}};
+        #mq {#send {OnSend show("日志记录已关闭", "orange")}};
     };
-};
-#alias {{^\s*log\s+mq\s+((?:on|off))\s*$}} {
-    #if {"%2" == "off"} {
+    #elseif {"%2" == "clear"} {
         #mq {#log {overwrite} {$work_path/log/mq.log}};
-        #mq {#log {off} {$work_path/log/mq.log}};
-    } {
+        #if {$logging == "off"} {#mq {#log {off}}};
+        #mq {#send {OnSend show("日志记录已清空", "orange")}};
+    };
+    #else {
+        #variable {logging} {on};
         #mq {#log {append} {$work_path/log/mq.log}};
+        #mq {#send {OnSend show("日志记录已开启", "orange")}};
     };
 };
 #alias {{^\s*flush\s*$}} {#mq {#send {OnSend alias_flush()}}};

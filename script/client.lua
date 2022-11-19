@@ -219,7 +219,7 @@ function get_matches(num)
 end
 
 function gag()
-    --print("Gag")
+    --print("GAG "..get_lines(-1)[1])
 end
 
 function reset_env()

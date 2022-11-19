@@ -1,4 +1,7 @@
 #session {main} {$host} {$port};
+#config {256 colors} {on};
+#screen {get} {rows} {rows};
+#screen {get} {cols} {cols};
 #read {$script_path/ui.tin};
 
 #config {charset} {GBK1TOUTF8};
@@ -20,6 +23,7 @@
 } {9.999};
 
 #read {$script_path/alias.tin};
+#read {$script_path/beautify.tin};
 
 #mq {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
 #mq {#send {OnSend HOME = "$work_path/"}};
