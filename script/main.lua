@@ -1,5 +1,5 @@
 global = global or { flood = 0, uid = {}, buffer = {}, regex = {} }
-global.debug = { level = 0, none = 0, info = 1, trace = 2 }
+global.debug = { level = 0, none = 0, info = 1, trace = 2 , endless = {}}
 automation = automation or {}
 var = var or {}
 
