@@ -1,4 +1,6 @@
 /.vscode/
+
+# Mudlet
 /edbee/
 /fonts/
 /moduleBackups/
@@ -9,6 +11,9 @@
 /autolog
 /mudlet.aff
 /mudlet.dic
+
+# Profiles
+/profiles/
 !/profiles/JHL
 /profiles/JHL/current/
 /profiles/JHL/tmp/
@@ -24,4 +29,8 @@
 /profiles/JHL/profile.*
 /profiles/JHL/notes_utf8.txt
 /profiles/JHL/*.cfg
-/profiles/
+
+# PaoTin
+/ids/
+!/ids/DEFAULT
+!/ids/EXAMPLE

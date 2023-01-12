@@ -126,9 +126,15 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 
 安装 Docker 软件，参见 Docker [官方安装文档](https://docs.docker.com/engine/install/)。
 
+引入 Tintin++ 插件 [PaoTin](https://github.com/mudclient/paotin)，以提供机器人边缘功能扩展。
+
 下载 [tintin 分支](https://github.com/zhenzh/JHL/archive/tintin.zip) 并解压
 
-打开命令行界面（Windows 打开 PowerShell）执行启动脚本：`<解压后的机器人所在路径>/docker-start.sh <角色 ID> `
+打开命令行界面（Windows 打开 PowerShell）执行脚本：
+
+- 角色首次运行：`<解压后的机器人所在路径>/new.sh <角色 ID>`
+- 关闭运行窗口(机器人保持运行)：`<ctrl+a> d`
+- 恢复已运行的角色窗口：`docker exec -it <角色 ID> start-ui`
 
 #### Windows
 
@@ -136,19 +142,9 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 
 #### MacOS/Linux
 
-安装 tintin++，详细步骤参见[官网安装说明](https://tintin.mudhalla.net/install.php)。
+为便于维护更新，tintin++ 的机器人将完全容器化。详细步骤参见 [Docker](#docker)
 
-安装 Lua5.1（如果没有 5.1 版本可选，5.2 版本也可以兼容）：
-
-- MacOS `brew install lua@5.1`
-- Ubuntu/Debian `apt get -y install lua5.1-0`
-- Alpine `apk add lua5.1`
-
-安装 [LuaRocks](https://github.com/luarocks/luarocks/wiki/Download) 5.1
-
-安装 Lua pcre 库：`luarocks-5.1 install lrexlib-pcre`
-
-执行启动脚本：`<解压后的机器人所在路径>/start.sh <角色 ID> `
+虽然本地化运行方案依然可用，但此处不再详加说明，有需要的可参考容器命令自行实现。
 
 ### [Mushclient](http://www.gammon.com.au/mushclient/mushclient.htm)
 
