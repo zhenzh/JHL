@@ -1,0 +1,25 @@
+#nop vim: set filetype=tt:;
+
+#nop 继承默认框架路径下的 ids/DEFAULT;
+#read {/paotin/ids/DEFAULT};
+
+#nop 变更为 mudlib 江湖路;
+mudlib.Define {jhl} {江湖路};
+mudlib.Set {jhl};
+
+#nop session 的名字，没特殊需求不建议修改;
+#var session[name]  main;
+
+#nop session 的主机名;
+#var session[host]  106.225.179.81;
+
+#nop session 的端口;
+#var session[port]  5555;
+#var session[UTF8]  false;
+
+#nop 是否开启 GMCP，默认开启;
+#var user[GMCP]     false;
+
+#nop 江湖路全自动机器人路径;
+#var jhl            {{path} {/paotin/mud/jhl}};
+#var jhl[script]    {$jhl[path]/script};

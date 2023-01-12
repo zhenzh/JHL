@@ -1,14 +1,7 @@
-#gts {
-    #var    path[mudlib]    {/paotin/mud/jhl};
-    #var    path[profile]   {/paotin/mud/jhl/profiles/zhengb};
-    #var    path[script]    {/paotin/mud/jhl/script};
-};
-
 #class {mq} {kill};
 
-#echo {"this is $path[mudlib]"};
 #zap {mq};
-#run {mq} {lua $path[script]/listener.lua};
+#run {mq} {lua $jhl[script]/listener.lua};
 #log {timestamp} {%Y%m%d%H%M%S};
 #config {charset} {UTF-8};
 
@@ -20,8 +13,8 @@
 } {9.999};
 
 #action {^RESET$} {
-    #gts {#read {$path[mudlib]/plugins/mq.tin}};
-    #gts {#read {$path[mudlib]/plugins/main.tin}};
+    #gts {#read {$jhl[path]/plugins/automation/mq.tin}};
+    #gts {#read {$jhl[path]/plugins/automation/main.tin}};
 } {1};
 
 #action {{^GAG (.*)$}} {#main {

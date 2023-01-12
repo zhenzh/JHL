@@ -14,10 +14,12 @@
     };
 } {9.999};
 
-#read {$path[script]/alias.tin};
+#read {$jhl[script]/alias.tin};
 
-#mq {#send {OnSend package.path = package.path..";$path[script]/?.lua"}};
-#mq {#send {OnSend HOME = "$path[profile]/"}};
-#mq {#send {OnSend SCRIPT = "$path[script]/"}};
+#mq {#send {OnSend package.path = package.path..";$jhl[script]/?.lua"}};
+#mq {#send {OnSend HOME = "$jhl[profile]/"}};
+#mq {#send {OnSend SCRIPT = "$jhl[script]/"}};
 #mq {#send {OnSend require "main"}};
 #mq {#send {OnSend if automation.reconnect ~= nil then send_cmd("") end}};
+
+#main;
