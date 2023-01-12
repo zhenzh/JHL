@@ -1,11 +1,3 @@
-#session {main} {$host} {$port};
-#config {256 colors} {on};
-#screen {get} {rows} {rows};
-#screen {get} {cols} {cols};
-#read {$script_path/ui.tin};
-
-#config {charset} {GBK1TOUTF8};
-
 #class {mq} {open};
 
 #alias {^/%*$} {
@@ -22,12 +14,10 @@
     };
 } {9.999};
 
-#read {$script_path/alias.tin};
-#read {$script_path/beautify.tin};
+#read {$path[script]/alias.tin};
 
-#mq {#send {OnSend package.path = package.path..";$script_path/?.lua"}};
-#mq {#send {OnSend HOME = "$work_path/"}};
-#mq {#send {OnSend SCRIPT = "$script_path/"}};
+#mq {#send {OnSend package.path = package.path..";$path[script]/?.lua"}};
+#mq {#send {OnSend HOME = "$path[profile]/"}};
+#mq {#send {OnSend SCRIPT = "$path[script]/"}};
 #mq {#send {OnSend require "main"}};
 #mq {#send {OnSend if automation.reconnect ~= nil then send_cmd("") end}};
-#main;

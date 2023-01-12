@@ -127,16 +127,6 @@ automation.statistics.processing = automation.statistics.processing or {}
 
 collectgarbage("collect")
 
-function keepalive()
-    message("info", debug.getinfo(1).source, debug.getinfo(1).currentline,
-            "函数［ keepalive ］")
-    timer.add("keepalive", 30, "disconnect('keepalive') disconnect()", "automation", {Enable=true, OneShot=true})
-    if connect("keepalive") == true then
-        timer.delete("keepalive")
-        timer.add("keepalive", 30, "keepalive()", "automation", {Enable=true, OneShot=true})
-    end
-end
-
 function init()
     message("trace", debug.getinfo(1).source, debug.getinfo(1).currentline, "函数［ init ］")
     trigger.add("init_hide_ga", "", nil, {Enable=true, Gag=true, StopEval=true}, 40, "^> $|^设定完毕。$|^从现在起你用\\S+点内力伤敌。$")
@@ -275,5 +265,3 @@ else
         end
     )()
 end
-
---keepalive()

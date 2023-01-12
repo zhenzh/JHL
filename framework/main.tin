@@ -1,0 +1,135 @@
+#nop vim: set filetype=tt:;
+
+/*
+模块名称：框架主程序
+模块说明：本文件属于框架代码的一部分，不建议修改。如有需求请在 GitHub 发 issue 或者 PR
+版权声明：本文件属于 PaoTin++ 的一部分
+===========
+PaoTin++ © 2020~2022 的所有版权均由担子炮(dzp <danzipao@gmail.com>) 享有并保留一切法律权利
+你可以在遵照 GPLv3 协议的基础之上使用、修改及重新分发本程序。
+===========
+*/
+
+#class main open;
+
+#kill all;
+
+#event {PROGRAM START} {
+    #if { "$user[id]" != "{[A-Za-z0-9]+}" } {
+        #echo {<110>请参考使用文档指定用户正确的 user id。<070>};
+        #return;
+    };
+
+    #if { "@InitLog{$user[id]}" != "true" } {
+        #echo {<110>创建日志目录 $gLog[PATH]/$user[id] 时遇到错误。<070>};
+        #echo {<130>请检查你的安装环境，或者参考使用手册重新安装本软件。<070>};
+        #return;
+    };
+    
+    load-module automation/mq;
+    load-module basic/login;
+    auto-login;
+};
+
+#event {PROGRAM TERMINATION} {
+    #screen set title {NONE};
+};
+
+#alias {auto-login} {
+    login {$session} {$user} {
+        load-file {framework/online.tin};
+    };
+};
+
+#event {SESSION CREATED} {
+    #if {"%0" == "$session[name]"} {
+        #%0 {
+            log.Open;
+            load-module lib/event;
+            event.Define {user-online} {无参} {framework} {已经登录到服务器，所有命令都可以正常使用了。};
+            load-module lib/ui;
+        };
+    };
+};
+
+#event {SESSION TIMED OUT} {
+    #if {"%0" == "$session[name]"} {
+        #echo {%s} {<110>连接服务器超时，稍后自动重试。<070>};
+        #gts #delay 3 auto-login;
+    };
+};
+
+#event {SESSION DISCONNECTED} {
+    #if { "%0" == "$session[name]" } {
+        #local reconnect {$session[reconnect]};
+        #if { "$session[remote_maint]" == "true" } {
+            #local reconnect {$session[reconnect_slow]};
+            #var session[remote_maint] {false};
+        };
+
+        #if { "$reconnect" == "{|0}" } {
+            #local reconnect 12;
+        };
+
+        #nop 断开连接后再次重连不要太频繁，以免服务器不高兴。;
+        #echo {%s} {<110>连接已被服务器断开，$reconnect 秒后自动重连。<070>};
+        #gts #delay {$reconnect} {
+            #echo {%s} {<120>自动重连。<070>};
+            auto-login;
+        };
+    };
+};
+
+#nop 优先加载 var/$file（玩家自定义文件），其次加载 mud/$file（MUDLIB 相关文件）;
+#alias {load-file} {
+    #local file {%1};
+
+    #local output {};
+    #script output {test -f var/$file && echo true || echo false};
+    #if { "$output[1]" == "true" } {
+        #read var/$file;
+        #return;
+    };
+
+    #if { "$gCurrentMUDLIB" != "" } {
+        #local output {};
+        #script output {test -f mud/$gCurrentMUDLIB/$file && echo true || echo false};
+        #if { "$output[1]" == "true" } {
+            #read mud/$gCurrentMUDLIB/$file;
+            #return;
+        };
+    };
+
+    #read $file;
+};
+
+#alias {init} {
+    #nop 调整 tintin 环境;
+    load-file framework/settings.tin;
+    #nop 框架依赖的基本函数;
+    load-file framework/utils.tin;
+    #nop 日志支持;
+    load-file framework/log.tin;
+    #nop 为 TinTin 赋能，实现模块加载器;
+    load-file framework/module-loader.tin;
+    #nop 支持不同的 MUD 服务器环境;
+    load-file framework/multi-mud.tin;
+
+    #nop 为 TinTin 赋能，自行实现的扩展语法和实用函数集。;
+    load-lib xtintin;
+
+    #nop 提供 TinTin++ 命令行自动补全功能。;
+    load-lib tab-completion;
+
+    #nop 默认的用户环境配置;
+    load-file ids/DEFAULT;
+};
+
+#var session    {};
+#var user       {};
+#var char       {};
+#var info       {};
+
+init;
+
+#class main close;
