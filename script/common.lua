@@ -158,13 +158,13 @@ function message(level, file, row, output, head)
         local lua = set.last(string.split(file, "/"))
         head = string.rep("　　", head or 0)
         show(string.format("\n%-24s%-s%-s", lua.." - "..tostring(row)..":", head, output))
-        if global.debug.level == "debug" then
+        if global.debug.level > 1 then
             if time.epoch() - (global.debug.endless[output] or 0) < 1 then
                 global.debug.endless.count = (global.debug.endless.count or 0) + 1
             else
                 global.debug.endless.count = 0
             end
-            if global.debug.endless.count > 100 then
+            if global.debug.endless.count > 1000 then
                 automation_reset()
             end
             global.debug.endless[output] = time.epoch()
