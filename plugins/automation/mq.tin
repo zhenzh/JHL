@@ -1,8 +1,8 @@
 #class {mq} {kill};
 
 #zap {mq};
-#run {mq} {lua $script_path/listener.lua};
-#log {timestamp} {%Y%m%d%H%M%S };
+#run {mq} {lua $jhl[script]/listener.lua};
+#log {timestamp} {%Y%m%d%H%M%S};
 #config {charset} {UTF-8};
 
 #action {{^DEBUG (.*)$}} {
@@ -13,21 +13,8 @@
 } {9.999};
 
 #action {^RESET$} {
-    #gts {#read {$script_path/mq.tin}};
-    #gts {#read {$script_path/main.tin}};
-} {1};
-
-#action {{^DISCONNECT (.*)$}} {
-    #gts {#zap {%2}};
-} {1};
-
-#action {{^CONNECT (.*) (.*)$}} {
-    #if {%3 == "INACTIVE"} {
-        #gts {#session {%3} {$host} {$port}};
-    };
-    #else {
-        #session {%2} {$host} {$port};
-    };
+    #gts {#read {$jhl[path]/plugins/automation/mq.tin}};
+    #gts {#read {$jhl[path]/plugins/automation/main.tin}};
 } {1};
 
 #action {{^GAG (.*)$}} {#main {

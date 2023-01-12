@@ -1,0 +1,39 @@
+#class login kill;
+#class login open;
+
+#var login[session]     {};
+#var login[user]        {};
+#var login[autoexec]    {};
+
+#alias {login} {
+    #var    login[session]  {%1};
+    #var    login[user]     {%2};
+    #var    login[autoexec] {%3};
+    #session {$session[name]} {$session[host]} {$session[port]};
+};
+
+#event {SESSION CONNECTED} {
+    #if { "%0" == "$login[session][name]" } {
+        #class auto-login kill;
+        #class auto-login open;
+
+        #nop 如果角色设置了 GMCP 支持，则积极回应服务器的 GMCP 协商请求。;
+        #if { "$user[GMCP]" == "true" } {
+            load-lib gmcp;
+            gmcp.Enable;
+        };
+
+        #if { "$session[UTF8]" == "true" } {
+            #config {charset} {UTF-8};
+        };
+        #else {
+            #config {charset} {GBK1TOUTF8};
+        };
+
+        load-module automation/main;
+
+        #class auto-login close;
+    };
+};
+
+#class login close;
