@@ -134,7 +134,7 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 
 - 角色首次运行或重置窗口：`<机器人路径>/new.sh <角色 ID>`
 - 关闭运行窗口(机器人保持运行)：`<ctrl+a> d`
-- 恢复已运行的角色窗口：`<机器人路径>/open.sh <角色 ID>`
+- 恢复已运行的角色窗口：`<机器人路径>/load.sh <角色 ID>`
 
 #### Windows
 
