@@ -13,8 +13,8 @@
 } {9.999};
 
 #action {^RESET$} {
-    #gts {#read {$jhl[path]/plugins/automation/mq.tin}};
-    #gts {#read {$jhl[path]/plugins/automation/main.tin}};
+    #gts {#read {$jhl[path]/plugins/auto/mq.tin}};
+    #gts {#read {$jhl[path]/plugins/auto/main.tin}};
 } {1};
 
 #action {{^GAG (.*)$}} {#main {

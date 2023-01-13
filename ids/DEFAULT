@@ -20,6 +20,12 @@ mudlib.Set {jhl};
 #nop 是否开启 GMCP，默认开启;
 #var user[GMCP]     false;
 
+#nop 是否启用自动登录;
+#var user[LOGIN]    true;
+
+#nop 是否启用自动挂机;
+#var user[AUTO]     true;
+
 #nop 江湖路全自动机器人路径;
 #var jhl            {{path} {/paotin/mud/jhl}};
 #var jhl[script]    {$jhl[path]/script};

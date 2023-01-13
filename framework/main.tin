@@ -25,8 +25,8 @@ PaoTin++ © 2020~2022 的所有版权均由担子炮(dzp <danzipao@gmail.com>) �
         #echo {<130>请检查你的安装环境，或者参考使用手册重新安装本软件。<070>};
         #return;
     };
-    
-    load-module automation/mq;
+
+    load-module auto/mq;
     load-module basic/login;
     auto-login;
 };

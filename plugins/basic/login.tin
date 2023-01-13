@@ -30,7 +30,44 @@
             #config {charset} {GBK1TOUTF8};
         };
 
-        load-module automation/main;
+        #if { "$user[LOGIN]" == "true" } {
+            #gts {#var user[LOGIN] {false}};
+
+            #class login open;
+
+            #line oneshot #action {^请输入您的英文ID：$} {
+                xtt.Answer {$login[user][id]};
+            };
+    
+            #line oneshot #action {^请您输入密码：$} {
+                xtt.Answer {$login[user][passwd]};
+            };
+    
+            #line oneshot #action {^您要将另一个连线中的相同人物赶出去，取而代之吗？(y/n)$} {
+                xtt.Answer y;
+            };
+    
+            #line oneshot #action {^%s{您目前的权限是：\(player\)，您设定为 GB 显示。|重新连线完毕。}%s$} {
+                #delay 0 {
+                    load-module auto/main;
+                    #if { "$user[AUTO]" == "false" } {
+                        #class login kill;
+                    }
+                };
+            };
+
+            #if { "$user[AUTO]" == "true" } {
+                #line oneshot #action {初始化完成} {
+                    #delay 0 {
+                        #mq {#send {OnSend alias_auto()}};
+                        #class login kill;
+                    };
+                };
+            };
+        };
+        #else {
+            load-module auto/main;
+        };
 
         #class auto-login close;
     };

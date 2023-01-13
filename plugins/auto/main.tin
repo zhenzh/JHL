@@ -7,6 +7,7 @@
     #replace {cmd} {\\} {\\};
     #mq {#send {OnSend $cmd}};
 } {9.999};
+
 #event {RECEIVED LINE} {
     #mq {
         #send {OnReceiveTXT %1};
@@ -19,6 +20,10 @@
 #mq {#send {OnSend package.path = package.path..";$jhl[script]/?.lua"}};
 #mq {#send {OnSend HOME = "$jhl[profile]/"}};
 #mq {#send {OnSend SCRIPT = "$jhl[script]/"}};
+
+#if { "$user[LOGIN]" == "true" } {
+    #mq {#send {OnSend global = global or { flood = 0, uid = {}, buffer = {''}, regex = {} }}};
+};
 #mq {#send {OnSend require "main"}};
 #mq {#send {OnSend if automation.reconnect ~= nil then send_cmd("") end}};
 

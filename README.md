@@ -132,9 +132,9 @@ tar xf Mudlet-<version>-linux-x64.AppImage.tar
 
 打开命令行界面（Windows 打开 PowerShell）执行脚本：
 
-- 角色首次运行：`<解压后的机器人所在路径>/new.sh <角色 ID>`
+- 角色首次运行或重置窗口：`<机器人路径>/new.sh <角色 ID>`
 - 关闭运行窗口(机器人保持运行)：`<ctrl+a> d`
-- 恢复已运行的角色窗口：`docker exec -it <角色 ID> start-ui`
+- 恢复已运行的角色窗口：`<机器人路径>/open.sh <角色 ID>`
 
 #### Windows
 
