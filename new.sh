@@ -7,5 +7,5 @@ if [ ! -f "ids/$1" ]; then
 fi
 
 docker container rm -f $(docker container list -q -f name=$1) 2> /dev/null
-docker run --name $1 -it -d --hostname $1 -v $PWD:/paotin/mud/jhl -v $PWD/ids:/paotin/var/ids -v $PWD/bin/start-ui:/paotin/bin/start-ui mudclient/paotin:latest daemon
+docker run --name $1 -it -d --hostname $1 -v $PWD:/paotin/mud/jhl -v $PWD/ids:/paotin/var/ids -v $PWD/bin/start-ui:/paotin/bin/start-ui zhenzh/paotin:latest daemon
 docker exec -it $1 start-ui auto
