@@ -50,7 +50,7 @@ function statistics_get_range(list)
 end
 
 function statistics_summary(list)
-    local format = "%2s%-8s%12s%-8s%12s%-12s%-16s%-10s"
+    local format = "%2s%-9s%16s%-10s%16s%-14s%-23s%-18s"
     local font_color,back_color = "yellow","dimgray"
     local summary = { total = {exp = 0, pot = 0, elapsed = 0} }
     for _,v in ipairs(config.jobs) do
@@ -76,7 +76,7 @@ function statistics_summary(list)
     end
     show(string.format("%2s统计概览（%19s ~ %19s）%25s", "", time.todate(list.begin_time, "%Y-%m-%d %H:%M:%S"), time.todate(list.end_time, "%Y-%m-%d %H:%M:%S"), ""), "olivedrab", "ivory")
     show(string.format("%2s%-20s%-20s%-20s%-16s", "", "重置次数："..tostring(list.reset), "重连次数："..tostring(list.connect), "死亡次数："..tostring(list.death), "发呆次数："..tostring(list.idle)), "yellow", "black")
-    show(string.format(format, "", "任务名", "获得经验", " / 效率", "获得潜能", " / 效率", "总用时（占比）", "完成数（成功率）"), "white", "dimgray")
+    show(string.format(format, "", "任务", "获得经验", " / 效率", "获得潜能", " / 效率", "总用时（占比）", "完成数（成功率）"), "white", "dimgray")
     local lxmsg
     for _,v in ipairs(summary) do
         local ratio = string.format("%.2f", math.decimal(v.elapsed/(list.end_time-list.begin_time)*100, 2))
@@ -126,7 +126,7 @@ function statistics_list(list)
     local format = "%2s%-18s%-12s%-8s%12s%12s%8s%-8s"
     local font_color,back_color = "yellow","dimgray"
     local sum = { exp = 0, pot = 0, elapsed = 0 }
-    show(string.format(format, "", "完成时间", "任务名", "任务结果", "获得经验", "获得潜能", "", "用时"), "white", "dimgray")
+    show(string.format(format, "", "完成时间", "任务", "任务结果", "获得经验", "获得潜能", "", "用时"), "white", "dimgray")
     for _,v in ipairs(list) do
         if v.name ~= "龙象破障" then
             if back_color == "black" then

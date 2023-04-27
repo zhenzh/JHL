@@ -510,7 +510,7 @@ function songshan_job_arrest(room, npc)
         return songshan_job_p5()
     else
         var.job.enemy_name = npc[1]
-        trigger.add("songshan_job_win", "songshan_job_win()", "songshan_job", {Enable=true, OneShot=true}, 99, "^你说道：“左掌门好好劝你归降投诚，你偏偏固执不听，自今而后，武林中可再没恒山一派了。$")
+        trigger.add("songshan_job_win", "songshan_job_win()", "songshan_job", {Enable=true, OneShot=true}, 99, "^你说道：“左掌门好好劝你归降投诚，你偏偏固执不听，自今而后，武林中可再没恒山一派了。$|^"..var.job.enemy_name.."脚下一个不稳，跌在地上昏了过去。$")
         local rc = fight()
         if rc == 0 then
             config.jobs["嵩山任务"].arrest = true
