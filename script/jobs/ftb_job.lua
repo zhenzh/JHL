@@ -22,7 +22,7 @@ config.jobs["斧头帮任务"].exclude = config.jobs["斧头帮任务"].exclude 
 
 function enable_ftb_job()
     trigger.delete_group("ftb_job")
-    trigger.add("ftb_job_wait_info", "ftb_job_wait_info()", "ftb_job", {Enable=false, Multi=true}, 99, "^程金斧说道：听说有(\\S+)个家伙想对本帮不利。\\n程金斧说道：据说他们已经到了(\\S+)(?:（该处靠近(\\S+)）|)方圆(\\S+)里之内。$")
+    trigger.add("ftb_job_wait_info", "ftb_job_wait_info()", "ftb_job", {Enable=false, Multi=true}, 99, "^程金斧说道：听说有(\\S+)个家伙想对本帮不利。\\n程金斧说道：据说他们已经到了(\\S+?)(?:（该处靠近(\\S+)）|)方圆(\\S+)里之内。$")
 end
 
 function disable_ftb_job()
