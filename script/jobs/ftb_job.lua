@@ -171,8 +171,8 @@ function ftb_job_refresh()
         trigger.enable("ftb_job_wait_info")
         l = wait_line(nil,
                       30, nil, nil,
-                      "^程金斧说道：麻烦\\S+去查一查, 若真是刺客便替本帮主除却了吧.$|"..
-                      "^程金斧说道：我早就告诉过你了:$|"..
+                      "^程金斧说道：麻烦\\S+去查一查，若真是刺客便替本帮主除却了吧。$|"..
+                      "^程金斧说道：我早就告诉过你了：$|"..
                       "^程金斧说道：BUG|"..
                       "^程金斧一脚正好踢中你的屁股！$|"..
                       "^程金斧对着你竖起了右手大拇指，好样的。$|"..
@@ -184,10 +184,10 @@ function ftb_job_refresh()
             l = wait_line(nil,
                           30, nil, nil,
                           "^程金斧说道：说话的声音象蚊子那么大，老子听不清楚。$|"..
-                          "^程金斧说道：去了这么久才回来, 人家早得手啦.$")
+                          "^程金斧说道：去了这么久才回来，人家早得手啦。$")
             if l == false then
                 return -1
-            elseif l[0] == "程金斧说道：去了这么久才回来, 人家早得手啦." then
+            elseif l[0] == "程金斧说道：去了这么久才回来，人家早得手啦。" then
                 timer.delete("ftb_job_cd")
                 config.jobs["斧头帮任务"].phase = phase["任务更新"]
                 if privilege_job("斧头帮任务") == true then
@@ -222,12 +222,12 @@ function ftb_job_refresh()
             config.jobs["斧头帮任务"].phase = phase["任务失败"]
             var.job.statistics = nil
             return 1
-        elseif l[0] == "程金斧说道：我早就告诉过你了:" then
+        elseif l[0] == "程金斧说道：我早就告诉过你了：" then
             if (config.jobs["斧头帮任务"].phase or 0) == phase["任务失败"] then
                 timer.delete("ftb_job_cd")
                 return ftb_job_p3()
             end
-            if wait_line(nil, 30, nil, nil, "^程金斧说道：麻烦\\S+去查一查, 若真是刺客便替本帮主除却了吧.$") == false then
+            if wait_line(nil, 30, nil, nil, "^程金斧说道：麻烦\\S+去查一查，若真是刺客便替本帮主除却了吧。$") == false then
                 return -1
             end
             config.jobs["斧头帮任务"].phase = phase["任务执行"]
@@ -412,8 +412,8 @@ function ftb_job_ask_npc(room, npc)
     else
         l = wait_line(nil,
                       30, nil, nil,
-                      "^"..set.last(npc)[1].."说道：老子怎么看都觉得你比我像杀手!$|"..
-                      "^"..set.last(npc)[1].."说道：青天白日的, 哪里有刺客\\? 笑话.$|"..
+                      "^"..set.last(npc)[1].."说道：老子怎么看都觉得你比我像杀手！$|"..
+                      "^"..set.last(npc)[1].."说道：青天白日的，哪里有刺客？笑话。$|"..
                       "^但是很显然的，\\S+现在的状况没有办法给你任何答覆。$|"..
                       "^"..set.last(npc)[1].."摇摇头，说道：没听说过。$|"..
                       "^"..set.last(npc)[1].."耸了耸肩，很抱歉地说：无可奉告。$|"..
